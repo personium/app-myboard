@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyBoard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="./js/myboard.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+    <link href='./css/myboard.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div class="main_box">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
+                       <span class="sr-only">Toggle navigation</span>
+                       <span class="icon-bar"></span>
+                       <span class="icon-bar"></span>
+                       <span class="icon-bar"></span>
+                    </button>
+
+                    <a class="navbar-brand">MyBoard</a>
+                </div>
+                <div class="collapse navbar-collapse" id="collapse-id">
+                 <ul class="nav navbar-nav">
+                    <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed">他のMyBoardを見る</a></li>
+                    
+                    <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed">閲覧許可依頼送信</a></li>
+                    <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed">閲覧許可状況</a></li>
+                    <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed">通知</a></li>
+                 </ul>
+                </div>
+                <div class="panel-group" id="accordion">
+                    <div id="extCellMyBoard" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <h3>他のMyBoardを見る</h3>
+                        <p>許可されているセル</p>
+                        <select id="otherAllowedCells"></select>
+                        <button id="bExtMyBoard">閲覧</button>
+                      </div>
+                    </div>
+                    <div id="sendAllowedMessage" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <h3>閲覧許可依頼送信</h3>
+                        <p>依頼先セル</p>
+                        <select id="requestCells"></select>
+                        <button id="bSendAllowed">送信</button>
+                      </div>
+                      <span class="popupAlertArea" style="color:red">
+                          <aside id="popupSendAllowedErrorMsg"></aside>
+                      </span>
+                    </div>
+                    <div id="listAllowed" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <h3>閲覧許可状況</h3>
+                        <p>許可しているセル</p>
+                        <table id="allowedCellList">
+                        </table>
+                      </div>
+                    </div>
+                    <div id="receiveMessage" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <h3>通知</h3>
+                        <div class="panel-group" id="messageList">
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="col-md-12 col-xs-12" align="center">
+            <div class="panel panel-default disp_board">
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="info text-center">
+                            <span class="small">好きな事を書いてください。</span>
+                        </td>
+                    </tr>
+                    <tr height="70%">
+                        <td>
+                            <textarea class="write_board" id="txtMyBoard" readonly></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <button type="button" class="btn btn-primary" id="exeEditer">
+              編集
+            </button>
+            <div id="errorMsg" style="display:none;">
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-edit-myboard" class="modal fade" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header login-header">
+            <h4 class="modal-title">編集</h4>
+          </div>
+          <div class="modal-body">
+             <textarea class="edit_board" id="txtEditMyBoard"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="b-edit-myboard-ok">編集</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header login-header">
+            <h4 class="modal-title">Session out</h4>
+          </div>
+          <div class="modal-body">
+             セッションが切れました。MyBoardを終了します。
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="b-session-relogin-ok" >Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

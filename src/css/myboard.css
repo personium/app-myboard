@@ -1,0 +1,51 @@
+textarea {
+    resize:none;
+}
+
+.paddingTd {
+    padding: 10px 20px;
+}
+
+.disp_board {
+    width: 100%;
+    height: 300px;
+    display: none;
+    text-align: left;
+    margin-top: 20px;
+}
+
+.write_board {
+    width: 100%;
+    height: 220px;
+    border: 0;
+}
+
+.edit_board {
+    width: 100%;
+    height: 220px;
+}
+
+.write_board:active {
+    border: 0;
+}
+
+.navbar-nav li:hover{
+    background-color: #EEE;
+}
+
+.allToggle {
+    display:block;
+    width:100%;
+    height:100%;
+}
+
+.display-table {
+    display: table;
+    padding: 0;
+    /*width: 720px;*/
+    width: 100%;
+}
+
+@media (max-width: 767px) {
+    
+}

@@ -1,0 +1,10 @@
+{
+  "Relations": [
+    {
+      "Name": "MyBoardWriter"
+    },
+    {
+      "Name": "MyBoardReader"
+    }
+  ]
+}

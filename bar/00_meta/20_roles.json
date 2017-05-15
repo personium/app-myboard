@@ -1,0 +1,10 @@
+{
+  "Roles": [
+    {
+      "Name": "MyBoardWrite"
+    },
+    {
+      "Name": "MyBoardRead"
+    }
+  ]
+}
