@@ -456,7 +456,7 @@ mb.refreshToken = function() {
 mb.refreshTokenAPI = function() {
     return $.ajax({
         type: "POST",
-        url: mb.cellUrl + '__auth',
+        url: mb.cellUrl + '__token',
         processData: true,
         dataType: 'json',
         data: {
@@ -479,7 +479,7 @@ mb.getProfile = function(url) {
 mb.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: mb.cellUrl + '__auth',
+                url: mb.cellUrl + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {
