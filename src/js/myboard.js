@@ -67,7 +67,7 @@ $(document).ready(function() {
             }
             $('.write_board').append(mb.msgData.message);
             $('.disp_board').css("display", "block");
-            mb.setIdleTime();
+            //mb.setIdleTime();
 
             
             // 閲覧許可状況(外部セル)
@@ -98,35 +98,31 @@ $(document).ready(function() {
             $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
         } else {
              var childWindow = window.open('about:blank');
-                $.ajax({
-                    type: "GET",
-                    url: mb.appUrl + "__/launch.json",
-                    headers: {
-                        'Authorization':'Bearer ' + mb.token,
-                        'Accept':'application/json'
-                    }
-                }).done(function(data) {
-                    var type = data.type;
-                    var launch = data[type];
-                    var target = value + mb.boxName;
-                    mb.getTargetToken(value).done(function(extData) {
-                        switch (type) {
-                            case "web":
-                                var url = launch;
-                                url += '#target=' + target;
-                                url += '&token=' + extData.access_token;
-                                url += '&ref=' + extData.refresh_token;
-                                url += '&expires=' + extData.expires_in;
-                                url += '&refexpires=' + extData.refresh_token_expires_in;
-                                childWindow.location.href = url;
-                                childWindow = null;
-                                break;
-                        }
-                    });
-                }).fail(function(data) {
-                    childWindow.close();
-                    childWindow = null;
-                });
+             $.ajax({
+                 type: "GET",
+                 url: mb.appUrl + "__/launch.json",
+                 headers: {
+                     'Authorization':'Bearer ' + mb.token,
+                     'Accept':'application/json'
+                 }
+             }).done(function(data) {
+                 var launchObj = data.personal;
+                 var launch = launchObj.web;
+                 var target = value + mb.boxName;
+                 mb.getTargetToken(value).done(function(extData) {
+                     var url = launch;
+                     url += '#target=' + target;
+                     url += '&token=' + extData.access_token;
+                     url += '&ref=' + extData.refresh_token;
+                     url += '&expires=' + extData.expires_in;
+                     url += '&refexpires=' + extData.refresh_token_expires_in;
+                     childWindow.location.href = url;
+                     childWindow = null;
+                 });
+             }).fail(function(data) {
+                 childWindow.close();
+                 childWindow = null;
+             });
         }
     });
 
