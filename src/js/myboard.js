@@ -116,7 +116,7 @@ $(document).ready(function() {
     $('#bExtMyBoard').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
+            $("#popupReadAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
              var childWindow = window.open('about:blank');
              $.ajax({
@@ -171,6 +171,7 @@ $(document).ready(function() {
         $("#listAllowed").attr("aria-expanded", false);
         $("#receiveMessage").removeClass('in');
         $("#receiveMessage").attr("aria-expanded", false);
+        $("#popupReadAllowedErrorMsg").html('');
     });
     $("#sendAllowedMessage").on('show.bs.collapse', function() {
         $("#extCellMyBoard").removeClass('in');
