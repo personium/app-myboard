@@ -31,6 +31,7 @@ mb.getName = function(path) {
 
 i18next
     .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
     .init({
         fallbackLng: 'en',
         debug: true,
@@ -40,14 +41,26 @@ i18next
             crossDomain: true
         }
     }, function(err, t) {
-        // for options see
-        // https://github.com/i18next/jquery-i18next#initialize-the-plugin
-        jqueryI18next.init(i18next, $);
-        // start localizing, details:
-        // https://github.com/i18next/jquery-i18next#usage-of-selector-function
-        $('title').localize();
-        $('[data-i18n]').localize();
+        initJqueryI18next()
+        
+        updateContent()
     });
+
+/*
+ * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
+ */
+function initJqueryI18next() {
+    // for options see
+    // https://github.com/i18next/jquery-i18next#initialize-the-plugin
+    jqueryI18next.init(i18next, $);
+}
+
+function updateContent() {
+    // start localizing, details:
+    // https://github.com/i18next/jquery-i18next#usage-of-selector-function
+    $('title').localize();
+    $('[data-i18n]').localize();
+}
 
 $(document).ready(function() {
     var appUrlMatch = location.href.split("#");
