@@ -28,6 +28,40 @@ mb.getName = function(path) {
   return collectionName;
 };
 
+
+i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/translation.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        initJqueryI18next()
+        
+        updateContent()
+    });
+
+/*
+ * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
+ */
+function initJqueryI18next() {
+    // for options see
+    // https://github.com/i18next/jquery-i18next#initialize-the-plugin
+    jqueryI18next.init(i18next, $);
+}
+
+function updateContent() {
+    // start localizing, details:
+    // https://github.com/i18next/jquery-i18next#usage-of-selector-function
+    $('title').localize();
+    $('[data-i18n]').localize();
+}
+
 $(document).ready(function() {
     var appUrlMatch = location.href.split("#");
     var appUrlSplit = appUrlMatch[0].split("/");
@@ -95,7 +129,7 @@ $(document).ready(function() {
     $('#bExtMyBoard').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
+            $("#popupReadAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
              var childWindow = window.open('about:blank');
              $.ajax({
@@ -129,16 +163,16 @@ $(document).ready(function() {
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
-            var title = "MyBoard_閲覧許可依頼";
-            var body = "MyBoardの閲覧許可をお願いします。";
+            var title = i18next.t("common.readRequestTitle");
+            var body = i18next.t("common.readRequestBody");
             //var reqRel = value + "__relation/__/MyBoardReader";
             var reqRel = "https://demo.personium.io/app-myboard/__relation/__/MyBoardReader";
             mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, mb.cellUrl).done(function(data) {
-                $("#popupSendAllowedErrorMsg").html('メッセージを送信しました。');
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
             }).fail(function(data) {
-                $("#popupSendAllowedErrorMsg").html('メッセージの送信に失敗しました。');
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
             });
         }
     });
@@ -150,6 +184,7 @@ $(document).ready(function() {
         $("#listAllowed").attr("aria-expanded", false);
         $("#receiveMessage").removeClass('in');
         $("#receiveMessage").attr("aria-expanded", false);
+        $("#popupReadAllowedErrorMsg").html('');
     });
     $("#sendAllowedMessage").on('show.bs.collapse', function() {
         $("#extCellMyBoard").removeClass('in');
@@ -285,7 +320,12 @@ mb.dispAllowedCellListAfter = function(extUrl, no) {
 };
 
 mb.appendAllowedCellList = function(extUrl, dispName, no) {
-    $("#allowedCellList").append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">解除</button></td></tr>');
+    var tempDom = [
+        '<tr id="deleteExtCellRel', no, '">',
+            '<td class="paddingTd">', dispName + '</td>',
+            '<td><button onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">', i18next.t("common.release"), '</button></td>',
+        '</tr>'].join("");
+    $("#allowedCellList").append(tempDom);
 };
 
 mb.notAllowedCell = function(extUrl, no) {
@@ -310,8 +350,8 @@ mb.getReceiveMessage = function() {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                 } else {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">承諾</button></td>';
-                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">拒否</button></td>';
+                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("common.approve") + '</button></td>';
+                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("common.decline") + '</button></td>';
                     html += '</tr></table>';
                 }
                 html += '</div></div></div>';
@@ -326,8 +366,8 @@ mb.approvalRel = function(extCell, uuid, msgId) {
     mb.changeStatusMessageAPI(uuid, "approved").done(function() {
         $("#" + msgId).remove();
         mb.getAllowedCellList();
-        var title = "MyBoard_登録依頼返信";
-        var body = "承認しました。";
+        var title = i18next.t("common.readResponseTitle");
+        var body = i18next.t("common.readResponseApprovedBody");
         mb.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
@@ -336,8 +376,8 @@ mb.rejectionRel = function(extCell, uuid, msgId) {
     mb.changeStatusMessageAPI(uuid, "rejected").done(function() {
         $("#" + msgId).remove();
         mb.getAllowedCellList();
-        var title = "MyBoard_登録依頼返信";
-        var body = "拒否しました。";
+        var title = i18next.t("common.readResponseTitle");
+        var body = i18next.t("common.readResponseDeclinedBody");
         mb.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
@@ -345,15 +385,15 @@ mb.rejectionRel = function(extCell, uuid, msgId) {
 mb.checkParam = function() {
     var msg = "";
     if (mb.target === null) {
-        msg = '対象セルが設定されていません。';
+        msg = i18next.t("msg.error.targetCellNotSelected");
     } else if (mb.token === null) {
-        msg = 'トークンが設定されていません。';
+        msg = i18next.t("msg.error.tokenMissing");
     } else if (mb.refToken === null) {
-        msg = 'リフレッシュトークンが設定されていません。';
+        msg = i18next.t("msg.error.refreshTokenMissing");
     } else if (mb.expires === null) {
-        msg = 'トークンの有効期限が設定されていません。';
+        msg = i18next.t("msg.error.tokenExpiryDateMissing");
     } else if (mb.refExpires === null) {
-        msg = 'リフレッシュトークンの有効期限が設定されていません。';
+        msg = i18next.t("msg.error.refreshTokenExpiryDateMissing");
     }
 
     if (msg.length > 0) {
@@ -400,9 +440,9 @@ mb.myboardReg = function() {
     }).fail(function(data) {
         var status = data.status;
         if (status == 403) {
-            $('#errorMsg').html("書込み権限がありません。");
+            $('#errorMsg').html(i18next.t("msg.error.noWritePermission"));
         } else {
-            $('#errorMsg').html("書込みに失敗しました。");
+            $('#errorMsg').html(i18next.t("msg.error.failedToWrite"));
         }
         $('#errorMsg').css("display", "block");
         $('#modal-edit-myboard').modal('hide');
