@@ -36,6 +36,7 @@
     },
     "common": {
         "edit": "Edit",
+        "save": "Save",
         "release": "Ungrant",
         "approve": "Approve",
         "decline": "Decline",
