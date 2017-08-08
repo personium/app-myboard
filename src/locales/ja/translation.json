@@ -36,6 +36,7 @@
     },
     "common": {
         "edit": "編集",
+        "save": "保存",
         "release": "解除",
         "approve": "承諾",
         "decline": "拒否",
