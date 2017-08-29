@@ -12,23 +12,6 @@ mb.msgData = null;
 mb.IDLE_TIMEOUT =  3600000;
 mb.LASTACTIVITY = new Date().getTime();
 
-mb.getName = function(path) {
-  var collectionName = path;
-  var recordsCount = 0;
-  if (collectionName != undefined) {
-          recordsCount = collectionName.length;
-          var lastIndex = collectionName.lastIndexOf("/");
-          if (recordsCount - lastIndex === 1) {
-                  collectionName = path.substring(0, recordsCount - 1);
-                  recordsCount = collectionName.length;
-                  lastIndex = collectionName.lastIndexOf("/");
-          }
-          collectionName = path.substring(lastIndex + 1, recordsCount);
-  }
-  return collectionName;
-};
-
-
 i18next
     .use(i18nextXHRBackend)
     .use(i18nextBrowserLanguageDetector)
@@ -244,15 +227,32 @@ mb.getOtherAllowedCells = function() {
 
 mb.dispOtherAllowedCells = function(extUrl) {
     mb.getProfile(extUrl).done(function(data) {
-        var dispName = mb.getName(extUrl);
+        var dispName = mb.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
         mb.checkOtherAllowedCells(extUrl, dispName)
     }).fail(function() {
-        var dispName = mb.getName(extUrl);
+        var dispName = mb.getCellNameFromUrl(extUrl);
         mb.checkOtherAllowedCells(extUrl, dispName)
     });
+};
+
+/*
+ * Retrieve cell name from cell URL
+ * Parameter:
+ *     1. ended with "/", "https://demo.personium.io/debug-user1/"
+ *     2. ended without "/", "https://demo.personium.io/debug-user1"
+ * Return:
+ *     debug-user1
+ */
+mb.getCellNameFromUrl = function(path) {
+    if ((typeof path === "undefined") || path == null || path == "") {
+        return "";
+    };
+
+    var cellName = _.last(_.compact(path.split("/")))
+    return cellName;
 };
 
 mb.checkOtherAllowedCells = function(extUrl, dispName) {
@@ -308,13 +308,13 @@ mb.dispAllowedCellList = function(json) {
 
 mb.dispAllowedCellListAfter = function(extUrl, no) {
     mb.getProfile(extUrl).done(function(data) {
-        var dispName = mb.getName(extUrl);
+        var dispName = mb.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
         mb.appendAllowedCellList(extUrl, dispName, no)
     }).fail(function() {
-        var dispName = mb.getName(extUrl);
+        var dispName = mb.getCellNameFromUrl(extUrl);
         mb.appendAllowedCellList(extUrl, dispName, no)
     });
 };
@@ -345,7 +345,7 @@ mb.getReceiveMessage = function() {
             var uuid = results[i].__id;
 
             if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
-                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + mb.getName(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
+                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + mb.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
                 if (results[i].Type === "message") {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                 } else {
