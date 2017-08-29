@@ -2,38 +2,17 @@
     "navbar": {
         "toggleNavigation": "Toggle navigation",
         "appName": "$t(glossary:title)",
-        "readAnotherBoard": {
-            "title": "他のMyBoardを見る",
-            "panelHeader": "$t(navbar.readAnotherBoard.title)",
-            "description": "許可されているセル",
-            "btn": "閲覧"
-        },
-        "sendReadPermissionRequest": {
-            "title": "閲覧許可依頼送信",
-            "panelHeader": "$t(navbar.sendReadPermissionRequest.title)",
-            "description": "依頼先セル",
-            "btn": "送信"
-        },
-        "readPermissionStatus": {
-            "title": "閲覧許可状況",
-            "panelHeader": "$t(navbar.readPermissionStatus.title)",
-            "description": "許可しているセル"
-        },
         "notification": {
             "title": "通知",
             "panelHeader": "$t(navbar.notification.title)"
         }
     },
-    "dialog": {
-        "sessionExpired": {
-            "title": "Session Expired",
-            "msg": "セッションが切れました。MyBoardを終了します。",
-            "button": {
-                "close": "Close"
-            }
-        }
+    "sessionExpiredDialog": {
+        "title": "$t(glossary:sessionExpiredDialog.title)",
+        "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
+        "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
-    "common": {
+     "common": {
         "edit": "編集",
         "save": "保存",
         "release": "解除",
@@ -47,7 +26,6 @@
     },
     "msg": {
         "info": {
-            "writeSomething": "好きな事を書いてください。",
             "messageSent": "メッセージを送信しました。"
         },
         "error": {

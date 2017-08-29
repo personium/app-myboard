@@ -23,7 +23,7 @@
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
-            <span class="sr-only" data-i18n="navbar.toggleNavigation">Toggle navigation</span>
+            <span class="sr-only" data-i18n="navbar.toggleNavigation"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -33,20 +33,20 @@
         </div>
         <div class="collapse navbar-collapse" id="collapse-id">
          <ul class="nav navbar-nav">
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed" data-i18n="navbar.readAnotherBoard.title">Read another</a></li>
+          <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed" data-i18n="glossary:navbar.readAnotherBoard.title"></a></li>
           
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed" data-i18n="navbar.sendReadPermissionRequest.title">Read more</a></li>
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed" data-i18n="navbar.readPermissionStatus.title">Read by</a></li>
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed" data-i18n="navbar.notification.title">Notifications</a></li>
+          <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed" data-i18n="glossary:navbar.sendReadPermissionRequest.title"></a></li>
+          <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed" data-i18n="glossary:navbar.readPermissionStatus.title"></a></li>
+          <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed" data-i18n="navbar.notification.title"></a></li>
          </ul>
         </div>
         <div class="panel-group" id="accordion">
           <div id="extCellMyBoard" class="panel-collapse collapse">
             <div class="panel-body">
-              <h3 data-i18n="navbar.readAnotherBoard.panelHeader">Read another MyBoard</h3>
-              <p data-i18n="navbar.readAnotherBoard.description">List of MyBoard which you have read permissions</p>
+              <h3 data-i18n="glossary:navbar.readAnotherBoard.panelHeader"></h3>
+              <p data-i18n="glossary:navbar.readAnotherBoard.description"></p>
               <select id="otherAllowedCells"></select>
-              <button type="button" class="btn btn-primary" id="bExtMyBoard" data-i18n="navbar.readAnotherBoard.btn" disabled></button>
+              <button type="button" class="btn btn-primary" id="bExtMyBoard" data-i18n="glossary:navbar.readAnotherBoard.btn" disabled></button>
             </div>
             <span class="popupAlertArea" style="color:red">
               <aside id="popupReadAllowedErrorMsg"></aside>
@@ -54,10 +54,10 @@
           </div>
           <div id="sendAllowedMessage" class="panel-collapse collapse">
             <div class="panel-body">
-              <h3 data-i18n="navbar.sendReadPermissionRequest.panelHeader">Add another MyBoard</h3>
-              <p data-i18n="navbar.sendReadPermissionRequest.description">List of MyBoard which you can ask for read permission</p>
+              <h3 data-i18n="glossary:navbar.sendReadPermissionRequest.panelHeader">Add another MyBoard</h3>
+              <p data-i18n="glossary:navbar.sendReadPermissionRequest.description">List of MyBoard which you can ask for read permission</p>
               <select id="requestCells"></select>
-              <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="navbar.sendReadPermissionRequest.btn" disabled></button>
+              <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="glossary:navbar.sendReadPermissionRequest.btn" disabled></button>
             </div>
             <span class="popupAlertArea" style="color:red">
               <aside id="popupSendAllowedErrorMsg"></aside>
@@ -65,14 +65,14 @@
           </div>
           <div id="listAllowed" class="panel-collapse collapse">
             <div class="panel-body">
-              <h3 data-i18n="navbar.readPermissionStatus.panelHeader">Read permission management</h3>
-              <p data-i18n="navbar.readPermissionStatus.description">List of MyBoard owners which you granted read permissions</p>
+              <h3 data-i18n="glossary:navbar.readPermissionStatus.panelHeader">Read permission management</h3>
+              <p data-i18n="glossary:navbar.readPermissionStatus.description"></p>
               <table id="allowedCellList"></table>
             </div>
           </div>
           <div id="receiveMessage" class="panel-collapse collapse">
             <div class="panel-body">
-              <h3 data-i18n="navbar.notification.panelHeader">List of notifications</h3>
+              <h3 data-i18n="navbar.notification.panelHeader"></h3>
               <div class="panel-group" id="messageList"></div>
             </div>
           </div>
@@ -84,7 +84,7 @@
         <table class="table table-bordered">
           <tr>
             <td class="info text-center">
-              <span class="small" data-i18n="msg.info.writeSomething">Write something.</span>
+              <span class="small" data-i18n="glossary:msg.info.writeSomething"></span>
             </td>
           </tr>
           <tr height="70%">
@@ -111,22 +111,6 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-primary" id="b-edit-myboard-ok" data-i18n="common.save">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header login-header">
-          <h4 class="modal-title" data-i18n="dialog.sessionExpired.title">Session Expired</h4>
-        </div>
-        <div class="modal-body" data-i18n="dialog.sessionExpired.msg">
-           Your session has expired. MyBoard is terminated.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="b-session-relogin-ok" data-i18n="dialog.sessionExpired.button.close">Close</button>
         </div>
       </div>
     </div>

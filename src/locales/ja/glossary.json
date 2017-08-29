@@ -1,43 +1,32 @@
 {
     "title": "MyBoard",
     "navbar": {
-        "toggleNavigation": "Toggle navigation",
-        "appName": "$t(title)",
         "readAnotherBoard": {
             "title": "他のMyBoardを見る",
-            "panelHeader": "$t(navbar.readAnotherBoard.title)",
+            "panelHeader": "$t(glossary:navbar.readAnotherBoard.title)",
             "description": "許可されているセル",
             "btn": "閲覧"
         },
         "sendReadPermissionRequest": {
             "title": "閲覧許可依頼送信",
-            "panelHeader": "$t(navbar.sendReadPermissionRequest.title)",
+            "panelHeader": "$t(glossary:navbar.sendReadPermissionRequest.title)",
             "description": "依頼先セル",
             "btn": "送信"
         },
         "readPermissionStatus": {
             "title": "閲覧許可状況",
-            "panelHeader": "$t(navbar.readPermissionStatus.title)",
+            "panelHeader": "$t(glossary:navbar.readPermissionStatus.title)",
             "description": "許可しているセル"
-        },
-        "notification": {
-            "title": "通知",
-            "panelHeader": "$t(navbar.notification.title)"
         }
     },
-    "dialog": {
-        "sessionExpired": {
-            "title": "Session Expired",
-            "msg": "セッションが切れました。MyBoardを終了します。",
-            "button": {
-                "close": "Close"
-            }
-        }
+    "sessionExpiredDialog": {
+        "title": "セッション期限切れ",
+        "action": "MyBoardを終了します。",
+        "btnOk": "OK"
     },
     "common": {
         "edit": "編集",
         "save": "保存",
-        "release": "解除",
         "approve": "承諾",
         "decline": "拒否",
         "readRequestTitle": "MyBoard_閲覧許可依頼",

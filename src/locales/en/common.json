@@ -2,36 +2,15 @@
     "navbar": {
         "toggleNavigation": "Toggle navigation",
         "appName": "$t(glossary:title)",
-        "readAnotherBoard": {
-            "title": "Read another",
-            "panelHeader": "Read another MyBoard",
-            "description": "List of MyBoard which you have read permissions",
-            "btn": "Read"
-        },
-        "sendReadPermissionRequest": {
-            "title": "Read more",
-            "panelHeader": "Add another MyBoard",
-            "description": "List of MyBoard which you can ask for read permission",
-            "btn": "Send"
-        },
-        "readPermissionStatus": {
-            "title": "Read by",
-            "panelHeader": "Read permission management",
-            "description": "List of MyBoard owners which you have granted read permissions"
-        },
         "notification": {
             "title": "Notifications",
             "panelHeader": "List of notifications"
         }
     },
-    "dialog": {
-        "sessionExpired": {
-            "title": "Session Expired",
-            "msg": "Your session has expired. MyBoard is terminated.",
-            "button": {
-                "close": "Close"
-            }
-        }
+    "sessionExpiredDialog": {
+        "title": "$t(glossary:sessionExpiredDialog.title)",
+        "message": "Session has expired.<br>$t(glossary:sessionExpiredDialog.action)",
+        "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "common": {
         "edit": "Edit",
@@ -47,7 +26,6 @@
     },
     "msg": {
         "info": {
-            "writeSomething": "Write something.",
             "messageSent": "Succeeded in sending the message."
         },
         "error": {

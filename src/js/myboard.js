@@ -93,7 +93,7 @@ additionalCallback = function() {
             }
             $('.write_board').append(mb.msgData.message);
             $('.disp_board').css("display", "block");
-            //mb.setIdleTime();
+            mb.setIdleTime();
 
             
             // 閲覧許可状況(外部セル)
@@ -104,10 +104,6 @@ additionalCallback = function() {
             mb.getReceiveMessage();
         });
     }
-
-    $('#b-session-relogin-ok').on('click', function () {
-        open(location, '_self').close();
-    });
 
     $('#exeEditer').on('click', function () {
         $("#txtEditMyBoard").val($("#txtMyBoard").val());
@@ -121,7 +117,9 @@ additionalCallback = function() {
     $('#bExtMyBoard').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupReadAllowedErrorMsg").html(i18next.t("glossary:msg.info.pleaseSelectTargetCell"));
+            $("#popupReadAllowedErrorMsg")
+                .attr("data-i18n", "glossary:msg.info.pleaseSelectTargetCell")
+                .localize();
         } else {
              var childWindow = window.open('about:blank');
              $.ajax({
@@ -155,7 +153,9 @@ additionalCallback = function() {
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("glossary:msg.info.pleaseSelectTargetCell"));
+            $("#popupSendAllowedErrorMsg")
+                .attr("data-i18n", "glossary:msg.info.pleaseSelectTargetCell")
+                .localize();
         } else {
             var title = i18next.t("common.readRequestTitle");
             var body = i18next.t("common.readRequestBody");
@@ -334,9 +334,11 @@ mb.appendAllowedCellList = function(extUrl, dispName, no) {
     var tempDom = [
         '<tr id="deleteExtCellRel', no, '">',
             '<td class="paddingTd">', dispName + '</td>',
-            '<td><button onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">', i18next.t("common.release"), '</button></td>',
+            '<td><button data-i18n="common.release" onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">', '</button></td>',
         '</tr>'].join("");
-    $("#allowedCellList").append(tempDom);
+    $("#allowedCellList")
+        .append(tempDom)
+        .localize();
 };
 
 mb.notAllowedCell = function(extUrl, no) {
@@ -462,6 +464,9 @@ mb.myboardReg = function() {
 
 // This method checks idle time
 mb.setIdleTime = function() {
+    // Create Session Expired Modal
+    mb.appendSessionExpiredDialog();
+    
     mb.refreshTokenAPI().done(function(data) {
         mb.token = data.access_token;
         mb.refToken = data.refresh_token;
@@ -483,6 +488,37 @@ mb.setIdleTime = function() {
       mb.LASTACTIVITY = new Date().getTime();
     };
 }
+
+mb.appendSessionExpiredDialog = function() {
+    // Session Expiration
+    var html = [
+        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header login-header">',
+                        '<h4 class="modal-title" data-i18n="sessionExpiredDialog.title"></h4>',
+                    '</div>',
+                    '<div class="modal-body" data-i18n="[html]sessionExpiredDialog.message"></div>',
+                    '<div class="modal-footer">',
+                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" data-i18n="sessionExpiredDialog.btnOk"></button>',
+                    '</div>',
+               '</div>',
+           '</div>',
+        '</div>'
+    ].join("");
+    $("body")
+        .append(html)
+        .localize();
+    $('#b-session-relogin-ok').on('click', function() { mb.closeTab(); });
+};
+
+/*
+ * clean up data and close tab
+ */
+mb.closeTab = function() {
+    window.close();
+};
+
 mb.checkIdleTime = function() {
   if (new Date().getTime() > mb.LASTACTIVITY + mb.IDLE_TIMEOUT) {
     $('#modal-session-expired').modal('show');
