@@ -12,22 +12,30 @@ mb.msgData = null;
 mb.IDLE_TIMEOUT =  3600000;
 mb.LASTACTIVITY = new Date().getTime();
 
-i18next
-    .use(i18nextXHRBackend)
-    .use(i18nextBrowserLanguageDetector)
-    .init({
-        fallbackLng: 'en',
-        debug: true,
-        backend: {
-            // load from i18next-gitbook repo
-            loadPath: './locales/{{lng}}/translation.json',
-            crossDomain: true
-        }
-    }, function(err, t) {
-        initJqueryI18next()
-        
-        updateContent()
-    });
+$(document).ready(function() {
+    i18next
+        .use(i18nextXHRBackend)
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'en',
+            ns: ['common', 'glossary'],
+            defaultNS: 'common',
+            debug: true,
+            backend: {
+                // load from i18next-gitbook repo
+                loadPath: './locales/{{lng}}/{{ns}}.json',
+                crossDomain: true
+            }
+        }, function(err, t) {
+            initJqueryI18next();
+            
+            if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                additionalCallback();
+            }
+
+            updateContent();
+        });
+});
 
 /*
  * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
@@ -35,17 +43,18 @@ i18next
 function initJqueryI18next() {
     // for options see
     // https://github.com/i18next/jquery-i18next#initialize-the-plugin
-    jqueryI18next.init(i18next, $);
+    jqueryI18next.init(i18next, $, {
+        useOptionsAttr: true
+    });
 }
 
 function updateContent() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
-    $('title').localize();
     $('[data-i18n]').localize();
 }
 
-$(document).ready(function() {
+additionalCallback = function() {
     var appUrlMatch = location.href.split("#");
     var appUrlSplit = appUrlMatch[0].split("/");
     mb.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
@@ -112,7 +121,7 @@ $(document).ready(function() {
     $('#bExtMyBoard').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupReadAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
+            $("#popupReadAllowedErrorMsg").html(i18next.t("glossary:msg.info.pleaseSelectTargetCell"));
         } else {
              var childWindow = window.open('about:blank');
              $.ajax({
@@ -146,7 +155,7 @@ $(document).ready(function() {
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
+            $("#popupSendAllowedErrorMsg").html(i18next.t("glossary:msg.info.pleaseSelectTargetCell"));
         } else {
             var title = i18next.t("common.readRequestTitle");
             var body = i18next.t("common.readRequestBody");
@@ -167,7 +176,7 @@ $(document).ready(function() {
         $("#listAllowed").attr("aria-expanded", false);
         $("#receiveMessage").removeClass('in');
         $("#receiveMessage").attr("aria-expanded", false);
-        $("#popupReadAllowedErrorMsg").html('');
+        $("#popupReadAllowedErrorMsg").empty();
     });
     $("#sendAllowedMessage").on('show.bs.collapse', function() {
         $("#extCellMyBoard").removeClass('in');
@@ -176,7 +185,7 @@ $(document).ready(function() {
         $("#listAllowed").attr("aria-expanded", false);
         $("#receiveMessage").removeClass('in');
         $("#receiveMessage").attr("aria-expanded", false);
-        $("#popupSendAllowedErrorMsg").html('');
+        $("#popupSendAllowedErrorMsg").empty();
     });
     $("#listAllowed").on('show.bs.collapse', function() {
         $("#sendAllowedMessage").removeClass('in');
@@ -194,7 +203,7 @@ $(document).ready(function() {
         $("#extCellMyBoard").removeClass('in');
         $("#extCellMyBoard").attr("aria-expanded", false);
     });
-});
+};
 
 mb.getOtherAllowedCells = function() {
     mb.getExtCell().done(function(json) {
@@ -269,10 +278,12 @@ mb.checkOtherAllowedCells = function(extUrl, dispName) {
 
 mb.appendOtherAllowedCells = function(extUrl, dispName) {
     $("#otherAllowedCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
+    $("#bExtMyBoard").prop("disabled", false);
 };
 
 mb.appendRequestCells = function(extUrl, dispName) {
     $("#requestCells").append('<option value="' + extUrl + '">' + dispName + '</option>');
+    $("#bSendAllowed").prop("disabled", false);
 };
 
 mb.getAllowedCellList = function() {

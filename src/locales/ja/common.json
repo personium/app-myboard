@@ -1,0 +1,64 @@
+{
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)",
+        "readAnotherBoard": {
+            "title": "他のMyBoardを見る",
+            "panelHeader": "$t(navbar.readAnotherBoard.title)",
+            "description": "許可されているセル",
+            "btn": "閲覧"
+        },
+        "sendReadPermissionRequest": {
+            "title": "閲覧許可依頼送信",
+            "panelHeader": "$t(navbar.sendReadPermissionRequest.title)",
+            "description": "依頼先セル",
+            "btn": "送信"
+        },
+        "readPermissionStatus": {
+            "title": "閲覧許可状況",
+            "panelHeader": "$t(navbar.readPermissionStatus.title)",
+            "description": "許可しているセル"
+        },
+        "notification": {
+            "title": "通知",
+            "panelHeader": "$t(navbar.notification.title)"
+        }
+    },
+    "dialog": {
+        "sessionExpired": {
+            "title": "Session Expired",
+            "msg": "セッションが切れました。MyBoardを終了します。",
+            "button": {
+                "close": "Close"
+            }
+        }
+    },
+    "common": {
+        "edit": "編集",
+        "save": "保存",
+        "release": "解除",
+        "approve": "承諾",
+        "decline": "拒否",
+        "readRequestTitle": "MyBoard_閲覧許可依頼",
+        "readRequestBody": "MyBoardの閲覧許可をお願いします。",
+        "readResponseTitle": "MyBoard_登録依頼返信",
+        "readResponseApprovedBody": "承認しました。",
+        "readResponseDeclinedBody": "拒否しました。"
+    },
+    "msg": {
+        "info": {
+            "writeSomething": "好きな事を書いてください。",
+            "messageSent": "メッセージを送信しました。"
+        },
+        "error": {
+            "failedToSendMessage": "メッセージの送信に失敗しました。",
+            "targetCellNotSelected": "対象セルが設定されていません。",
+            "tokenMissing": "トークンが設定されていません。",
+            "refreshTokenMissing": "リフレッシュトークンが設定されていません。",
+            "tokenExpiryDateMissing": "トークンの有効期限が設定されていません。",
+            "refreshTokenExpiryDateMissing": "リフレッシュトークンの有効期限が設定されていません。",
+            "noWritePermission": "書込み権限がありません。",
+            "failedToWrite": "書込みに失敗しました。"
+        }
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)",
+        "readAnotherBoard": {
+            "title": "Read another",
+            "panelHeader": "Read another MyBoard",
+            "description": "List of MyBoard which you have read permissions",
+            "btn": "Read"
+        },
+        "sendReadPermissionRequest": {
+            "title": "Read more",
+            "panelHeader": "Add another MyBoard",
+            "description": "List of MyBoard which you can ask for read permission",
+            "btn": "Send"
+        },
+        "readPermissionStatus": {
+            "title": "Read by",
+            "panelHeader": "Read permission management",
+            "description": "List of MyBoard owners which you have granted read permissions"
+        },
+        "notification": {
+            "title": "Notifications",
+            "panelHeader": "List of notifications"
+        }
+    },
+    "dialog": {
+        "sessionExpired": {
+            "title": "Session Expired",
+            "msg": "Your session has expired. MyBoard is terminated.",
+            "button": {
+                "close": "Close"
+            }
+        }
+    },
+    "common": {
+        "edit": "Edit",
+        "save": "Save",
+        "release": "Ungrant",
+        "approve": "Approve",
+        "decline": "Decline",
+        "readRequestTitle": "MyBoard_Read Permission Request",
+        "readRequestBody": "Please grant read permission for your board (MyBoard).",
+        "readResponseTitle": "MyBoard_Read Permission Reply",
+        "readResponseApprovedBody": "Read permission is granted.",
+        "readResponseDeclinedBody": "Read permission is not granted."
+    },
+    "msg": {
+        "info": {
+            "writeSomething": "Write something.",
+            "messageSent": "Succeeded in sending the message."
+        },
+        "error": {
+            "failedToSendMessage": "Failed to send message.",
+            "targetCellNotSelected": "Target cell not selected.",
+            "tokenMissing": "Token is missing.",
+            "refreshTokenMissing": "Refresh token is missing.",
+            "tokenExpiryDateMissing": "Token's expiry date is not set.",
+            "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
+            "noWritePermission": "No write permission for this board.",
+            "failedToWrite": "Failed to write to this board."
+        }
+    }
+}

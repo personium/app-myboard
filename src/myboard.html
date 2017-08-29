@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title data-i18n="title"></title>
+  <title data-i18n="glossary:title"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
@@ -29,7 +29,7 @@
             <span class="icon-bar"></span>
           </button>
 
-          <a class="navbar-brand" data-i18n="navbar.appName">MyBoard</a>
+          <a class="navbar-brand" data-i18n="navbar.appName"></a>
         </div>
         <div class="collapse navbar-collapse" id="collapse-id">
          <ul class="nav navbar-nav">
@@ -46,7 +46,7 @@
               <h3 data-i18n="navbar.readAnotherBoard.panelHeader">Read another MyBoard</h3>
               <p data-i18n="navbar.readAnotherBoard.description">List of MyBoard which you have read permissions</p>
               <select id="otherAllowedCells"></select>
-              <button id="bExtMyBoard" data-i18n="navbar.readAnotherBoard.btn">Read</button>
+              <button type="button" class="btn btn-primary" id="bExtMyBoard" data-i18n="navbar.readAnotherBoard.btn" disabled></button>
             </div>
             <span class="popupAlertArea" style="color:red">
               <aside id="popupReadAllowedErrorMsg"></aside>
@@ -57,7 +57,7 @@
               <h3 data-i18n="navbar.sendReadPermissionRequest.panelHeader">Add another MyBoard</h3>
               <p data-i18n="navbar.sendReadPermissionRequest.description">List of MyBoard which you can ask for read permission</p>
               <select id="requestCells"></select>
-              <button id="bSendAllowed" data-i18n="navbar.sendReadPermissionRequest.btn">Send</button>
+              <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="navbar.sendReadPermissionRequest.btn" disabled></button>
             </div>
             <span class="popupAlertArea" style="color:red">
               <aside id="popupSendAllowedErrorMsg"></aside>
@@ -94,9 +94,7 @@
           </tr>
         </table>
       </div>
-      <button type="button" class="btn btn-primary" id="exeEditer" data-i18n="common.edit">
-        Edit
-      </button>
+      <button type="button" class="btn btn-primary" id="exeEditer" data-i18n="common.edit"></button>
       <div id="errorMsg" style="display:none;"></div>
     </div>
   </div>
