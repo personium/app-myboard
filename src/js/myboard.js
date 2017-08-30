@@ -74,57 +74,45 @@ additionalCallback = function() {
 
     $('#bExtMyBoard').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
-        if (value == undefined || value === "") {
-            $("#popupReadAllowedErrorMsg")
-                .attr("data-i18n", "glossary:msg.info.pleaseSelectTargetCell")
-                .localize();
-        } else {
-             var childWindow = window.open('about:blank');
-             $.ajax({
-                 type: "GET",
-                 url: mb.appUrl + "__/launch.json",
-                 headers: {
-                     'Authorization':'Bearer ' + mb.token,
-                     'Accept':'application/json'
-                 }
-             }).done(function(data) {
-                 var launchObj = data.personal;
-                 var launch = launchObj.web;
-                 var target = value + mb.boxName;
-                 mb.getTargetToken(value).done(function(extData) {
-                     var url = launch;
-                     url += '#target=' + target;
-                     url += '&token=' + extData.access_token;
-                     url += '&ref=' + extData.refresh_token;
-                     url += '&expires=' + extData.expires_in;
-                     url += '&refexpires=' + extData.refresh_token_expires_in;
-                     childWindow.location.href = url;
-                     childWindow = null;
-                 });
-             }).fail(function(data) {
-                 childWindow.close();
-                 childWindow = null;
-             });
-        }
+        var childWindow = window.open('about:blank');
+        $.ajax({
+            type: "GET",
+            url: mb.appUrl + "__/launch.json",
+            headers: {
+                'Authorization':'Bearer ' + mb.token,
+                'Accept':'application/json'
+            }
+        }).done(function(data) {
+            var launchObj = data.personal;
+            var launch = launchObj.web;
+            var target = value + mb.boxName;
+            mb.getTargetToken(value).done(function(extData) {
+                var url = launch;
+                url += '#target=' + target;
+                url += '&token=' + extData.access_token;
+                url += '&ref=' + extData.refresh_token;
+                url += '&expires=' + extData.expires_in;
+                url += '&refexpires=' + extData.refresh_token_expires_in;
+                childWindow.location.href = url;
+                childWindow = null;
+            });
+        }).fail(function(data) {
+            childWindow.close();
+            childWindow = null;
+        });
     });
 
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
-        if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg")
-                .attr("data-i18n", "glossary:msg.info.pleaseSelectTargetCell")
-                .localize();
-        } else {
-            var title = i18next.t("common.readRequestTitle");
-            var body = i18next.t("common.readRequestBody");
-            //var reqRel = value + "__relation/__/MyBoardReader";
-            var reqRel = "https://demo.personium.io/app-myboard/__relation/__/MyBoardReader";
-            mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, mb.cellUrl).done(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
-            }).fail(function(data) {
-                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-            });
-        }
+        var title = i18next.t("common.readRequestTitle");
+        var body = i18next.t("common.readRequestBody");
+        //var reqRel = value + "__relation/__/MyBoardReader";
+        var reqRel = "https://demo.personium.io/app-myboard/__relation/__/MyBoardReader";
+        mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, mb.cellUrl).done(function(data) {
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
+        }).fail(function(data) {
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
+        });
     });
 
     $("#extCellMyBoard").on('show.bs.collapse', function() {

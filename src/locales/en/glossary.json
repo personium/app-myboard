@@ -37,9 +37,7 @@
     },
     "msg": {
         "info": {
-            "writeSomething": "Write something.",
-            "pleaseSelectTargetCell": "Please select a board.",
-            "messageSent": "Succeeded in sending the message."
+            "writeSomething": "Write something."
         },
         "error": {
             "failedToSendMessage": "Failed to send message.",

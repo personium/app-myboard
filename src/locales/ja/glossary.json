@@ -37,9 +37,7 @@
     },
     "msg": {
         "info": {
-            "writeSomething": "好きな事を書いてください。",
-            "pleaseSelectTargetCell": "対象セルを選択して下さい。",
-            "messageSent": "メッセージを送信しました。"
+            "writeSomething": "好きな事を書いてください。"
         },
         "error": {
             "failedToSendMessage": "メッセージの送信に失敗しました。",
