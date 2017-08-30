@@ -1,9 +1,5 @@
 var mb = {};
 
-mb.target = null;
-mb.expires = null;
-mb.refExpires = null;
-
 mb.msgData = null;
 
 // Please add file names (with file extension) 
@@ -11,19 +7,46 @@ getNamesapces = function(){
     return ['common', 'glossary'];
 };
 
-getAppCellUrl = function() {
-    var appUrlMatch = location.href.split("#");
-    var appUrlSplit = appUrlMatch[0].split("/");
-    mb.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
-    if (appUrlSplit[0].indexOf("file:") == 0) {
-        mb.appUrl = "https://demo.personium.io/app-myboard/";
+setAppCellUrl = function() {
+    var appUrlSplit = _.first(location.href.split("#")).split("/");
+
+    if (_.contains(appUrlSplit, "localhost") || _.contains(appUrlSplit, "file:")) {
+        Common.accessData.appUrl = "https://demo.personium.io/app-myboard/";
+    } else {
+        Common.accessData.appUrl = _.first(appUrlSplit, 4).join("/") + "/"; 
     }
 
-    return mb.appUrl;
-}
+    return;
+};
+
+// MyBoard's cell URL
+getAppCellUrl = function() {
+    return Common.accessData.appUrl;
+};
+
+setTarget = function(url) {
+    Common.accessData.targetUrl = url;
+
+    var urlSplit = url.split("/");
+    Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
+    Common.accessData.boxName = _.last(urlSplit);
+};
+
+// Data subject's cell URL
+getTargetUrl = function() {
+    return Common.accessData.targetUrl;
+};
+
+getCellUrl = function() {
+    return Common.accessData.cellUrl;
+};
+
+getBoxName = function() {
+    return Common.accessData.boxName;
+};
 
 additionalCallback = function() {
-    getAppCellUrl();
+    setAppCellUrl();
 
     var hash = location.hash.substring(1);
     var params = hash.split("&");
@@ -32,24 +55,20 @@ additionalCallback = function() {
         var id = param[0];
         switch (id) {
             case "target":
-                mb.target = param[1];
-                var urlSplit = param[1].split("/");
-                Common.accessData.cellUrl = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/";
-                var split = mb.target.split("/");
-                mb.boxName = split[split.length - 1];
+                setTarget(param[1]);
             case "token":
                 Common.accessData.token = param[1];
             case "ref":
                 Common.accessData.refToken = param[1];
             case "expires":
-                mb.expires = param[1];
+                Common.accessData.expires = param[1];
             case "refexpires":
-                mb.refExpires = param[1];
+                Common.accessData.refExpires = param[1];
         }
     }
 
-    if (mb.checkParam()) {
-        mb.getMyBoardAPI(mb.target, Common.accessData.token).done(function(data) {
+    if (Common.checkParam()) {
+        mb.getMyBoardAPI(getTargetUrl(), Common.accessData.token).done(function(data) {
             mb.msgData = JSON.parse(data);
             if (mb.msgData.message !== undefined) {
                 mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
@@ -82,7 +101,7 @@ additionalCallback = function() {
         var childWindow = window.open('about:blank');
         $.ajax({
             type: "GET",
-            url: mb.appUrl + "__/launch.json",
+            url: getAppCellUrl() + "__/launch.json",
             headers: {
                 'Authorization':'Bearer ' + Common.accessData.token,
                 'Accept':'application/json'
@@ -90,7 +109,7 @@ additionalCallback = function() {
         }).done(function(data) {
             var launchObj = data.personal;
             var launch = launchObj.web;
-            var target = value + mb.boxName;
+            var target = value + getBoxName();
             mb.getTargetToken(value).done(function(extData) {
                 var url = launch;
                 url += '#target=' + target;
@@ -113,7 +132,7 @@ additionalCallback = function() {
         var body = i18next.t("common.readRequestBody");
         //var reqRel = value + "__relation/__/MyBoardReader";
         var reqRel = [
-            mb.appUrl,
+            getAppCellUrl(),
             "__relation/__/MyBoardReader"
         ].join("");
         mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.accessData.cellUrl).done(function(data) {
@@ -220,7 +239,7 @@ mb.getCellNameFromUrl = function(path) {
 
 mb.checkOtherAllowedCells = function(extUrl, dispName) {
     mb.getTargetToken(extUrl).done(function(extData) {
-        mb.getMyBoardAPI(extUrl + mb.boxName, extData.access_token).done(function(data) {
+        mb.getMyBoardAPI(extUrl + getBoxName(), extData.access_token).done(function(data) {
             mb.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
             // Insufficient access privileges
@@ -244,7 +263,7 @@ mb.appendRequestCells = function(extUrl, dispName) {
 mb.getAllowedCellList = function() {
     $.ajax({
         type: "GET",
-        url: Common.accessData.cellUrl + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + mb.boxName + '\')/$links/_ExtCell',
+        url: Common.accessData.cellUrl + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + getBoxName() + '\')/$links/_ExtCell',
         headers: {
             'Authorization':'Bearer ' + Common.accessData.token,
             'Accept':'application/json'
@@ -350,29 +369,6 @@ mb.rejectionRel = function(extCell, uuid, msgId) {
     });
 };
 
-mb.checkParam = function() {
-    var msg = "";
-    if (mb.target === null) {
-        msg = i18next.t("msg.error.targetCellNotSelected");
-    } else if (Common.accessData.token === null) {
-        msg = i18next.t("msg.error.tokenMissing");
-    } else if (Common.accessData.refToken === null) {
-        msg = i18next.t("msg.error.refreshTokenMissing");
-    } else if (mb.expires === null) {
-        msg = i18next.t("msg.error.tokenExpiryDateMissing");
-    } else if (mb.refExpires === null) {
-        msg = i18next.t("msg.error.refreshTokenExpiryDateMissing");
-    }
-
-    if (msg.length > 0) {
-        $('#errorMsg').html(msg);
-        $('#errorMsg').css("display", "block");
-        return false;
-    }
-
-    return true;
-};
-
 mb.getMyBoardAPI = function(targetCell, token) {
     return $.ajax({
         type: "GET",
@@ -392,7 +388,7 @@ mb.myboardReg = function() {
     };
     $.ajax({
         type: "PUT",
-        url: mb.target + '/MyBoardBox/my-board.json',
+        url: getTargetUrl() + '/MyBoardBox/my-board.json',
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
@@ -400,19 +396,15 @@ mb.myboardReg = function() {
             'Accept':'application/json'
         }
     }).done(function() {
-        //$('.write_board').html(mb.msgData.message);
-        //$('#errorMsg').html("保存しました。");
-        //$('#errorMsg').css("display", "block");
         $("#txtMyBoard").val(strTxt);
         $('#modal-edit-myboard').modal('hide');
     }).fail(function(data) {
         var status = data.status;
         if (status == 403) {
-            $('#errorMsg').html(i18next.t("msg.error.noWritePermission"));
+            Common.displayMessageByKey("msg.error.noWritePermission");
         } else {
-            $('#errorMsg').html(i18next.t("msg.error.failedToWrite"));
+            Common.displayMessageByKey("msg.error.failedToWrite");
         }
-        $('#errorMsg').css("display", "block");
         $('#modal-edit-myboard').modal('hide');
     });
 };
@@ -483,7 +475,7 @@ mb.deleteExtCellLinkRelation = function(extCell, relName) {
     var cellName = urlArray[3];
     return $.ajax({
             type: "DELETE",
-            url: Common.accessData.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + mb.boxName + '\')',
+            url: Common.accessData.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + getBoxName() + '\')',
             headers: {
               'Authorization':'Bearer ' + Common.accessData.token
             }

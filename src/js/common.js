@@ -28,9 +28,13 @@ Common.IDLE_CHECK = 3300000;
 Common.lastActivity = new Date().getTime();
 
 Common.accessData = {
+    targetUrl: null,
     cellUrl: null,
+    appUrl: null,
     token: null,
-    refToken: null
+    refToken: null,
+    expires: null,
+    refExpires: null
 };
 
 /*
@@ -78,6 +82,28 @@ Common.updateContent = function() {
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
     $('[data-i18n]').localize();
 }
+
+Common.checkParam = function() {
+    var msg_key = "";
+    if (getTargetUrl() === null) {
+        msg_key = "msg.error.targetCellNotSelected";
+    } else if (Common.accessData.token ===null) {
+        msg_key = "msg.error.tokenMissing";
+    } else if (Common.accessData.refToken === null) {
+        msg_key = "msg.error.refreshTokenMissing";
+    } else if (Common.accessData.expires === null) {
+        msg_key = "msg.error.tokenExpiryDateMissing";
+    } else if (Common.accessData.refExpires === null) {
+        msg_key = "msg.error.refreshTokenExpiryDateMissing";
+    }
+
+    if (msg_key.length > 0) {
+        Common.displayMessageByKey(msg_key);
+        return false;
+    }
+
+    return true;
+};
 
 /*
  * Initialize info for idling check
@@ -135,20 +161,34 @@ Common.closeTab = function() {
 };
 
 Common.refreshToken = function() {
-    Common.getAppToken().done(function(appToken) {
-        Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-            // update sessionStorage
-            Common.updateSessionStorage(appCellToken);
-        }).fail(function(appCellToken) {
+    Common.getLaunchJson().done(function(launchObj){
+        Common.getAppToken(launchObj.personal).done(function(appToken) {
+            Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
+                // update sessionStorage
+                Common.updateSessionStorage(appCellToken);
+            }).fail(function(appCellToken) {
+                Common.displayMessageByKey("msg.error.failedToRefreshToken");
+            });
+        }).fail(function(appToken) {
             Common.displayMessageByKey("msg.error.failedToRefreshToken");
         });
-    }).fail(function(appToken) {
+    }).fail(function(){
         Common.displayMessageByKey("msg.error.failedToRefreshToken");
     });
 };
 
+Common.getLaunchJson = function() {
+    return $.ajax({
+        type: "GET",
+        url: getAppCellUrl() + "__/launch.json",
+        headers: {
+            'Authorization':'Bearer ' + Common.accessData.token,
+            'Accept':'application/json'
+        }
+    });
+}
 // This App's token
-Common.getAppToken = function() {
+Common.getAppToken = function(personalInfo) {
     return $.ajax({
                 type: "POST",
                 url: getAppCellUrl() + '__token',
@@ -156,8 +196,8 @@ Common.getAppToken = function() {
                 dataType: 'json',
                 data: {
                         grant_type: "password",
-                        username: "megenki",
-                        password: "personiumgenki",
+                        username: personalInfo.appTokenId,
+                        password: personalInfo.appTokenPw,
                         p_target: Common.accessData.cellUrl
                 },
                 headers: {'Accept':'application/json'}
@@ -210,4 +250,14 @@ Common.checkIdleTime = function() {
 Common.stopIdleTimer = function() {
     clearInterval(Common.checkIdleTimer);
     $(document).off('click mousemove keypress');
+};
+
+Common.displayMessageByKey = function(msg_key) {
+    if (msg_key) {
+        $('#dispMsg').attr("data-i18n", msg_key)
+            .localize()
+            .show();
+    } else {
+        $('#dispMsg').hide();
+    }
 };
