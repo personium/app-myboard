@@ -1,24 +1,29 @@
 var mb = {};
 
 mb.target = null;
-mb.cellUrl = null;
-mb.token = null;
-mb.refToken = null;
 mb.expires = null;
 mb.refExpires = null;
 
 mb.msgData = null;
 
-mb.IDLE_TIMEOUT =  3600000;
-mb.LASTACTIVITY = new Date().getTime();
+// Please add file names (with file extension) 
+getNamesapces = function(){
+    return ['common', 'glossary'];
+};
 
-additionalCallback = function() {
+getAppCellUrl = function() {
     var appUrlMatch = location.href.split("#");
     var appUrlSplit = appUrlMatch[0].split("/");
     mb.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
     if (appUrlSplit[0].indexOf("file:") == 0) {
         mb.appUrl = "https://demo.personium.io/app-myboard/";
     }
+
+    return mb.appUrl;
+}
+
+additionalCallback = function() {
+    getAppCellUrl();
 
     var hash = location.hash.substring(1);
     var params = hash.split("&");
@@ -29,13 +34,13 @@ additionalCallback = function() {
             case "target":
                 mb.target = param[1];
                 var urlSplit = param[1].split("/");
-                mb.cellUrl = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/";
+                Common.accessData.cellUrl = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/";
                 var split = mb.target.split("/");
                 mb.boxName = split[split.length - 1];
             case "token":
-                mb.token = param[1];
+                Common.accessData.token = param[1];
             case "ref":
-                mb.refToken = param[1];
+                Common.accessData.refToken = param[1];
             case "expires":
                 mb.expires = param[1];
             case "refexpires":
@@ -44,14 +49,14 @@ additionalCallback = function() {
     }
 
     if (mb.checkParam()) {
-        mb.getMyBoardAPI(mb.target, mb.token).done(function(data) {
+        mb.getMyBoardAPI(mb.target, Common.accessData.token).done(function(data) {
             mb.msgData = JSON.parse(data);
             if (mb.msgData.message !== undefined) {
                 mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
             }
             $('.write_board').append(mb.msgData.message);
             $('.disp_board').css("display", "block");
-            mb.setIdleTime();
+            Common.setIdleTime();
 
             
             // 閲覧許可状況(外部セル)
@@ -79,7 +84,7 @@ additionalCallback = function() {
             type: "GET",
             url: mb.appUrl + "__/launch.json",
             headers: {
-                'Authorization':'Bearer ' + mb.token,
+                'Authorization':'Bearer ' + Common.accessData.token,
                 'Accept':'application/json'
             }
         }).done(function(data) {
@@ -107,8 +112,11 @@ additionalCallback = function() {
         var title = i18next.t("common.readRequestTitle");
         var body = i18next.t("common.readRequestBody");
         //var reqRel = value + "__relation/__/MyBoardReader";
-        var reqRel = "https://demo.personium.io/app-myboard/__relation/__/MyBoardReader";
-        mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, mb.cellUrl).done(function(data) {
+        var reqRel = [
+            mb.appUrl,
+            "__relation/__/MyBoardReader"
+        ].join("");
+        mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.accessData.cellUrl).done(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
         }).fail(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
@@ -206,7 +214,7 @@ mb.getCellNameFromUrl = function(path) {
         return "";
     };
 
-    var cellName = _.last(_.compact(path.split("/")))
+    var cellName = _.last(_.compact(path.split("/")));
     return cellName;
 };
 
@@ -215,7 +223,8 @@ mb.checkOtherAllowedCells = function(extUrl, dispName) {
         mb.getMyBoardAPI(extUrl + mb.boxName, extData.access_token).done(function(data) {
             mb.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
-            if (data.status !== 404) {
+            // Insufficient access privileges
+            if (data.status === 403) {
                 mb.appendRequestCells(extUrl, dispName);
             }
         });
@@ -235,9 +244,9 @@ mb.appendRequestCells = function(extUrl, dispName) {
 mb.getAllowedCellList = function() {
     $.ajax({
         type: "GET",
-        url: mb.cellUrl + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + mb.boxName + '\')/$links/_ExtCell',
+        url: Common.accessData.cellUrl + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + mb.boxName + '\')/$links/_ExtCell',
         headers: {
-            'Authorization':'Bearer ' + mb.token,
+            'Authorization':'Bearer ' + Common.accessData.token,
             'Accept':'application/json'
         }
     }).done(function(data) {
@@ -345,9 +354,9 @@ mb.checkParam = function() {
     var msg = "";
     if (mb.target === null) {
         msg = i18next.t("msg.error.targetCellNotSelected");
-    } else if (mb.token === null) {
+    } else if (Common.accessData.token === null) {
         msg = i18next.t("msg.error.tokenMissing");
-    } else if (mb.refToken === null) {
+    } else if (Common.accessData.refToken === null) {
         msg = i18next.t("msg.error.refreshTokenMissing");
     } else if (mb.expires === null) {
         msg = i18next.t("msg.error.tokenExpiryDateMissing");
@@ -387,7 +396,7 @@ mb.myboardReg = function() {
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
-            'Authorization':'Bearer ' + mb.token,
+            'Authorization':'Bearer ' + Common.accessData.token,
             'Accept':'application/json'
         }
     }).done(function() {
@@ -408,94 +417,6 @@ mb.myboardReg = function() {
     });
 };
 
-// This method checks idle time
-mb.setIdleTime = function() {
-    // Create Session Expired Modal
-    mb.appendSessionExpiredDialog();
-    
-    mb.refreshTokenAPI().done(function(data) {
-        mb.token = data.access_token;
-        mb.refToken = data.refresh_token;
-        mb.expires = data.expires_in;
-        mb.refExpires = data.refresh_token_expires_in;
-    }).fail(function(data) {
-        $("#collapse-id").empty();
-        $("#exeEditer").prop("disabled", true);
-    });
-
-    setInterval(mb.checkIdleTime, 3300000);
-    document.onclick = function() {
-      mb.LASTACTIVITY = new Date().getTime();
-    };
-    document.onmousemove = function() {
-      mb.LASTACTIVITY = new Date().getTime();
-    };
-    document.onkeypress = function() {
-      mb.LASTACTIVITY = new Date().getTime();
-    };
-}
-
-mb.appendSessionExpiredDialog = function() {
-    // Session Expiration
-    var html = [
-        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
-            '<div class="modal-dialog">',
-                '<div class="modal-content">',
-                    '<div class="modal-header login-header">',
-                        '<h4 class="modal-title" data-i18n="sessionExpiredDialog.title"></h4>',
-                    '</div>',
-                    '<div class="modal-body" data-i18n="[html]sessionExpiredDialog.message"></div>',
-                    '<div class="modal-footer">',
-                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" data-i18n="sessionExpiredDialog.btnOk"></button>',
-                    '</div>',
-               '</div>',
-           '</div>',
-        '</div>'
-    ].join("");
-    $("body")
-        .append(html)
-        .localize();
-    $('#b-session-relogin-ok').on('click', function() { mb.closeTab(); });
-};
-
-/*
- * clean up data and close tab
- */
-mb.closeTab = function() {
-    window.close();
-};
-
-mb.checkIdleTime = function() {
-  if (new Date().getTime() > mb.LASTACTIVITY + mb.IDLE_TIMEOUT) {
-    $('#modal-session-expired').modal('show');
-  } else {
-      mb.refreshToken();
-  }
-};
-
-mb.refreshToken = function() {
-    mb.refreshTokenAPI().done(function(data) {
-        mb.token = data.access_token;
-        mb.refToken = data.refresh_token;
-        mb.expires = data.expires_in;
-        mb.refExpires = data.refresh_token_expires_in;
-    });
-};
-
-mb.refreshTokenAPI = function() {
-    return $.ajax({
-        type: "POST",
-        url: mb.cellUrl + '__token',
-        processData: true,
-        dataType: 'json',
-        data: {
-               grant_type: "refresh_token",
-               refresh_token: mb.refToken
-        },
-        headers: {'Accept':'application/json'}
-    })
-}
-
 mb.getProfile = function(url) {
     return $.ajax({
 	type: "GET",
@@ -508,12 +429,12 @@ mb.getProfile = function(url) {
 mb.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: mb.cellUrl + '__token',
+                url: Common.accessData.cellUrl + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {
                         grant_type: "refresh_token",
-                        refresh_token: mb.refToken,
+                        refresh_token: Common.accessData.refToken,
                         p_target: extCellUrl
                 },
 		headers: {'Accept':'application/json'}
@@ -523,9 +444,9 @@ mb.getTargetToken = function(extCellUrl) {
 mb.getExtCell = function() {
   return $.ajax({
                 type: "GET",
-                url: mb.cellUrl + '__ctl/ExtCell',
+                url: Common.accessData.cellUrl + '__ctl/ExtCell',
                 headers: {
-                    'Authorization':'Bearer ' + mb.token,
+                    'Authorization':'Bearer ' + Common.accessData.token,
                     'Accept':'application/json'
                 }
   });
@@ -534,9 +455,9 @@ mb.getExtCell = function() {
 mb.getReceivedMessageAPI = function() {
   return $.ajax({
                 type: "GET",
-                url: mb.cellUrl + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
+                url: Common.accessData.cellUrl + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
                 headers: {
-                    'Authorization':'Bearer ' + mb.token,
+                    'Authorization':'Bearer ' + Common.accessData.token,
                     'Accept':'application/json'
                 }
   });
@@ -547,10 +468,10 @@ mb.changeStatusMessageAPI = function(uuid, command) {
     data.Command = command;
     return $.ajax({
             type: "POST",
-            url: mb.cellUrl + '__message/received/' + uuid,
+            url: Common.accessData.cellUrl + '__message/received/' + uuid,
             data: JSON.stringify(data),
             headers: {
-                    'Authorization':'Bearer ' + mb.token
+                    'Authorization':'Bearer ' + Common.accessData.token
             }
     })
 };
@@ -562,9 +483,9 @@ mb.deleteExtCellLinkRelation = function(extCell, relName) {
     var cellName = urlArray[3];
     return $.ajax({
             type: "DELETE",
-            url: mb.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + mb.boxName + '\')',
+            url: Common.accessData.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + mb.boxName + '\')',
             headers: {
-              'Authorization':'Bearer ' + mb.token
+              'Authorization':'Bearer ' + Common.accessData.token
             }
     });
 };
@@ -588,10 +509,10 @@ mb.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar
 
     return $.ajax({
             type: "POST",
-            url: mb.cellUrl + '__message/send',
+            url: Common.accessData.cellUrl + '__message/send',
             data: JSON.stringify(data),
             headers: {
-                    'Authorization':'Bearer ' + mb.token
+                    'Authorization':'Bearer ' + Common.accessData.token
             }
     })
 };
