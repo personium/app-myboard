@@ -12,17 +12,12 @@
         "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
-     "common": {
-        "edit": "編集",
-        "save": "保存",
-        "release": "解除",
-        "approve": "承諾",
-        "decline": "拒否",
-        "readRequestTitle": "MyBoard_閲覧許可依頼",
-        "readRequestBody": "MyBoardの閲覧許可をお願いします。",
-        "readResponseTitle": "MyBoard_登録依頼返信",
-        "readResponseApprovedBody": "承認しました。",
-        "readResponseDeclinedBody": "拒否しました。"
+    "common": {
+        "readRequestTitle": "$t(glossary:message.readRequestTitle)",
+        "readRequestBody": "$t(glossary:message.readRequestBody)",
+        "readResponseTitle": "$t(glossary:message.readResponseTitle)",
+        "readResponseApprovedBody": "$t(glossary:message.readResponseApprovedBody)",
+        "readResponseDeclinedBody": "$t(glossary:message.readResponseDeclinedBody)"
     },
     "msg": {
         "info": {
@@ -37,12 +32,15 @@
             "refreshTokenExpiryDateMissing": "リフレッシュトークンの有効期限が設定されていません。",
             "failedToRetrieveData": "データの取得に失敗しました。",
             "dataNotFound": "データがありません。",
-            "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。",
-            "noWritePermission": "書込み権限がありません。",
-            "failedToWrite": "書込みに失敗しました。"
+            "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。"
         }
     },
     "btn": {
-        "cancel": "キャンセル"
+        "cancel": "キャンセル",
+        "edit": "編集",
+        "save": "保存",
+        "release": "解除",
+        "approve": "承諾",
+        "decline": "拒否"
     }
 }

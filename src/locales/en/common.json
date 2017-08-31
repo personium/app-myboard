@@ -13,16 +13,11 @@
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "common": {
-        "edit": "Edit",
-        "save": "Save",
-        "release": "Ungrant",
-        "approve": "Approve",
-        "decline": "Decline",
-        "readRequestTitle": "MyBoard_Read Permission Request",
-        "readRequestBody": "Please grant read permission for your board (MyBoard).",
-        "readResponseTitle": "MyBoard_Read Permission Reply",
-        "readResponseApprovedBody": "Read permission is granted.",
-        "readResponseDeclinedBody": "Read permission is not granted."
+        "readRequestTitle": "$t(glossary:message.readRequestTitle)",
+        "readRequestBody": "$t(glossary:message.readRequestBody)",
+        "readResponseTitle": "$t(glossary:message.readResponseTitle)",
+        "readResponseApprovedBody": "$t(glossary:message.readResponseApprovedBody)",
+        "readResponseDeclinedBody": "$t(glossary:message.readResponseDeclinedBody)"
     },
     "msg": {
         "info": {
@@ -37,12 +32,15 @@
             "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
             "failedToRetrieveData": "Failed to retrieve data.",
             "dataNotFound": "Data not found.",
-            "failedToRefreshToken": "Failed to refresh token.<br>Please reload page.",
-            "noWritePermission": "No write permission for this board.",
-            "failedToWrite": "Failed to write to this board."
+            "failedToRefreshToken": "Failed to refresh token.<br>Please reload page."
         }
     },
     "btn": {
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "release": "Ungrant",
+        "approve": "Approve",
+        "decline": "Decline"
     }
 }

@@ -258,7 +258,7 @@ Common.stopIdleTimer = function() {
 
 Common.displayMessageByKey = function(msg_key) {
     if (msg_key) {
-        $('#dispMsg').attr("data-i18n", msg_key)
+        $('#dispMsg').attr("data-i18n", '[html]' + msg_key)
             .localize()
             .show();
     } else {

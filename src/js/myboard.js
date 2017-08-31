@@ -318,7 +318,7 @@ mb.appendAllowedCellList = function(extUrl, dispName, no) {
     var tempDom = [
         '<tr id="deleteExtCellRel', no, '">',
             '<td class="paddingTd">', dispName + '</td>',
-            '<td><button data-i18n="common.release" onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">', '</button></td>',
+            '<td><button data-i18n="btn.release" onClick="mb.notAllowedCell(\'' + extUrl + '\', ' + no + ')">', '</button></td>',
         '</tr>'].join("");
     $("#allowedCellList")
         .append(tempDom)
@@ -347,8 +347,8 @@ mb.getReceiveMessage = function() {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                 } else {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("common.approve") + '</button></td>';
-                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("common.decline") + '</button></td>';
+                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.approve") + '</button></td>';
+                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.decline") + '</button></td>';
                     html += '</tr></table>';
                 }
                 html += '</div></div></div>';
@@ -411,9 +411,9 @@ mb.myboardReg = function() {
     }).fail(function(data) {
         var status = data.status;
         if (status == 403) {
-            Common.displayMessageByKey("msg.error.noWritePermission");
+            Common.displayMessageByKey("glossary:msg.error.noWritePermission");
         } else {
-            Common.displayMessageByKey("msg.error.failedToWrite");
+            Common.displayMessageByKey("glossary:msg.error.failedToWrite");
         }
         $('#modal-edit-myboard').modal('hide');
     });

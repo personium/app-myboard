@@ -24,11 +24,7 @@
         "action": "MyBoard will be terminated.",
         "btnOk": "OK"
     },
-    "common": {
-        "edit": "Edit",
-        "save": "Save",
-        "approve": "Approve",
-        "decline": "Decline",
+    "message": {
         "readRequestTitle": "MyBoard_Read Permission Request",
         "readRequestBody": "Please grant read permission for your board (MyBoard).",
         "readResponseTitle": "MyBoard_Read Permission Reply",
@@ -40,12 +36,6 @@
             "writeSomething": "Write something."
         },
         "error": {
-            "failedToSendMessage": "Failed to send message.",
-            "targetCellNotSelected": "Target cell not selected.",
-            "tokenMissing": "Token is missing.",
-            "refreshTokenMissing": "Refresh token is missing.",
-            "tokenExpiryDateMissing": "Token's expiry date is not set.",
-            "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
             "noWritePermission": "No write permission for this board.",
             "failedToWrite": "Failed to write to this board."
         }
