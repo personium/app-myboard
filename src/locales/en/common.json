@@ -35,8 +35,14 @@
             "refreshTokenMissing": "Refresh token is missing.",
             "tokenExpiryDateMissing": "Token's expiry date is not set.",
             "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
+            "failedToRetrieveData": "Failed to retrieve data.",
+            "dataNotFound": "Data not found.",
+            "failedToRefreshToken": "Failed to refresh token.<br>Please reload page.",
             "noWritePermission": "No write permission for this board.",
             "failedToWrite": "Failed to write to this board."
         }
+    },
+    "btn": {
+        "cancel": "Cancel"
     }
 }

@@ -161,6 +161,10 @@ Common.closeTab = function() {
 };
 
 Common.refreshToken = function() {
+    // Do nothing when current cell does not belong to the owner
+    if (notMe()) {
+        return;
+    }
     Common.getLaunchJson().done(function(launchObj){
         Common.getAppToken(launchObj.personal).done(function(appToken) {
             Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
@@ -260,4 +264,21 @@ Common.displayMessageByKey = function(msg_key) {
     } else {
         $('#dispMsg').hide();
     }
+};
+
+/*
+ * Retrieve cell name from cell URL
+ * Parameter:
+ *     1. ended with "/", "https://demo.personium.io/debug-user1/"
+ *     2. ended without "/", "https://demo.personium.io/debug-user1"
+ * Return:
+ *     debug-user1
+ */
+Common.getCellNameFromUrl = function(url) {
+    if ((typeof url === "undefined") || url == null || url == "") {
+        return "";
+    };
+
+    var cellName = _.last(_.compact(url.split("/")));
+    return cellName;
 };

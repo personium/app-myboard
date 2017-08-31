@@ -35,8 +35,14 @@
             "refreshTokenMissing": "リフレッシュトークンが設定されていません。",
             "tokenExpiryDateMissing": "トークンの有効期限が設定されていません。",
             "refreshTokenExpiryDateMissing": "リフレッシュトークンの有効期限が設定されていません。",
+            "failedToRetrieveData": "データの取得に失敗しました。",
+            "dataNotFound": "データがありません。",
+            "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。",
             "noWritePermission": "書込み権限がありません。",
             "failedToWrite": "書込みに失敗しました。"
         }
+    },
+    "btn": {
+        "cancel": "キャンセル"
     }
 }

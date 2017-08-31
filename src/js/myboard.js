@@ -29,6 +29,7 @@ setTarget = function(url) {
 
     var urlSplit = url.split("/");
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
+    Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
     Common.accessData.boxName = _.last(urlSplit);
 };
 
@@ -40,6 +41,18 @@ getTargetUrl = function() {
 getCellUrl = function() {
     return Common.accessData.cellUrl;
 };
+
+getCellName = function() {
+    return Common.accessData.cellName;
+};
+
+notMe = function() {
+    if (typeof Common.accessData.fromCell !== "undefined") {
+        return (Common.accessData.cellName != Common.accessData.fromCell);
+    } else {
+        return false;
+    }
+}
 
 getBoxName = function() {
     return Common.accessData.boxName;
@@ -54,16 +67,24 @@ additionalCallback = function() {
         var param = params[i].split("=");
         var id = param[0];
         switch (id) {
-            case "target":
-                setTarget(param[1]);
-            case "token":
-                Common.accessData.token = param[1];
-            case "ref":
-                Common.accessData.refToken = param[1];
-            case "expires":
-                Common.accessData.expires = param[1];
-            case "refexpires":
-                Common.accessData.refExpires = param[1];
+        case "target":
+            setTarget(param[1]);
+            break;
+        case "token":
+            Common.accessData.token = param[1];
+            break;
+        case "ref":
+            Common.accessData.refToken = param[1];
+            break;
+        case "expires":
+            Common.accessData.expires = param[1];
+            break;
+        case "refexpires":
+            Common.accessData.refExpires = param[1];
+            break;
+        case "fromCell":
+            Common.accessData.fromCell = param[1];
+            break;
         }
     }
 
@@ -75,6 +96,11 @@ additionalCallback = function() {
             }
             $('.write_board').append(mb.msgData.message);
             $('.disp_board').css("display", "block");
+            if (notMe()) {
+                $("#exeEditer")
+                    .prop("disabled", true);
+            }
+
             Common.setIdleTime();
 
             
@@ -117,6 +143,7 @@ additionalCallback = function() {
                 url += '&ref=' + extData.refresh_token;
                 url += '&expires=' + extData.expires_in;
                 url += '&refexpires=' + extData.refresh_token_expires_in;
+                url += '&fromCell=' + getCellName();
                 childWindow.location.href = url;
                 childWindow = null;
             });
@@ -209,32 +236,15 @@ mb.getOtherAllowedCells = function() {
 
 mb.dispOtherAllowedCells = function(extUrl) {
     mb.getProfile(extUrl).done(function(data) {
-        var dispName = mb.getCellNameFromUrl(extUrl);
+        var dispName = Common.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
         mb.checkOtherAllowedCells(extUrl, dispName)
     }).fail(function() {
-        var dispName = mb.getCellNameFromUrl(extUrl);
+        var dispName = Common.getCellNameFromUrl(extUrl);
         mb.checkOtherAllowedCells(extUrl, dispName)
     });
-};
-
-/*
- * Retrieve cell name from cell URL
- * Parameter:
- *     1. ended with "/", "https://demo.personium.io/debug-user1/"
- *     2. ended without "/", "https://demo.personium.io/debug-user1"
- * Return:
- *     debug-user1
- */
-mb.getCellNameFromUrl = function(path) {
-    if ((typeof path === "undefined") || path == null || path == "") {
-        return "";
-    };
-
-    var cellName = _.last(_.compact(path.split("/")));
-    return cellName;
 };
 
 mb.checkOtherAllowedCells = function(extUrl, dispName) {
@@ -293,13 +303,13 @@ mb.dispAllowedCellList = function(json) {
 
 mb.dispAllowedCellListAfter = function(extUrl, no) {
     mb.getProfile(extUrl).done(function(data) {
-        var dispName = mb.getCellNameFromUrl(extUrl);
+        var dispName = Common.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
         mb.appendAllowedCellList(extUrl, dispName, no)
     }).fail(function() {
-        var dispName = mb.getCellNameFromUrl(extUrl);
+        var dispName = Common.getCellNameFromUrl(extUrl);
         mb.appendAllowedCellList(extUrl, dispName, no)
     });
 };
@@ -332,7 +342,7 @@ mb.getReceiveMessage = function() {
             var uuid = results[i].__id;
 
             if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
-                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + mb.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
+                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + Common.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
                 if (results[i].Type === "message") {
                     html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                 } else {
