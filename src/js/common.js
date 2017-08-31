@@ -30,6 +30,7 @@ Common.lastActivity = new Date().getTime();
 Common.accessData = {
     targetUrl: null,
     cellUrl: null,
+    cellName: null,
     appUrl: null,
     token: null,
     refToken: null,
@@ -77,6 +78,102 @@ Common.initJqueryI18next = function() {
     });
 }
 
+Common.setAppCellUrl = function() {
+    var appUrlSplit = _.first(location.href.split("#")).split("/");
+
+    if (_.contains(appUrlSplit, "localhost") || _.contains(appUrlSplit, "file:")) {
+        Common.accessData.appUrl = APP_URL; // APP_URL must be defined by each App
+    } else {
+        Common.accessData.appUrl = _.first(appUrlSplit, 4).join("/") + "/"; 
+    }
+
+    return;
+};
+
+Common.getAppCellUrl = function() {
+    return Common.accessData.appUrl;
+};
+
+Common.setAccessData = function() {
+    var hash = location.hash.substring(1);
+    var params = hash.split("&");
+    for (var i in params) {
+        var param = params[i].split("=");
+        var id = param[0];
+        switch (id) {
+        case "target":
+            Common.setTarget(param[1]);
+            break;
+        case "token":
+            Common.accessData.token = param[1];
+            break;
+        case "ref":
+            Common.accessData.refToken = param[1];
+            break;
+        case "expires":
+            Common.accessData.expires = param[1];
+            break;
+        case "refexpires":
+            Common.accessData.refExpires = param[1];
+            break;
+        case "fromCell":
+            Common.accessData.fromCell = param[1];
+            break;
+        }
+    }
+};
+
+Common.setTarget = function(url) {
+    Common.accessData.targetUrl = url;
+
+    var urlSplit = url.split("/");
+    Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
+    Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
+    Common.accessData.boxName = _.last(urlSplit);
+};
+
+// Data subject's cell URL
+Common.getTargetUrl = function() {
+    return Common.accessData.targetUrl;
+};
+
+Common.getCellUrl = function() {
+    return Common.accessData.cellUrl;
+};
+
+Common.getCellName = function() {
+    return Common.accessData.cellName;
+};
+
+Common.getBoxName = function() {
+    return Common.accessData.boxName;
+};
+
+/*
+ * Retrieve cell name from cell URL
+ * Parameter:
+ *     1. ended with "/", "https://demo.personium.io/debug-user1/"
+ *     2. ended without "/", "https://demo.personium.io/debug-user1"
+ * Return:
+ *     debug-user1
+ */
+Common.getCellNameFromUrl = function(url) {
+    if ((typeof url === "undefined") || url == null || url == "") {
+        return "";
+    };
+
+    var cellName = _.last(_.compact(url.split("/")));
+    return cellName;
+};
+
+Common.notMe = function() {
+    if (typeof Common.accessData.fromCell !== "undefined") {
+        return (Common.accessData.cellName != Common.accessData.fromCell);
+    } else {
+        return false;
+    }
+}
+
 Common.updateContent = function() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
@@ -85,7 +182,7 @@ Common.updateContent = function() {
 
 Common.checkParam = function() {
     var msg_key = "";
-    if (getTargetUrl() === null) {
+    if (Common.getTargetUrl() === null) {
         msg_key = "msg.error.targetCellNotSelected";
     } else if (Common.accessData.token ===null) {
         msg_key = "msg.error.tokenMissing";
@@ -162,7 +259,7 @@ Common.closeTab = function() {
 
 Common.refreshToken = function() {
     // Do nothing when current cell does not belong to the owner
-    if (notMe()) {
+    if (Common.notMe()) {
         return;
     }
     Common.getLaunchJson().done(function(launchObj){
@@ -184,7 +281,7 @@ Common.refreshToken = function() {
 Common.getLaunchJson = function() {
     return $.ajax({
         type: "GET",
-        url: getAppCellUrl() + "__/launch.json",
+        url: Common.getAppCellUrl() + "__/launch.json",
         headers: {
             'Authorization':'Bearer ' + Common.accessData.token,
             'Accept':'application/json'
@@ -195,14 +292,14 @@ Common.getLaunchJson = function() {
 Common.getAppToken = function(personalInfo) {
     return $.ajax({
                 type: "POST",
-                url: getAppCellUrl() + '__token',
+                url: Common.getAppCellUrl() + '__token',
                 processData: true,
                 dataType: 'json',
                 data: {
                         grant_type: "password",
                         username: personalInfo.appTokenId,
                         password: personalInfo.appTokenPw,
-                        p_target: Common.accessData.cellUrl
+                        p_target: Common.getCellUrl()
                 },
                 headers: {'Accept':'application/json'}
          });
@@ -217,13 +314,13 @@ Common.getAppToken = function(personalInfo) {
 Common.getAppCellToken = function(appToken) {
   return $.ajax({
                 type: "POST",
-                url: Common.accessData.cellUrl + '__token',
+                url: Common.getCellUrl() + '__token',
                 processData: true,
                 dataType: 'json',
                 data: {
                     grant_type: "refresh_token",
                     refresh_token: Common.accessData.refToken,
-                    client_id: getAppCellUrl(),
+                    client_id: Common.getAppCellUrl(),
                     client_secret: appToken
                 },
                 headers: {'Accept':'application/json'}
@@ -264,21 +361,4 @@ Common.displayMessageByKey = function(msg_key) {
     } else {
         $('#dispMsg').hide();
     }
-};
-
-/*
- * Retrieve cell name from cell URL
- * Parameter:
- *     1. ended with "/", "https://demo.personium.io/debug-user1/"
- *     2. ended without "/", "https://demo.personium.io/debug-user1"
- * Return:
- *     debug-user1
- */
-Common.getCellNameFromUrl = function(url) {
-    if ((typeof url === "undefined") || url == null || url == "") {
-        return "";
-    };
-
-    var cellName = _.last(_.compact(url.split("/")));
-    return cellName;
 };

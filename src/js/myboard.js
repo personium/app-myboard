@@ -2,101 +2,27 @@ var mb = {};
 
 mb.msgData = null;
 
+const APP_URL = "https://demo.personium.io/app-myboard/";
+
 // Please add file names (with file extension) 
 getNamesapces = function(){
     return ['common', 'glossary'];
 };
 
-setAppCellUrl = function() {
-    var appUrlSplit = _.first(location.href.split("#")).split("/");
-
-    if (_.contains(appUrlSplit, "localhost") || _.contains(appUrlSplit, "file:")) {
-        Common.accessData.appUrl = "https://demo.personium.io/app-myboard/";
-    } else {
-        Common.accessData.appUrl = _.first(appUrlSplit, 4).join("/") + "/"; 
-    }
-
-    return;
-};
-
-// MyBoard's cell URL
-getAppCellUrl = function() {
-    return Common.accessData.appUrl;
-};
-
-setTarget = function(url) {
-    Common.accessData.targetUrl = url;
-
-    var urlSplit = url.split("/");
-    Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
-    Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
-    Common.accessData.boxName = _.last(urlSplit);
-};
-
-// Data subject's cell URL
-getTargetUrl = function() {
-    return Common.accessData.targetUrl;
-};
-
-getCellUrl = function() {
-    return Common.accessData.cellUrl;
-};
-
-getCellName = function() {
-    return Common.accessData.cellName;
-};
-
-notMe = function() {
-    if (typeof Common.accessData.fromCell !== "undefined") {
-        return (Common.accessData.cellName != Common.accessData.fromCell);
-    } else {
-        return false;
-    }
-}
-
-getBoxName = function() {
-    return Common.accessData.boxName;
-};
-
 additionalCallback = function() {
-    setAppCellUrl();
+    Common.setAppCellUrl();
 
-    var hash = location.hash.substring(1);
-    var params = hash.split("&");
-    for (var i in params) {
-        var param = params[i].split("=");
-        var id = param[0];
-        switch (id) {
-        case "target":
-            setTarget(param[1]);
-            break;
-        case "token":
-            Common.accessData.token = param[1];
-            break;
-        case "ref":
-            Common.accessData.refToken = param[1];
-            break;
-        case "expires":
-            Common.accessData.expires = param[1];
-            break;
-        case "refexpires":
-            Common.accessData.refExpires = param[1];
-            break;
-        case "fromCell":
-            Common.accessData.fromCell = param[1];
-            break;
-        }
-    }
+    Common.setAccessData();
 
     if (Common.checkParam()) {
-        mb.getMyBoardAPI(getTargetUrl(), Common.accessData.token).done(function(data) {
+        mb.getMyBoardAPI(Common.getTargetUrl(), Common.accessData.token).done(function(data) {
             mb.msgData = JSON.parse(data);
             if (mb.msgData.message !== undefined) {
                 mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
             }
             $('.write_board').append(mb.msgData.message);
             $('.disp_board').css("display", "block");
-            if (notMe()) {
+            if (Common.notMe()) {
                 $("#exeEditer")
                     .prop("disabled", true);
             }
@@ -127,7 +53,7 @@ additionalCallback = function() {
         var childWindow = window.open('about:blank');
         $.ajax({
             type: "GET",
-            url: getAppCellUrl() + "__/launch.json",
+            url: Common.getAppCellUrl() + "__/launch.json",
             headers: {
                 'Authorization':'Bearer ' + Common.accessData.token,
                 'Accept':'application/json'
@@ -135,7 +61,7 @@ additionalCallback = function() {
         }).done(function(data) {
             var launchObj = data.personal;
             var launch = launchObj.web;
-            var target = value + getBoxName();
+            var target = value + Common.getBoxName();
             mb.getTargetToken(value).done(function(extData) {
                 var url = launch;
                 url += '#target=' + target;
@@ -143,7 +69,7 @@ additionalCallback = function() {
                 url += '&ref=' + extData.refresh_token;
                 url += '&expires=' + extData.expires_in;
                 url += '&refexpires=' + extData.refresh_token_expires_in;
-                url += '&fromCell=' + getCellName();
+                url += '&fromCell=' + Common.getCellName();
                 childWindow.location.href = url;
                 childWindow = null;
             });
@@ -159,10 +85,10 @@ additionalCallback = function() {
         var body = i18next.t("common.readRequestBody");
         //var reqRel = value + "__relation/__/MyBoardReader";
         var reqRel = [
-            getAppCellUrl(),
+            Common.getAppCellUrl(),
             "__relation/__/MyBoardReader"
         ].join("");
-        mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.accessData.cellUrl).done(function(data) {
+        mb.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl()).done(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
         }).fail(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
@@ -249,7 +175,7 @@ mb.dispOtherAllowedCells = function(extUrl) {
 
 mb.checkOtherAllowedCells = function(extUrl, dispName) {
     mb.getTargetToken(extUrl).done(function(extData) {
-        mb.getMyBoardAPI(extUrl + getBoxName(), extData.access_token).done(function(data) {
+        mb.getMyBoardAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
             mb.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
             // Insufficient access privileges
@@ -273,7 +199,7 @@ mb.appendRequestCells = function(extUrl, dispName) {
 mb.getAllowedCellList = function() {
     $.ajax({
         type: "GET",
-        url: Common.accessData.cellUrl + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + getBoxName() + '\')/$links/_ExtCell',
+        url: Common.getCellUrl() + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + Common.getBoxName() + '\')/$links/_ExtCell',
         headers: {
             'Authorization':'Bearer ' + Common.accessData.token,
             'Accept':'application/json'
@@ -398,7 +324,7 @@ mb.myboardReg = function() {
     };
     $.ajax({
         type: "PUT",
-        url: getTargetUrl() + '/MyBoardBox/my-board.json',
+        url: Common.getTargetUrl() + '/MyBoardBox/my-board.json',
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
@@ -431,7 +357,7 @@ mb.getProfile = function(url) {
 mb.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: Common.accessData.cellUrl + '__token',
+                url: Common.getCellUrl() + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {
@@ -446,7 +372,7 @@ mb.getTargetToken = function(extCellUrl) {
 mb.getExtCell = function() {
   return $.ajax({
                 type: "GET",
-                url: Common.accessData.cellUrl + '__ctl/ExtCell',
+                url: Common.getCellUrl() + '__ctl/ExtCell',
                 headers: {
                     'Authorization':'Bearer ' + Common.accessData.token,
                     'Accept':'application/json'
@@ -457,7 +383,7 @@ mb.getExtCell = function() {
 mb.getReceivedMessageAPI = function() {
   return $.ajax({
                 type: "GET",
-                url: Common.accessData.cellUrl + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
+                url: Common.getCellUrl() + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
                 headers: {
                     'Authorization':'Bearer ' + Common.accessData.token,
                     'Accept':'application/json'
@@ -470,7 +396,7 @@ mb.changeStatusMessageAPI = function(uuid, command) {
     data.Command = command;
     return $.ajax({
             type: "POST",
-            url: Common.accessData.cellUrl + '__message/received/' + uuid,
+            url: Common.getCellUrl() + '__message/received/' + uuid,
             data: JSON.stringify(data),
             headers: {
                     'Authorization':'Bearer ' + Common.accessData.token
@@ -485,7 +411,7 @@ mb.deleteExtCellLinkRelation = function(extCell, relName) {
     var cellName = urlArray[3];
     return $.ajax({
             type: "DELETE",
-            url: Common.accessData.cellUrl + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + getBoxName() + '\')',
+            url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
             headers: {
               'Authorization':'Bearer ' + Common.accessData.token
             }
@@ -511,7 +437,7 @@ mb.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar
 
     return $.ajax({
             type: "POST",
-            url: Common.accessData.cellUrl + '__message/send',
+            url: Common.getCellUrl() + '__message/send',
             data: JSON.stringify(data),
             headers: {
                     'Authorization':'Bearer ' + Common.accessData.token
