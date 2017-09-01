@@ -1,8 +1,6 @@
 {
     "title": "MyBoard",
     "navbar": {
-        "toggleNavigation": "Toggle navigation",
-        "appName": "$t(title)",
         "readAnotherBoard": {
             "title": "Read another",
             "panelHeader": "Read another MyBoard",
@@ -19,27 +17,17 @@
             "title": "Read by",
             "panelHeader": "Read permission management",
             "description": "List of MyBoard owners which you have granted read permissions"
-        },
-        "notification": {
-            "title": "Notifications",
-            "panelHeader": "List of notifications"
         }
     },
-    "dialog": {
-        "sessionExpired": {
-            "title": "Session Expired",
-            "msg": "Your session has expired. MyBoard is terminated.",
-            "button": {
-                "close": "Close"
-            }
-        }
+    "sessionExpiredDialog": {
+        "title": "Session Expired",
+        "action": "MyBoard will be terminated.",
+        "btnOk": "OK"
     },
-    "common": {
-        "edit": "Edit",
-        "save": "Save",
-        "release": "Ungrant",
-        "approve": "Approve",
-        "decline": "Decline",
+    "irrecoverableErrorDialog": {
+        "title": "Terminating MyBoard ..."
+    },
+    "message": {
         "readRequestTitle": "MyBoard_Read Permission Request",
         "readRequestBody": "Please grant read permission for your board (MyBoard).",
         "readResponseTitle": "MyBoard_Read Permission Reply",
@@ -48,17 +36,9 @@
     },
     "msg": {
         "info": {
-            "writeSomething": "Write something.",
-            "pleaseSelectTargetCell": "Please select a board.",
-            "messageSent": "Succeeded in sending the message."
+            "writeSomething": "Write something."
         },
         "error": {
-            "failedToSendMessage": "Failed to send message.",
-            "targetCellNotSelected": "Target cell not selected.",
-            "tokenMissing": "Token is missing.",
-            "refreshTokenMissing": "Refresh token is missing.",
-            "tokenExpiryDateMissing": "Token's expiry date is not set.",
-            "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
             "noWritePermission": "No write permission for this board.",
             "failedToWrite": "Failed to write to this board."
         }

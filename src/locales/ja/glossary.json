@@ -1,0 +1,46 @@
+{
+    "title": "MyBoard",
+    "navbar": {
+        "readAnotherBoard": {
+            "title": "他のMyBoardを見る",
+            "panelHeader": "$t(glossary:navbar.readAnotherBoard.title)",
+            "description": "許可されているセル",
+            "btn": "閲覧"
+        },
+        "sendReadPermissionRequest": {
+            "title": "閲覧許可依頼送信",
+            "panelHeader": "$t(glossary:navbar.sendReadPermissionRequest.title)",
+            "description": "依頼先セル",
+            "btn": "送信"
+        },
+        "readPermissionStatus": {
+            "title": "閲覧許可状況",
+            "panelHeader": "$t(glossary:navbar.readPermissionStatus.title)",
+            "description": "許可しているセル"
+        }
+    },
+    "sessionExpiredDialog": {
+        "title": "セッション期限切れ",
+        "action": "MyBoardを終了します。",
+        "btnOk": "OK"
+    },
+    "irrecoverableErrorDialog": {
+        "title": "MyBoardを終了します ..."
+    },
+    "message": {
+        "readRequestTitle": "MyBoard_閲覧許可依頼",
+        "readRequestBody": "MyBoardの閲覧許可をお願いします。",
+        "readResponseTitle": "MyBoard_登録依頼返信",
+        "readResponseApprovedBody": "承認しました。",
+        "readResponseDeclinedBody": "拒否しました。"
+    },
+    "msg": {
+        "info": {
+            "writeSomething": "好きな事を書いてください。"
+        },
+        "error": {
+            "noWritePermission": "書込み権限がありません。",
+            "failedToWrite": "書込みに失敗しました。"
+        }
+    }
+}
