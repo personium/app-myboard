@@ -10,34 +10,42 @@ getNamesapces = function(){
 };
 
 additionalCallback = function() {
+    Common.appendCommonDialog();
+
     Common.setAppCellUrl();
 
     Common.setAccessData();
 
-    if (Common.checkParam()) {
-        mb.getMyBoardAPI(Common.getTargetUrl(), Common.accessData.token).done(function(data) {
-            mb.msgData = JSON.parse(data);
-            if (mb.msgData.message !== undefined) {
-                mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
-            }
-            $('.write_board').append(mb.msgData.message);
-            $('.disp_board').css("display", "block");
-            if (Common.notMe()) {
-                $("#exeEditer")
-                    .prop("disabled", true);
-            }
+    if (!Common.checkParam()) {
+        // cannot do anything to recover
+        // display a dialog and close the app.
+        return;
+    };
 
-            Common.setIdleTime();
+    mb.getMyBoardAPI(Common.getTargetUrl(), Common.accessData.token).done(function(data) {
+        mb.msgData = JSON.parse(data);
+        if (mb.msgData.message !== undefined) {
+            mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
+        }
+        $('.write_board').append(mb.msgData.message);
+        $('.disp_board').css("display", "block");
+        if (Common.notMe()) {
+            $("#exeEditer")
+                .prop("disabled", true)
+                .hide();
+        }
 
-            
+        Common.setIdleTime();
+
+        if (!Common.notMe()) {
             // 閲覧許可状況(外部セル)
             mb.getOtherAllowedCells();
             // 閲覧許可状況
             mb.getAllowedCellList();
             // 通知
             mb.getReceiveMessage();
-        });
-    }
+        }
+    });
 
     $('#exeEditer').on('click', function () {
         $("#txtEditMyBoard").val($("#txtMyBoard").val());
@@ -129,6 +137,11 @@ additionalCallback = function() {
         $("#extCellMyBoard").removeClass('in');
         $("#extCellMyBoard").attr("aria-expanded", false);
     });
+};
+
+irrecoverableErrorHandler = function() {
+    $("#collapse-id").empty();
+    $("#exeEditer").prop("disabled", true);
 };
 
 mb.getOtherAllowedCells = function() {

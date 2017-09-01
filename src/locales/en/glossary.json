@@ -24,6 +24,9 @@
         "action": "MyBoard will be terminated.",
         "btnOk": "OK"
     },
+    "irrecoverableErrorDialog": {
+        "title": "Terminating MyBoard ..."
+    },
     "message": {
         "readRequestTitle": "MyBoard_Read Permission Request",
         "readRequestBody": "Please grant read permission for your board (MyBoard).",

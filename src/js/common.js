@@ -195,7 +195,7 @@ Common.checkParam = function() {
     }
 
     if (msg_key.length > 0) {
-        Common.displayMessageByKey(msg_key);
+        Common.irrecoverableErrorHandler(msg_key);
         return false;
     }
 
@@ -244,6 +244,40 @@ Common.appendSessionExpiredDialog = function() {
     });
 };
 
+Common.appendCommonDialog = function() {
+    var html = [
+        '<div id="modal-common" class="modal fade" role="dialog" data-backdrop="static">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header login-header">',
+                        '<h4 class="modal-title"></h4>',
+                    '</div>',
+                    '<div class="modal-body"></div>',
+                    '<div class="modal-footer">',
+                        '<button type="button" class="btn btn-primary" id="b-common-ok" data-i18n="sessionExpiredDialog.btnOk"></button>',
+                    '</div>',
+               '</div>',
+           '</div>',
+        '</div>'
+    ].join("");
+    $("body").append(html);
+    $('#b-common-ok').on('click', function() { 
+        Common.closeTab();
+    });
+};
+
+Common.openCommonDialog = function(title_key, message_key) {
+    $("#modal-common .modal-title")
+        .attr('data-i18n', title_key);
+
+    $("#modal-common .modal-body")
+        .attr('data-i18n', '[html]' + message_key);
+
+    $("#modal-common")
+        .localize()
+        .modal('show');
+};
+
 /*
  * clean up data and close tab/window
  */
@@ -258,7 +292,11 @@ Common.closeTab = function() {
 };
 
 Common.refreshToken = function() {
-    // Do nothing when current cell does not belong to the owner
+    /*
+     * Not enough information in Common.accessData to refresh token
+     * when opening another MyBoard.
+     * To be implemented.
+     */
     if (Common.notMe()) {
         return;
     }
@@ -351,6 +389,15 @@ Common.checkIdleTime = function() {
 Common.stopIdleTimer = function() {
     clearInterval(Common.checkIdleTimer);
     $(document).off('click mousemove keypress');
+};
+
+Common.irrecoverableErrorHandler = function(msg_key) {
+    // define your own handler for each App/screen
+    if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
+        irrecoverableErrorHandler();
+    }
+
+    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
 };
 
 Common.displayMessageByKey = function(msg_key) {

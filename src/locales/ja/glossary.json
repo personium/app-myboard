@@ -24,6 +24,9 @@
         "action": "MyBoardを終了します。",
         "btnOk": "OK"
     },
+    "irrecoverableErrorDialog": {
+        "title": "MyBoardを終了します ..."
+    },
     "message": {
         "readRequestTitle": "MyBoard_閲覧許可依頼",
         "readRequestBody": "MyBoardの閲覧許可をお願いします。",

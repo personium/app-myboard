@@ -12,12 +12,19 @@
         "message": "Session has expired.<br>$t(glossary:sessionExpiredDialog.action)",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
+    "irrecoverableErrorDialog": {
+        "title": "$t(glossary:irrecoverableErrorDialog.title)"
+    },
     "common": {
         "readRequestTitle": "$t(glossary:message.readRequestTitle)",
         "readRequestBody": "$t(glossary:message.readRequestBody)",
         "readResponseTitle": "$t(glossary:message.readResponseTitle)",
         "readResponseApprovedBody": "$t(glossary:message.readResponseApprovedBody)",
         "readResponseDeclinedBody": "$t(glossary:message.readResponseDeclinedBody)"
+    },
+    "error": {
+        "title": "Error",
+        "label": "Error"
     },
     "msg": {
         "info": {
