@@ -306,13 +306,13 @@ Common.refreshToken = function() {
                 // update sessionStorage
                 Common.updateSessionStorage(appCellToken);
             }).fail(function(appCellToken) {
-                Common.displayMessageByKey("msg.error.failedToRefreshToken");
+                Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
             });
         }).fail(function(appToken) {
-            Common.displayMessageByKey("msg.error.failedToRefreshToken");
+            Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
         });
     }).fail(function(){
-        Common.displayMessageByKey("msg.error.failedToRefreshToken");
+        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
     });
 };
 
