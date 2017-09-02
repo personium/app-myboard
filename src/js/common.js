@@ -380,7 +380,7 @@ Common.updateSessionStorage = function(appCellToken) {
     Common.accessData.refToken = appCellToken.refresh_token;
     Common.accessData.expires = appCellToken.expires_in;
     Common.accessData.refExpires = appCellToken.refresh_token_expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(Common.accessData));
+    sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
 /*
