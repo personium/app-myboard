@@ -57,6 +57,8 @@ $(document).ready(function() {
             }
         }, function(err, t) {
             Common.initJqueryI18next();
+
+            Common.appendCommonDialog();
             
             // define your own additionalCallback for each App/screen
             if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
@@ -147,6 +149,14 @@ Common.getCellName = function() {
 
 Common.getBoxName = function() {
     return Common.accessData.boxName;
+};
+
+Common.getToken = function() {
+    return Common.accessData.token;
+};
+
+Common.getRefressToken = function() {
+    return Common.accessData.refToken;
 };
 
 /*

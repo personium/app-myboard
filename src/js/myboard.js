@@ -10,8 +10,6 @@ getNamesapces = function(){
 };
 
 additionalCallback = function() {
-    Common.appendCommonDialog();
-
     Common.setAppCellUrl();
 
     Common.setAccessData();
@@ -22,7 +20,7 @@ additionalCallback = function() {
         return;
     };
 
-    mb.getMyBoardAPI(Common.getTargetUrl(), Common.accessData.token).done(function(data) {
+    mb.getMyBoardAPI(Common.getTargetUrl(), Common.getToken()).done(function(data) {
         mb.msgData = JSON.parse(data);
         if (mb.msgData.message !== undefined) {
             mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
@@ -63,7 +61,7 @@ additionalCallback = function() {
             type: "GET",
             url: Common.getAppCellUrl() + "__/launch.json",
             headers: {
-                'Authorization':'Bearer ' + Common.accessData.token,
+                'Authorization':'Bearer ' + Common.getToken(),
                 'Accept':'application/json'
             }
         }).done(function(data) {
@@ -148,21 +146,21 @@ mb.getOtherAllowedCells = function() {
     mb.getExtCell().done(function(json) {
         var objSel = document.getElementById("otherAllowedCells");
         if (objSel.hasChildNodes()) {
-          while (objSel.childNodes.length > 0) {
-            objSel.removeChild(objSel.firstChild);
-          }
+            while (objSel.childNodes.length > 0) {
+                objSel.removeChild(objSel.firstChild);
+            }
         }
         objSel = document.getElementById("requestCells");
         if (objSel.hasChildNodes()) {
-          while (objSel.childNodes.length > 0) {
-            objSel.removeChild(objSel.firstChild);
-          }
+            while (objSel.childNodes.length > 0) {
+                objSel.removeChild(objSel.firstChild);
+            }
         }
 
         var results = json.d.results;
         if (results.length > 0) {
             results.sort(function(val1, val2) {
-              return (val1.Url < val2.Url ? 1 : -1);
+                return (val1.Url < val2.Url ? 1 : -1);
             })
 
             for (var i in results) {
@@ -214,7 +212,7 @@ mb.getAllowedCellList = function() {
         type: "GET",
         url: Common.getCellUrl() + '__ctl/Relation(Name=\'MyBoardReader\',_Box\.Name=\'' + Common.getBoxName() + '\')/$links/_ExtCell',
         headers: {
-            'Authorization':'Bearer ' + Common.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function(data) {
@@ -231,11 +229,11 @@ mb.dispAllowedCellList = function(json) {
         })
 
         for (var i in results) {
-          var uri = results[i].uri;
-          var matchUrl = uri.match(/\(\'(.+)\'\)/);
-          var extUrl = matchUrl[1];
+            var uri = results[i].uri;
+            var matchUrl = uri.match(/\(\'(.+)\'\)/);
+            var extUrl = matchUrl[1];
 
-          mb.dispAllowedCellListAfter(extUrl, i);
+            mb.dispAllowedCellListAfter(extUrl, i);
         }
     }
 };
@@ -333,7 +331,7 @@ mb.myboardReg = function() {
     var strTxt = $("#txtEditMyBoard").val();
     mb.msgData.message = strTxt.replace(/\n/g, "<br>");
     json = {
-             "message" : mb.msgData.message
+        "message" : mb.msgData.message
     };
     $.ajax({
         type: "PUT",
@@ -341,7 +339,7 @@ mb.myboardReg = function() {
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
-            'Authorization':'Bearer ' + Common.accessData.token,
+            'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
     }).done(function() {
@@ -360,60 +358,60 @@ mb.myboardReg = function() {
 
 mb.getProfile = function(url) {
     return $.ajax({
-	type: "GET",
-	url: url + '__/profile.json',
-	dataType: 'json',
+        type: "GET",
+        url: url + '__/profile.json',
+        dataType: 'json',
         headers: {'Accept':'application/json'}
     })
 };
 
 mb.getTargetToken = function(extCellUrl) {
-  return $.ajax({
-                type: "POST",
-                url: Common.getCellUrl() + '__token',
-                processData: true,
+    return $.ajax({
+        type: "POST",
+        url: Common.getCellUrl() + '__token',
+        processData: true,
 		dataType: 'json',
-                data: {
-                        grant_type: "refresh_token",
-                        refresh_token: Common.accessData.refToken,
-                        p_target: extCellUrl
-                },
+        data: {
+            grant_type: "refresh_token",
+            refresh_token: Common.getRefressToken(),
+            p_target: extCellUrl
+        },
 		headers: {'Accept':'application/json'}
-         });
+    });
 };
 
 mb.getExtCell = function() {
-  return $.ajax({
-                type: "GET",
-                url: Common.getCellUrl() + '__ctl/ExtCell',
-                headers: {
-                    'Authorization':'Bearer ' + Common.accessData.token,
-                    'Accept':'application/json'
-                }
-  });
+    return $.ajax({
+        type: "GET",
+        url: Common.getCellUrl() + '__ctl/ExtCell',
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken(),
+            'Accept':'application/json'
+        }
+    });
 };
 
 mb.getReceivedMessageAPI = function() {
-  return $.ajax({
-                type: "GET",
-                url: Common.getCellUrl() + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
-                headers: {
-                    'Authorization':'Bearer ' + Common.accessData.token,
-                    'Accept':'application/json'
-                }
-  });
+    return $.ajax({
+        type: "GET",
+        url: Common.getCellUrl() + '__ctl/ReceivedMessage?$filter=startswith%28Title,%27MyBoard%27%29&$orderby=__published%20desc',
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken(),
+            'Accept':'application/json'
+        }
+    });
 };
 
 mb.changeStatusMessageAPI = function(uuid, command) {
     var data = {};
     data.Command = command;
     return $.ajax({
-            type: "POST",
-            url: Common.getCellUrl() + '__message/received/' + uuid,
-            data: JSON.stringify(data),
-            headers: {
-                    'Authorization':'Bearer ' + Common.accessData.token
-            }
+        type: "POST",
+        url: Common.getCellUrl() + '__message/received/' + uuid,
+        data: JSON.stringify(data),
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken()
+        }
     })
 };
 
@@ -423,11 +421,11 @@ mb.deleteExtCellLinkRelation = function(extCell, relName) {
     var fqdn = urlArray[2];
     var cellName = urlArray[3];
     return $.ajax({
-            type: "DELETE",
-            url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
-            headers: {
-              'Authorization':'Bearer ' + Common.accessData.token
-            }
+        type: "DELETE",
+        url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken()
+        }
     });
 };
 
@@ -449,11 +447,11 @@ mb.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar
     }
 
     return $.ajax({
-            type: "POST",
-            url: Common.getCellUrl() + '__message/send',
-            data: JSON.stringify(data),
-            headers: {
-                    'Authorization':'Bearer ' + Common.accessData.token
-            }
+        type: "POST",
+        url: Common.getCellUrl() + '__message/send',
+        data: JSON.stringify(data),
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken()
+        }
     })
 };
