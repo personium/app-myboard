@@ -87,8 +87,8 @@ additionalCallback = function() {
 
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
-        var title = i18next.t("common.readRequestTitle");
-        var body = i18next.t("common.readRequestBody");
+        var title = i18next.t("readRequestTitle");
+        var body = i18next.t("readRequestBody");
         //var reqRel = value + "__relation/__/MyBoardReader";
         var reqRel = [
             Common.getAppCellUrl(),
@@ -207,6 +207,75 @@ mb.appendRequestCells = function(extUrl, dispName) {
     $("#bSendAllowed").prop("disabled", false);
 };
 
+
+
+mb.notAllowedCell = function(extUrl, no) {
+    mb.deleteExtCellLinkRelation(extUrl, 'MyBoardReader').done(function() {
+        $("#deleteExtCellRel" + no).remove();
+    });
+};
+
+mb.getReceiveMessage = function() {
+    $("#messageList").empty();
+    mb.getReceivedMessageAPI().done(function(data) {
+        var results = data.d.results;
+        for (var i in results) {
+            var title = results[i].Title;
+            var body = results[i].Body;
+            var fromCell = results[i].From;
+            var uuid = results[i].__id;
+
+            if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
+                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + Common.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
+                if (results[i].Type === "message") {
+                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
+                } else {
+                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
+                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.approve") + '</button></td>';
+                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.decline") + '</button></td>';
+                    html += '</tr></table>';
+                }
+                html += '</div></div></div>';
+
+                $("#messageList").append(html);
+            }
+        }
+    });
+};
+
+mb.approvalRel = function(extCell, uuid, msgId) {
+    mb.changeStatusMessageAPI(uuid, "approved").done(function() {
+        $("#" + msgId).remove();
+        mb.getAllowedCellList();
+        var title = i18next.t("readResponseTitle");
+        var body = i18next.t("readResponseApprovedBody");
+        mb.sendMessageAPI(uuid, extCell, "message", title, body);
+    });
+};
+
+mb.rejectionRel = function(extCell, uuid, msgId) {
+    mb.changeStatusMessageAPI(uuid, "rejected").done(function() {
+        $("#" + msgId).remove();
+        mb.getAllowedCellList();
+        var title = i18next.t("readResponseTitle");
+        var body = i18next.t("readResponseDeclinedBody");
+        mb.sendMessageAPI(uuid, extCell, "message", title, body);
+    });
+};
+
+mb.changeStatusMessageAPI = function(uuid, command) {
+    var data = {};
+    data.Command = command;
+    return $.ajax({
+        type: "POST",
+        url: Common.getCellUrl() + '__message/received/' + uuid,
+        data: JSON.stringify(data),
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken()
+        }
+    })
+};
+
 mb.getAllowedCellList = function() {
     $.ajax({
         type: "GET",
@@ -260,60 +329,6 @@ mb.appendAllowedCellList = function(extUrl, dispName, no) {
     $("#allowedCellList")
         .append(tempDom)
         .localize();
-};
-
-mb.notAllowedCell = function(extUrl, no) {
-    mb.deleteExtCellLinkRelation(extUrl, 'MyBoardReader').done(function() {
-        $("#deleteExtCellRel" + no).remove();
-    });
-};
-
-mb.getReceiveMessage = function() {
-    $("#messageList").empty();
-    mb.getReceivedMessageAPI().done(function(data) {
-        var results = data.d.results;
-        for (var i in results) {
-            var title = results[i].Title;
-            var body = results[i].Body;
-            var fromCell = results[i].From;
-            var uuid = results[i].__id;
-
-            if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
-                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + Common.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
-                if (results[i].Type === "message") {
-                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
-                } else {
-                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                    html += '<td width="10%"><button onClick="mb.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.approve") + '</button></td>';
-                    html += '<td width="10%"><button onClick="mb.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">'+ i18next.t("btn.decline") + '</button></td>';
-                    html += '</tr></table>';
-                }
-                html += '</div></div></div>';
-
-                $("#messageList").append(html);
-            }
-        }
-    });
-};
-
-mb.approvalRel = function(extCell, uuid, msgId) {
-    mb.changeStatusMessageAPI(uuid, "approved").done(function() {
-        $("#" + msgId).remove();
-        mb.getAllowedCellList();
-        var title = i18next.t("common.readResponseTitle");
-        var body = i18next.t("common.readResponseApprovedBody");
-        mb.sendMessageAPI(uuid, extCell, "message", title, body);
-    });
-};
-
-mb.rejectionRel = function(extCell, uuid, msgId) {
-    mb.changeStatusMessageAPI(uuid, "rejected").done(function() {
-        $("#" + msgId).remove();
-        mb.getAllowedCellList();
-        var title = i18next.t("common.readResponseTitle");
-        var body = i18next.t("common.readResponseDeclinedBody");
-        mb.sendMessageAPI(uuid, extCell, "message", title, body);
-    });
 };
 
 mb.getMyBoardAPI = function(targetCell, token) {
@@ -400,19 +415,6 @@ mb.getReceivedMessageAPI = function() {
             'Accept':'application/json'
         }
     });
-};
-
-mb.changeStatusMessageAPI = function(uuid, command) {
-    var data = {};
-    data.Command = command;
-    return $.ajax({
-        type: "POST",
-        url: Common.getCellUrl() + '__message/received/' + uuid,
-        data: JSON.stringify(data),
-        headers: {
-            'Authorization':'Bearer ' + Common.getToken()
-        }
-    })
 };
 
 mb.deleteExtCellLinkRelation = function(extCell, relName) {

@@ -27,13 +27,8 @@
     "irrecoverableErrorDialog": {
         "title": "Terminating MyBoard ..."
     },
-    "message": {
-        "readRequestTitle": "MyBoard_Read Permission Request",
-        "readRequestBody": "Please grant read permission for your board (MyBoard).",
-        "readResponseTitle": "MyBoard_Read Permission Reply",
-        "readResponseApprovedBody": "Read permission is granted.",
-        "readResponseDeclinedBody": "Read permission is not granted."
-    },
+    "readRequestTarget": "MyBoard",
+    "readRequestBodyTarget": "board (MyBoard)",
     "msg": {
         "info": {
             "writeSomething": "Write something."
