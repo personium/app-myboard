@@ -18,7 +18,7 @@
 /*
  * The followings should be shared among applications and/or within the same application.
  */
-var Common = {};
+var Common = Common || {};
 
 //Default timeout limit - 60 minutes.
 Common.IDLE_TIMEOUT =  3600000;
