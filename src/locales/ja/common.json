@@ -1,11 +1,15 @@
 {
-    "navbar": {
-        "toggleNavigation": "Toggle navigation",
-        "appName": "$t(glossary:title)",
+    "me": "自分",
+    "menu": {
+        "title": "メニュー",
         "notification": {
             "title": "通知",
-            "panelHeader": "$t(navbar.notification.title)"
+            "header": "$t(menu.notification.title)一覧"
         }
+    },
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)"
     },
     "sessionExpiredDialog": {
         "title": "$t(glossary:sessionExpiredDialog.title)",
@@ -15,28 +19,27 @@
     "irrecoverableErrorDialog": {
         "title": "$t(glossary:irrecoverableErrorDialog.title)"
     },
-    "common": {
-        "readRequestTitle": "$t(glossary:message.readRequestTitle)",
-        "readRequestBody": "$t(glossary:message.readRequestBody)",
-        "readResponseTitle": "$t(glossary:message.readResponseTitle)",
-        "readResponseApprovedBody": "$t(glossary:message.readResponseApprovedBody)",
-        "readResponseDeclinedBody": "$t(glossary:message.readResponseDeclinedBody)"
-    },
+    "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
+    "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
+    "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
+    "readResponseApprovedBody": "承認しました。",
+    "readResponseDeclinedBody": "拒否しました。",
     "error": {
         "title": "エラー",
         "label": "エラー"
     },
     "msg": {
         "info": {
+            "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
             "messageSent": "メッセージを送信しました。"
         },
         "error": {
             "failedToSendMessage": "メッセージの送信に失敗しました。",
             "targetCellNotSelected": "対象セルが設定されていません。",
             "tokenMissing": "トークンが設定されていません。",
-            "refreshTokenMissing": "リフレッシュトークンが設定されていません。",
+            "refreshTokenMissing": "リフレッシュ$t(msg.error.tokenMissing)",
             "tokenExpiryDateMissing": "トークンの有効期限が設定されていません。",
-            "refreshTokenExpiryDateMissing": "リフレッシュトークンの有効期限が設定されていません。",
+            "refreshTokenExpiryDateMissing": "リフレッシュ$t(msg.error.tokenExpiryDateMissing)",
             "failedToRetrieveData": "データの取得に失敗しました。",
             "dataNotFound": "データがありません。",
             "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。"

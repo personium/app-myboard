@@ -1,11 +1,15 @@
 {
-    "navbar": {
-        "toggleNavigation": "Toggle navigation",
-        "appName": "$t(glossary:title)",
+    "me": "Me",
+    "menu": {
+        "title": "Menu",
         "notification": {
             "title": "Notifications",
-            "panelHeader": "List of notifications"
+            "header": "List of notifications"
         }
+    },
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)"
     },
     "sessionExpiredDialog": {
         "title": "$t(glossary:sessionExpiredDialog.title)",
@@ -15,19 +19,18 @@
     "irrecoverableErrorDialog": {
         "title": "$t(glossary:irrecoverableErrorDialog.title)"
     },
-    "common": {
-        "readRequestTitle": "$t(glossary:message.readRequestTitle)",
-        "readRequestBody": "$t(glossary:message.readRequestBody)",
-        "readResponseTitle": "$t(glossary:message.readResponseTitle)",
-        "readResponseApprovedBody": "$t(glossary:message.readResponseApprovedBody)",
-        "readResponseDeclinedBody": "$t(glossary:message.readResponseDeclinedBody)"
-    },
+    "readRequestTitle": "$t(glossary:readRequestTarget)_Read Permission Request",
+    "readRequestBody": "Please grant read permission for your $t(glossary:readRequestBodyTarget).",
+    "readResponseTitle": "$t(glossary:readRequestTarget)_Read Permission Reply",
+    "readResponseApprovedBody": "Read permission is granted.",
+    "readResponseDeclinedBody": "Read permission is not granted.",
     "error": {
         "title": "Error",
         "label": "Error"
     },
     "msg": {
         "info": {
+            "pleaseSelectTargetCell": "Please select a $t(glossary:dataSubject.label).",
             "messageSent": "Succeeded in sending the message."
         },
         "error": {

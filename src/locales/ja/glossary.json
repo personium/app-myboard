@@ -27,13 +27,8 @@
     "irrecoverableErrorDialog": {
         "title": "MyBoardを終了します ..."
     },
-    "message": {
-        "readRequestTitle": "MyBoard_閲覧許可依頼",
-        "readRequestBody": "MyBoardの閲覧許可をお願いします。",
-        "readResponseTitle": "MyBoard_登録依頼返信",
-        "readResponseApprovedBody": "承認しました。",
-        "readResponseDeclinedBody": "拒否しました。"
-    },
+    "readRequestTarget": "MyBoard",
+    "readRequestBodyTarget": "$t(glossary:readRequestTarget)",
     "msg": {
         "info": {
             "writeSomething": "好きな事を書いてください。"

@@ -18,7 +18,7 @@
 /*
  * The followings should be shared among applications and/or within the same application.
  */
-var Common = {};
+var Common = Common || {};
 
 //Default timeout limit - 60 minutes.
 Common.IDLE_TIMEOUT =  3600000;
@@ -57,6 +57,8 @@ $(document).ready(function() {
             }
         }, function(err, t) {
             Common.initJqueryI18next();
+
+            Common.appendCommonDialog();
             
             // define your own additionalCallback for each App/screen
             if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
@@ -147,6 +149,14 @@ Common.getCellName = function() {
 
 Common.getBoxName = function() {
     return Common.accessData.boxName;
+};
+
+Common.getToken = function() {
+    return Common.accessData.token;
+};
+
+Common.getRefressToken = function() {
+    return Common.accessData.refToken;
 };
 
 /*
@@ -370,7 +380,7 @@ Common.updateSessionStorage = function(appCellToken) {
     Common.accessData.refToken = appCellToken.refresh_token;
     Common.accessData.expires = appCellToken.expires_in;
     Common.accessData.refExpires = appCellToken.refresh_token_expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(Common.accessData));
+    sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
 /*
