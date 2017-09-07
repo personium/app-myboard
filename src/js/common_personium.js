@@ -220,14 +220,18 @@ Common.getTargetToken = function(extCellUrl) {
 };
 
 Common.getAppDataAPI = function(targetCell, token) {
-    return $.ajax({
-        type: "GET",
-        url: targetCell + getAppDataPath(),
-        dataType: "text",
-        headers: {
-            'Authorization':'Bearer ' + token
-        }
-    });
+    let requestInfo = $.extend(true,
+        {
+            type: 'GET',
+            url: targetCell + getAppDataPath(),
+            headers: {
+                    'Authorization':'Bearer ' + token,
+            }
+        },
+        getAppRequestInfo()
+    );
+
+    return $.ajax(requestInfo);
 };
 
 Common.appendOtherAllowedCells = function(extUrl, dispName) {

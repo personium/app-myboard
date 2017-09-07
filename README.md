@@ -30,6 +30,12 @@ You are free to use this app as base and write your own.  Basically, we reuse fi
 		    return '/MyBoardBox/my-board.json';
 		}
 
+1. AJAX option for getting data.  
+
+		getAppRequestInfo = function() {
+		    ...
+		}
+
 1. After i18next has prepare all the necessary information, it will call the following function which configure and render your app.  
 
 		additionalCallback = function() {
