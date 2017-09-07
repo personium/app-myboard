@@ -10,11 +10,28 @@ getNamesapces = function() {
 
 getAppReadRelation = function() {
     return 'MyBoardReader';
-}
+};
 
 getAppDataPath = function() {
     return '/MyBoardBox/my-board.json';
-}
+};
+
+/*
+ * To be combine with the default hash to produce the following:
+ * {
+ *     type: 'GET',
+ *     dataType: 'text',
+ *     url: targetCell + getAppDataPath(),
+ *     headers: {
+ *         'Authorization':'Bearer ' + token,
+ *     }
+ *  }
+ */
+getAppRequestInfo = function() {
+    return {
+        dataType: 'text'
+    }
+};
 
 additionalCallback = function() {
     Common.setAppCellUrl();
