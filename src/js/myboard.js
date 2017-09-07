@@ -4,7 +4,6 @@ mb.msgData = null;
 
 const APP_URL = "https://demo.personium.io/app-myboard/";
 
-// Please add file names (with file extension) 
 getNamesapces = function() {
     return ['common', 'glossary'];
 };
