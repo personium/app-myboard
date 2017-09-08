@@ -179,15 +179,21 @@ Common.getExtCell = function() {
 };
 
 Common.dispOtherAllowedCells = function(extUrl) {
+    Common.getProfileName(extUrl, Common.checkOtherAllowedCells);
+};
+
+Common.getProfileName = function(extUrl, callback) {
+    let dispName = Common.getCellNameFromUrl(extUrl);
+
     Common.getProfile(extUrl).done(function(data) {
-        var dispName = Common.getCellNameFromUrl(extUrl);
         if (data !== null) {
             dispName = data.DisplayName;
         }
-        Common.checkOtherAllowedCells(extUrl, dispName)
-    }).fail(function() {
-        var dispName = Common.getCellNameFromUrl(extUrl);
-        Common.checkOtherAllowedCells(extUrl, dispName)
+    }).always(function(){
+        console.log(dispName);
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback(extUrl, dispName);
+        }
     });
 };
 
