@@ -49,9 +49,12 @@ additionalCallback = function() {
         if (mb.msgData.message !== undefined) {
             mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
         }
+        Common.getProfileName(Common.accessData.cellUrl, function(url, name){ $("#boardTitle").html(name) });
         $('.write_board').append(mb.msgData.message);
         $('.disp_board').css("display", "block");
         if (Common.notMe()) {
+            $(".navbar-header button").hide();
+            $("#collapse-id").empty();
             $("#exeEditer")
                 .prop("disabled", true)
                 .hide();
