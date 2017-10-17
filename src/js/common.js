@@ -20,6 +20,8 @@
  */
 var Common = Common || {};
 
+Common.PERSONIUM_LOCALUNIT = "personium-localunit:";
+
 //Default timeout limit - 60 minutes.
 Common.IDLE_TIMEOUT =  3600000;
 // 55 minutes
@@ -29,6 +31,7 @@ Common.lastActivity = new Date().getTime();
 
 Common.accessData = {
     targetUrl: null,
+    unitUrl: null,
     cellUrl: null,
     cellName: null,
     appUrl: null,
@@ -129,6 +132,7 @@ Common.setTarget = function(url) {
     Common.accessData.targetUrl = url;
 
     var urlSplit = url.split("/");
+    Common.accessData.unitUrl = _.first(urlSplit, 3).join("/") + "/";
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
     Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
     Common.accessData.boxName = _.last(urlSplit);
@@ -137,6 +141,19 @@ Common.setTarget = function(url) {
 // Data subject's cell URL
 Common.getTargetUrl = function() {
     return Common.accessData.targetUrl;
+};
+
+Common.getUnitUrl = function() {
+    return Common.accessData.unitUrl;
+};
+
+Common.changeLocalUnitToUnitUrl = function (cellUrl) {
+    var result = cellUrl;
+    if (cellUrl.startsWith(Common.PERSONIUM_LOCALUNIT)) {
+        result = cellUrl.replace(Common.PERSONIUM_LOCALUNIT + "/", Common.getUnitUrl());
+    }
+
+    return result;
 };
 
 Common.getCellUrl = function() {

@@ -152,7 +152,7 @@ Common.getOtherAllowedCells = function() {
                 objSel.removeChild(objSel.firstChild);
             }
         }
-
+        
         var results = json.d.results;
         if (results.length > 0) {
             results.sort(function(val1, val2) {
@@ -160,7 +160,7 @@ Common.getOtherAllowedCells = function() {
             })
 
             for (var i in results) {
-                var url = results[i].Url;
+                var url = Common.changeLocalUnitToUnitUrl(results[i].Url);
                 Common.dispOtherAllowedCells(url);
             }
         }
