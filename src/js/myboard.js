@@ -13,7 +13,7 @@ getAppReadRelation = function() {
 };
 
 getAppDataPath = function() {
-    return '/MyBoardBox/my-board.json';
+    return 'MyBoardBox/my-board.json';
 };
 
 /*

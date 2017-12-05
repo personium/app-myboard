@@ -199,7 +199,7 @@ Common.getProfileName = function(extUrl, callback) {
 
 Common.checkOtherAllowedCells = function(extUrl, dispName) {
     Common.getTargetToken(extUrl).done(function(extData) {
-        Common.getAppDataAPI(extUrl + Common.getBoxName(), extData.access_token).done(function(data) {
+        Common.getAppDataAPI(extUrl + Common.getBoxName() + "/", extData.access_token).done(function(data) {
             Common.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
             // Insufficient access privileges
@@ -225,11 +225,11 @@ Common.getTargetToken = function(extCellUrl) {
     });
 };
 
-Common.getAppDataAPI = function(targetCell, token) {
+Common.getAppDataAPI = function(targetBoxUrl, token) {
     let requestInfo = $.extend(true,
         {
             type: 'GET',
-            url: targetCell + getAppDataPath(),
+            url: targetBoxUrl + getAppDataPath(),
             headers: {
                     'Authorization':'Bearer ' + token,
             }

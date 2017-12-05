@@ -27,7 +27,7 @@ You are free to use this app as base and write your own.  Basically, we reuse fi
 1. Location where MyBoard app stores the notice board information.  
 
 		getAppDataPath = function() {
-		    return '/MyBoardBox/my-board.json';
+		    return 'MyBoardBox/my-board.json';
 		}
 
 1. AJAX option for getting data.  

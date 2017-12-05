@@ -74,7 +74,7 @@ $(document).ready(function() {
             };
 
             Common.refreshToken(function(){
-                Common.getBoxUrl()
+                Common.getBoxUrlAPI()
                     .done(function(data, textStatus, request) {
                         let boxUrl = request.getResponseHeader("Location");
                         console.log(boxUrl);
@@ -142,11 +142,7 @@ Common.setAccessData = function() {
     }
 };
 
-Common.setBoxUrl = function(url) {
-    boxUrl
-};
-
-Common.getBoxUrl = function() {
+Common.getBoxUrlAPI = function() {
     return $.ajax({
         type: "GET",
         url: Common.getCellUrl() + "__box",
@@ -162,6 +158,7 @@ Common.setInfo = function(url) {
     Common.accessData.unitUrl = _.first(urlSplit, 3).join("/") + "/";
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
     Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
+    Common.setBoxUrl(url + "/");
     Common.accessData.boxName = _.last(urlSplit);
 };
 
@@ -188,6 +185,14 @@ Common.getCellUrl = function() {
 
 Common.getCellName = function() {
     return Common.accessData.cellName;
+};
+
+Common.setBoxUrl = function(url) {
+    Common.accessData.boxUrl = url;
+};
+
+Common.getBoxUrl = function(url) {
+    return Common.accessData.boxUrl;
 };
 
 Common.getBoxName = function() {
