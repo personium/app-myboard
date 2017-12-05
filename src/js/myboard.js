@@ -50,6 +50,8 @@ additionalCallback = function() {
                 .hide();
         }
 
+        Common.setIdleTime();
+
         if (!Common.notMe()) {
             // 閲覧許可状況(外部セル)
             Common.getOtherAllowedCells();
