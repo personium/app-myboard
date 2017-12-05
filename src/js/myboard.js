@@ -34,17 +34,7 @@ getAppRequestInfo = function() {
 };
 
 additionalCallback = function() {
-    Common.setAppCellUrl();
-
-    Common.setAccessData();
-
-    if (!Common.checkParam()) {
-        // cannot do anything to recover
-        // display a dialog and close the app.
-        return;
-    };
-
-    Common.getAppDataAPI(Common.getTargetUrl(), Common.getToken()).done(function(data) {
+    Common.getAppDataAPI(Common.getBoxUrl(), Common.getToken()).done(function(data) {
         mb.msgData = JSON.parse(data);
         if (mb.msgData.message !== undefined) {
             mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
@@ -59,8 +49,6 @@ additionalCallback = function() {
                 .prop("disabled", true)
                 .hide();
         }
-
-        Common.setIdleTime();
 
         if (!Common.notMe()) {
             // 閲覧許可状況(外部セル)
@@ -97,11 +85,9 @@ additionalCallback = function() {
             var target = value + Common.getBoxName();
             Common.getTargetToken(value).done(function(extData) {
                 var url = launch;
-                url += '#target=' + target;
-                url += '&token=' + extData.access_token;
-                url += '&ref=' + extData.refresh_token;
-                url += '&expires=' + extData.expires_in;
-                url += '&refexpires=' + extData.refresh_token_expires_in;
+                url += '?lng=' + i18next.language;
+                url += '#cell=' + target;
+                url += '&refresh_token=' + extData.refresh_token;
                 url += '&fromCell=' + Common.getCellName();
                 childWindow.location.href = url;
                 childWindow = null;
@@ -205,7 +191,7 @@ mb.myboardReg = function() {
     };
     $.ajax({
         type: "PUT",
-        url: Common.getTargetUrl() + '/MyBoardBox/my-board.json',
+        url: Common.getBoxUrl() + '/MyBoardBox/my-board.json',
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {

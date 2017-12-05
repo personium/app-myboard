@@ -62,11 +62,34 @@ $(document).ready(function() {
             Common.initJqueryI18next();
 
             Common.appendCommonDialog();
-            
-            // define your own additionalCallback for each App/screen
-            if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
-                additionalCallback();
-            }
+
+            Common.setAppCellUrl();
+
+            Common.setAccessData();
+
+            if (!Common.checkParam()) {
+                // cannot do anything to recover
+                // display a dialog and close the app.
+                return;
+            };
+
+            Common.refreshToken(function(){
+                Common.getBoxUrl()
+                    .done(function(data, textStatus, request) {
+                        let boxUrl = request.getResponseHeader("Location");
+                        console.log(boxUrl);
+                        Common.setInfo(boxUrl);
+                        // define your own additionalCallback for each App/screen
+                        if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                            additionalCallback();
+                        }
+                    })
+                    .fail(function(error) {
+                        console.log(error.code);
+                        console.log(error.message.value);
+                        Common.irrecoverableErrorHandler(msg.error.failedToGetBoxUrl);
+                    });
+            });
 
             Common.updateContent();
         });
@@ -106,20 +129,11 @@ Common.setAccessData = function() {
         var param = params[i].split("=");
         var id = param[0];
         switch (id) {
-        case "target":
-            Common.setTarget(param[1]);
+        case "cell":
+            Common.setCellUrl(param[1]);
             break;
-        case "token":
-            Common.accessData.token = param[1];
-            break;
-        case "ref":
+        case "refresh_token":
             Common.accessData.refToken = param[1];
-            break;
-        case "expires":
-            Common.accessData.expires = param[1];
-            break;
-        case "refexpires":
-            Common.accessData.refExpires = param[1];
             break;
         case "fromCell":
             Common.accessData.fromCell = param[1];
@@ -128,19 +142,27 @@ Common.setAccessData = function() {
     }
 };
 
-Common.setTarget = function(url) {
-    Common.accessData.targetUrl = url;
+Common.setBoxUrl = function(url) {
+    boxUrl
+};
 
+Common.getBoxUrl = function() {
+    return $.ajax({
+        type: "GET",
+        url: Common.getCellUrl() + "__box",
+        headers: {
+            'Authorization':'Bearer ' + Common.getToken(),
+            'Accept':'application/json'
+        }
+    });
+};
+
+Common.setInfo = function(url) {
     var urlSplit = url.split("/");
     Common.accessData.unitUrl = _.first(urlSplit, 3).join("/") + "/";
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
     Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
     Common.accessData.boxName = _.last(urlSplit);
-};
-
-// Data subject's cell URL
-Common.getTargetUrl = function() {
-    return Common.accessData.targetUrl;
 };
 
 Common.getUnitUrl = function() {
@@ -154,6 +176,10 @@ Common.changeLocalUnitToUnitUrl = function (cellUrl) {
     }
 
     return result;
+};
+
+Common.setCellUrl = function(url) {
+    Common.accessData.cellUrl = url;
 };
 
 Common.getCellUrl = function() {
@@ -209,16 +235,10 @@ Common.updateContent = function() {
 
 Common.checkParam = function() {
     var msg_key = "";
-    if (Common.getTargetUrl() === null) {
+    if (Common.getCellUrl() === null) {
         msg_key = "msg.error.targetCellNotSelected";
-    } else if (Common.accessData.token ===null) {
-        msg_key = "msg.error.tokenMissing";
     } else if (Common.accessData.refToken === null) {
         msg_key = "msg.error.refreshTokenMissing";
-    } else if (Common.accessData.expires === null) {
-        msg_key = "msg.error.tokenExpiryDateMissing";
-    } else if (Common.accessData.refExpires === null) {
-        msg_key = "msg.error.refreshTokenExpiryDateMissing";
     }
 
     if (msg_key.length > 0) {
@@ -236,7 +256,7 @@ Common.setIdleTime = function() {
     // Create Session Expired Modal
     Common.appendSessionExpiredDialog();
 
-    Common.refreshToken();
+    //Common.refreshToken();
 
     // check 5 minutes before session expires (60minutes)
     Common.checkIdleTimer = setInterval(Common.checkIdleTime, Common.IDLE_CHECK);
@@ -318,7 +338,7 @@ Common.closeTab = function() {
     window.close();
 };
 
-Common.refreshToken = function() {
+Common.refreshToken = function(callback) {
     /*
      * Not enough information in Common.accessData to refresh token
      * when opening another MyBoard.
@@ -332,6 +352,9 @@ Common.refreshToken = function() {
             Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
                 // update sessionStorage
                 Common.updateSessionStorage(appCellToken);
+                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                    callback();
+                };
             }).fail(function(appCellToken) {
                 Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
             });
