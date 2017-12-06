@@ -91,6 +91,20 @@ $(document).ready(function() {
                     });
             });
 
+            /*
+             * Currently we don't have the proper API to get another user's token which
+             * is needed to retrieve Box URL.
+             */
+            if (Common.notMe()) {
+                let boxUrl = Common.getCellUrl() + Common.getBoxName();
+                console.log(boxUrl);
+                Common.setInfo(boxUrl);
+                // define your own additionalCallback for each App/screen
+                if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                    additionalCallback();
+                }
+            }
+
             Common.updateContent();
         });
 });
@@ -131,6 +145,12 @@ Common.setAccessData = function() {
         switch (id) {
         case "cell":
             Common.setCellUrl(param[1]);
+            break;
+        case "boxName":
+            Common.accessData.boxName = param[1];
+            break;
+        case "token":
+            Common.accessData.token = param[1];
             break;
         case "refresh_token":
             Common.accessData.refToken = param[1];
@@ -244,6 +264,14 @@ Common.checkParam = function() {
         msg_key = "msg.error.targetCellNotSelected";
     } else if (Common.accessData.refToken === null) {
         msg_key = "msg.error.refreshTokenMissing";
+    }
+
+    if (Common.notMe()) {
+        if (Common.getBoxName() === null) {
+            msg_key = "msg.error.dataNotFound";
+        } else if (Common.getToken() === null) {
+            msg_key = "msg.error.tokenMissing";
+        }
     }
 
     if (msg_key.length > 0) {

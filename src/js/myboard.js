@@ -84,12 +84,14 @@ additionalCallback = function() {
         }).done(function(data) {
             var launchObj = data.personal;
             var launch = launchObj.web;
-            var target = value + Common.getBoxName();
+            var target = value; // + Common.getBoxName();
             Common.getTargetToken(value).done(function(extData) {
                 var url = launch;
                 url += '?lng=' + i18next.language;
                 url += '#cell=' + target;
-                url += '&refresh_token=' + extData.refresh_token;
+                url += '&boxName=' + Common.getBoxName();
+                url += '&token=' + extData.access_token; // Original user's token combined with another user's read permission 
+                url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
                 url += '&fromCell=' + Common.getCellName();
                 childWindow.location.href = url;
                 childWindow = null;
