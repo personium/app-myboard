@@ -195,7 +195,7 @@ mb.myboardReg = function() {
     };
     $.ajax({
         type: "PUT",
-        url: Common.getBoxUrl() + '/MyBoardBox/my-board.json',
+        url: Common.getBoxUrl() + 'MyBoardBox/my-board.json',
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
