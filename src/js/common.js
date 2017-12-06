@@ -87,7 +87,7 @@ $(document).ready(function() {
                     .fail(function(error) {
                         console.log(error.responseJSON.code);
                         console.log(error.responseJSON.message.value);
-                        Common.irrecoverableErrorHandler(msg.error.failedToGetBoxUrl);
+                        Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
                     });
             });
 
