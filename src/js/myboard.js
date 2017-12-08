@@ -13,7 +13,7 @@ getAppReadRelation = function() {
 };
 
 getAppDataPath = function() {
-    return '/MyBoardBox/my-board.json';
+    return 'MyBoardBox/my-board.json';
 };
 
 /*
@@ -34,17 +34,7 @@ getAppRequestInfo = function() {
 };
 
 additionalCallback = function() {
-    Common.setAppCellUrl();
-
-    Common.setAccessData();
-
-    if (!Common.checkParam()) {
-        // cannot do anything to recover
-        // display a dialog and close the app.
-        return;
-    };
-
-    Common.getAppDataAPI(Common.getTargetUrl(), Common.getToken()).done(function(data) {
+    Common.getAppDataAPI(Common.getBoxUrl(), Common.getToken()).done(function(data) {
         mb.msgData = JSON.parse(data);
         if (mb.msgData.message !== undefined) {
             mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
@@ -94,14 +84,14 @@ additionalCallback = function() {
         }).done(function(data) {
             var launchObj = data.personal;
             var launch = launchObj.web;
-            var target = value + Common.getBoxName();
+            var target = value; // + Common.getBoxName();
             Common.getTargetToken(value).done(function(extData) {
                 var url = launch;
-                url += '#target=' + target;
-                url += '&token=' + extData.access_token;
-                url += '&ref=' + extData.refresh_token;
-                url += '&expires=' + extData.expires_in;
-                url += '&refexpires=' + extData.refresh_token_expires_in;
+                url += '?lng=' + i18next.language;
+                url += '#cell=' + target;
+                url += '&boxName=' + Common.getBoxName();
+                url += '&token=' + extData.access_token; // Original user's token combined with another user's read permission 
+                url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
                 url += '&fromCell=' + Common.getCellName();
                 childWindow.location.href = url;
                 childWindow = null;
@@ -205,7 +195,7 @@ mb.myboardReg = function() {
     };
     $.ajax({
         type: "PUT",
-        url: Common.getTargetUrl() + '/MyBoardBox/my-board.json',
+        url: Common.getBoxUrl() + 'MyBoardBox/my-board.json',
         data: JSON.stringify(json),
         dataType: 'json',
         headers: {
