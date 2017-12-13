@@ -8,8 +8,9 @@ getNamesapces = function() {
     return ['common', 'glossary'];
 };
 
-getAppReadRelation = function() {
-    return 'MyBoardReader';
+getAppRole = function() {
+    // Currently we only allow role with read permission.
+    return 'MyBoardViewer';
 };
 
 getAppDataPath = function() {
@@ -56,7 +57,7 @@ additionalCallback = function() {
             // 閲覧許可状況(外部セル)
             Common.getOtherAllowedCells();
             // 閲覧許可状況
-            Common.getAllowedCellList();
+            Common.getAllowedCellList(getAppRole());
             // 通知
             mb.getReceiveMessage();
         }
@@ -108,10 +109,10 @@ additionalCallback = function() {
         var body = i18next.t("readRequestBody");
         var reqRel = [
             Common.getAppCellUrl(),
-            "__relation/__/",
-            getAppReadRelation()
+            "__role/__/",
+            getAppRole()
         ].join("");
-        Common.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl()).done(function(data) {
+        Common.sendMessageAPI(null, value, "req.role.grant", title, body, reqRel, Common.getCellUrl()).done(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
         }).fail(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
@@ -186,6 +187,15 @@ mb.getReceiveMessage = function() {
         }
     });
 };
+
+mb.approvalCallback = function() {
+    Common.getAllowedCellList(getAppRole());
+};
+
+mb.rejectionCallback = function() {
+    Common.getAllowedCellList(getAppRole());
+};
+
 
 mb.myboardReg = function() {
     var strTxt = $("#txtEditMyBoard").val();

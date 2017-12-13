@@ -1,10 +1,10 @@
 {
   "Roles": [
     {
-      "Name": "MyBoardWrite"
+      "Name": "MyBoardOperator"
     },
     {
-      "Name": "MyBoardRead"
+      "Name": "MyBoardViewer"
     }
   ]
 }

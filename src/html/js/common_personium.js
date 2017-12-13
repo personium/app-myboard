@@ -16,20 +16,24 @@
  */
 var Common = Common || {};
 
-Common.approvalRel = function(extCell, uuid, msgId) {
+Common.approvalRel = function(extCell, uuid, msgId, callback) {
     Common.changeStatusMessageAPI(uuid, "approved").done(function() {
         $("#" + msgId).remove();
-        Common.getAllowedCellList();
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        }
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseApprovedBody");
         Common.sendMessageAPI(uuid, extCell, "message", title, body);
     });
 };
 
-Common.rejectionRel = function(extCell, uuid, msgId) {
+Common.rejectionRel = function(extCell, uuid, msgId, callback) {
     Common.changeStatusMessageAPI(uuid, "rejected").done(function() {
         $("#" + msgId).remove();
-        Common.getAllowedCellList();
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        }
         var title = i18next.t("readResponseTitle");
         var body = i18next.t("readResponseDeclinedBody");
         Common.sendMessageAPI(uuid, extCell, "message", title, body);
@@ -49,11 +53,11 @@ Common.changeStatusMessageAPI = function(uuid, command) {
     })
 };
 
-Common.getAllowedCellList = function() {
+Common.getAllowedCellList = function(role) {
     let extCellUrl = [
         Common.getCellUrl(),
-        '__ctl/Relation(Name=\'',
-        getAppReadRelation(),
+        '__ctl/Role(Name=\'',
+        role,
         '\',_Box\.Name=\'',
         Common.getBoxName(),
         '\')/$links/_ExtCell'
@@ -119,7 +123,7 @@ Common.appendAllowedCellList = function(extUrl, dispName, no) {
 
 Common.notAllowedCell = function(aDom) {
     let extUrl = $(aDom).data("extUrl");
-    Common.deleteExtCellLinkRelation(extUrl, getAppReadRelation()).done(function() {
+    Common.deleteExtCellLinkRelation(extUrl, getAppRole()).done(function() {
         $(aDom).closest("tr").remove();
     });
 };
@@ -131,7 +135,7 @@ Common.deleteExtCellLinkRelation = function(extCell, relName) {
     var cellName = urlArray[3];
     return $.ajax({
         type: "DELETE",
-        url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Relation(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
+        url: Common.getCellUrl() + '__ctl/ExtCell(\'' + hProt + '%3A%2F%2F' + fqdn + '%2F' + cellName + '%2F\')/$links/_Role(Name=\'' + relName + '\',_Box.Name=\'' + Common.getBoxName() + '\')',
         headers: {
             'Authorization':'Bearer ' + Common.getToken()
         }
