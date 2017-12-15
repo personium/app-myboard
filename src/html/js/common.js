@@ -380,59 +380,41 @@ Common.refreshToken = function(callback) {
     if (Common.notMe()) {
         return;
     }
-    Common.getLaunchJson().done(function(launchObj){
-        Common.getAppToken(launchObj.personal).done(function(appToken) {
-            Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-                // update sessionStorage
-                Common.updateSessionStorage(appCellToken);
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback();
-                };
-            }).fail(function(appCellToken) {
-                Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
-            });
-        }).fail(function(appToken) {
+    Common.getAppAuthToken().done(function(appToken) {
+        Common.getSchemaAuthToken(appToken.access_token).done(function(appCellToken) {
+            // update sessionStorage
+            Common.updateSessionStorage(appCellToken);
+            if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                callback();
+            };
+        }).fail(function(appCellToken) {
             Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
         });
-    }).fail(function(){
+    }).fail(function(appToken) {
         Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
     });
 };
 
-Common.getLaunchJson = function() {
+// Get App Authentication Token
+Common.getAppAuthToken = function() {
+    let engineEndPoint = getEngineEndPoint();
     return $.ajax({
-        type: "GET",
-        url: Common.getAppCellUrl() + "__/launch.json",
-        headers: {
-            'Authorization':'Bearer ' + Common.accessData.token,
-            'Accept':'application/json'
-        }
+        type: "POST",
+        url: engineEndPoint,
+        data: {
+                p_target: Common.getCellUrl()
+        },
+        headers: {'Accept':'application/json'}
     });
-}
-// This App's token
-Common.getAppToken = function(personalInfo) {
-    return $.ajax({
-                type: "POST",
-                url: Common.getAppCellUrl() + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                        grant_type: "password",
-                        username: personalInfo.appTokenId,
-                        password: personalInfo.appTokenPw,
-                        p_target: Common.getCellUrl()
-                },
-                headers: {'Accept':'application/json'}
-         });
 };
 
 /*
- * This App's refresh token
- * client_id must be this App's cell URL
+ * Get Schema Authentication Token
+ * client_id belongs to a App's cell URL
  * Example: MyBoard is "https://demo.personium.io/app-myboard/"
  *          Calorie Smile is "https://demo.personium.io/hn-app-genki/"
  */
-Common.getAppCellToken = function(appToken) {
+Common.getSchemaAuthToken = function(appToken) {
   return $.ajax({
                 type: "POST",
                 url: Common.getCellUrl() + '__token',

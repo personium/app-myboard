@@ -2,8 +2,6 @@
   "personal": {
      "web": "https://demo.personium.io/app-myboard/__/src/myboard.html",
      "android": "myboard:",
-     "ios": "myboard:",
-     "appTokenId": "tokenAcc",
-     "appTokenPw": "personiumtoken"
+     "ios": "myboard:"
   }
 }
