@@ -21,16 +21,13 @@ function(request){
       };
   }
 
-  
-
   // Get App Token
   var appCellAuthInfo = {
       "cellUrl": [ rootUrl, appCellName ].join("/"),
       "userId": "***",
-      "password": "***",
-      "p_target": params.p_target
+      "password": "***"
   };
-  var appCell = dc.as(appCellAuthInfo).cell();
+    var appCell = dc.as(appCellAuthInfo).cell(params.p_target);
   var ret = appCell.getToken();
 
   // Return App Token
