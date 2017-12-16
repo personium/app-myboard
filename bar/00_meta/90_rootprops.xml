@@ -6,6 +6,18 @@
                 <resourcetype>
                     <collection/>
                 </resourcetype>
+                <acl xml:base="https://demo.personium.io/app-myboard/__role/__/" xmlns:dc="urn:x-dcl:xmlns">
+                    <ace>
+                        <principal>
+                            <href>MyBoardViewer</href>
+                        </principal>
+                        <grant>
+                            <privilege>
+                                <read/>
+                            </privilege>
+                        </grant>
+                    </ace>
+                </acl>
             </prop>
         </propstat>
     </response>
