@@ -39,12 +39,22 @@ getAppRequestInfo = function() {
 };
 
 additionalCallback = function() {
-    Common.getAppDataAPI(Common.getBoxUrl(), Common.getToken()).done(function(data) {
+    let cellUrl, boxUrl, token;
+    if (Common.notMe()) {
+        cellUrl = Common.getToCellUrl();
+        boxUrl = Common.getToCellBoxUrl();
+        token = Common.getToCellToken();
+    } else {
+        cellUrl = Common.getCellUrl()
+        boxUrl = Common.getBoxUrl();
+        token = Common.getToken();
+    }
+    Common.getAppDataAPI(boxUrl, token).done(function(data) {
         mb.msgData = JSON.parse(data);
         if (mb.msgData.message !== undefined) {
             mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
         }
-        Common.getProfileName(Common.accessData.cellUrl, function(url, name){ $("#boardTitle").html(name) });
+        Common.getProfileName(cellUrl, function(url, name){ $("#boardTitle").html(name) });
         $('.write_board').append(mb.msgData.message);
         $('.disp_board').css("display", "block");
         if (Common.notMe()) {
@@ -61,7 +71,7 @@ additionalCallback = function() {
             // 閲覧許可状況(外部セル)
             Common.getOtherAllowedCells();
             // 閲覧許可状況
-            Common.getAllowedCellList(getAppRole());
+            Common.getAllowedCellList();
             // 通知
             mb.getReceiveMessage();
         }
@@ -77,7 +87,7 @@ additionalCallback = function() {
     });
 
     $('#bReadAnotherCell').on('click', function () {
-        var value = $("#otherAllowedCells option:selected").val();
+        var toCellUrl = $("#otherAllowedCells option:selected").val();
         var childWindow = window.open('about:blank');
         $.ajax({
             type: "GET",
@@ -89,18 +99,13 @@ additionalCallback = function() {
         }).done(function(data) {
             var launchObj = data.personal;
             var launch = launchObj.web;
-            var target = value; // + Common.getBoxName();
-            Common.getTargetToken(value).done(function(extData) {
                 var url = launch;
                 url += '?lng=' + i18next.language;
-                url += '#cell=' + target;
-                url += '&boxName=' + Common.getBoxName();
-                url += '&token=' + extData.access_token; // Original user's token combined with another user's read permission 
+            url += '#cell=' + Common.getCellUrl();
                 url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
-                url += '&fromCell=' + Common.getCellName();
+            url += '&toCell=' + toCellUrl;
                 childWindow.location.href = url;
                 childWindow = null;
-            });
         }).fail(function(data) {
             childWindow.close();
             childWindow = null;
