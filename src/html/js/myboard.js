@@ -71,7 +71,7 @@ additionalCallback = function() {
             // 閲覧許可状況(外部セル)
             Common.getOtherAllowedCells();
             // 閲覧許可状況
-            Common.getAllowedCellList();
+            Common.getAllowedCellList(getAppRole());
             // 通知
             mb.getReceiveMessage();
         }
