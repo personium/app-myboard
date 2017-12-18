@@ -76,11 +76,11 @@ $(document).ready(function() {
             Common.refreshToken(function(){
                 if (Common.notMe()) {
                     let cellUrl = Common.getToCellUrl();
-                    $.when(Common.getTargetToken(cellUrl), Common.getAppAuthToken(cellUrl))
+                    $.when(Common.getTranscellToken(cellUrl), Common.getAppAuthToken(cellUrl))
                         .done(function(result1, result2) {
                             let tempTCAT = result1[0].access_token; // Transcell Access Token
                             let tempAAAT = result2[0].access_token; // App Authentication Access Token
-                            Common.getToCellAppToken(cellUrl, tempTCAT, tempAAAT);
+                            Common.perpareToCellInfo(cellUrl, tempTCAT, tempAAAT);
                         })
                 } else {
                     let cellUrl = Common.getCellUrl();
@@ -445,8 +445,8 @@ Common.updateSessionStorage = function(appCellToken) {
     sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
-Common.getToCellAppToken = function(cellUrl, tcat, aaat) {
-    Common.getToCellAppCellToken(cellUrl, tcat, aaat).done(function(appCellToken) {
+Common.perpareToCellInfo = function(cellUrl, tcat, aaat) {
+    Common.getToCellSchemaAuthToken(cellUrl, tcat, aaat).done(function(appCellToken) {
         Common.setToCellToken(appCellToken.access_token);
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
@@ -468,7 +468,7 @@ Common.getToCellAppToken = function(cellUrl, tcat, aaat) {
     });
 };
 
-Common.getToCellAppCellToken = function(cellUrl, tcat, aaat) {
+Common.getToCellSchemaAuthToken = function(cellUrl, tcat, aaat) {
     return $.ajax({
         type: "POST",
         url: cellUrl + '__token',

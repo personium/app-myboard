@@ -183,7 +183,7 @@ Common.getExtCell = function() {
 };
 
 Common.dispOtherAllowedCells = function(extUrl) {
-    Common.getProfileName(extUrl, Common.checkOtherAllowedCells);
+    Common.getProfileName(extUrl, Common.prepareExtCellForApp);
 };
 
 Common.getProfileName = function(extUrl, callback) {
@@ -201,9 +201,52 @@ Common.getProfileName = function(extUrl, callback) {
     });
 };
 
-Common.checkOtherAllowedCells = function(extUrl, dispName) {
-    Common.getTargetToken(extUrl).done(function(extData) {
-        Common.getAppDataAPI(extUrl + Common.getBoxName() + "/", extData.access_token).done(function(data) {
+/*
+ * Get Transcell Token of the external Cell and prepare its data.
+ * When done, execute callback (add external Cell to proper list).
+ */
+Common.prepareExtCellForApp = function(extUrl, dispName) {
+    $.when(Common.getTranscellToken(extUrl), Common.getAppAuthToken(extUrl))
+        .done(function(result1, result2) {
+            let tempTCAT = result1[0].access_token; // Transcell Access Token
+            let tempAAAT = result2[0].access_token; // App Authentication Access Token
+            Common.perpareExtCellInfo(extUrl, tempTCAT, tempAAAT, Common.appendExtCellToList, dispName);
+        })
+};
+
+/*
+ * Get Schema Authenitication Token of the external Cell and get its Box URL.
+ * When done, execute callback (add external Cell to proper list).
+ */
+Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, dispName) {
+    Common.getToCellSchemaAuthToken(cellUrl, tcat, aaat).done(function(appCellToken) {
+        Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
+            .done(function(data, textStatus, request) {
+                let boxUrl = request.getResponseHeader("Location") + "/";
+                console.log(boxUrl);
+
+                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                    callback(boxUrl, tcat, cellUrl, dispName);
+                }
+            })
+            .fail(function(error) {
+                console.log(error.responseJSON.code);
+                console.log(error.responseJSON.message.value);
+            });
+    }).fail(function(error) {
+        console.log(error.responseJSON.code);
+        console.log(error.responseJSON.message.value);
+    });
+};
+
+/* 
+ * Check and append the external Cell to either fo the following lists.
+ * - List contains Cell which has read permission
+ * - List contains Cell which does not has read permission
+ */
+Common.appendExtCellToList = function(extBoxUrl, extTcat, extUrl, dispName) {
+    Common.getAppDataAPI(extBoxUrl, extTcat)
+        .done(function(data) {
             Common.appendOtherAllowedCells(extUrl, dispName);
         }).fail(function(data) {
             // Insufficient access privileges
@@ -211,10 +254,9 @@ Common.checkOtherAllowedCells = function(extUrl, dispName) {
                 Common.appendRequestCells(extUrl, dispName);
             }
         });
-    });
 };
 
-Common.getTargetToken = function(extCellUrl) {
+Common.getTranscellToken = function(extCellUrl) {
     return $.ajax({
         type: "POST",
         url: Common.getCellUrl() + '__token',
