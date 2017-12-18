@@ -5,7 +5,7 @@ mb.msgData = null;
 const APP_URL = "https://demo.personium.io/app-myboard/";
 
 getEngineEndPoint = function() {
-    return Common.getAppCellUrl() + "__/html-debug/Engine/getAppAuthToken";
+    return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
 };
 
 getNamesapces = function() {
