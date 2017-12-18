@@ -9,7 +9,7 @@ function(request){
         return {
             status : 500,
             headers : {"Content-Type":"application/json"},
-            body: [{"code": "500", "message": "Cross-domain request not allowed."}]
+            body: [JSON.stringify({"code": "500", "message": "Cross-domain request not allowed."})]
         };
     }
 
@@ -18,7 +18,7 @@ function(request){
         return {
             status : 400,
             headers : {"Content-Type":"application/json"},
-            body: [{"code": "400", "message": "Request body is empty."}]
+            body: [JSON.stringify({"code": "400", "message": "Request body is empty."})]
         };
     }
     var params = dc.util.queryParse(bodyAsString);
@@ -27,7 +27,7 @@ function(request){
         return {
             status : 400,
             headers : {"Content-Type":"application/json"},
-            body: [{"code": "400", "message": "Required paramter [p_target] missing."}]
+            body: [JSON.stringify({"code": "400", "message": "Required paramter [p_target] missing."})]
         };
     }
 
@@ -45,7 +45,7 @@ function(request){
         return {
             status: 500,
             headers: {"Content-Type":"application/json"},
-            body: [{"code": "500", "message": e}]
+            body: [JSON.stringify({"code": "500", "message": e})]
         };
     }
 
