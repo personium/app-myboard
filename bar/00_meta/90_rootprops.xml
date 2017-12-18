@@ -6,30 +6,6 @@
                 <resourcetype>
                     <collection/>
                 </resourcetype>
-                <acl xml:base="https://demo.personium.io/app-myboard/__role/__/" xmlns:dc="urn:x-dcl:xmlns">
-                    <ace>
-                        <principal>
-                            <href>MyBoardWrite</href>
-                        </principal>
-                        <grant>
-                            <privilege>
-                                <write/>
-                            </privilege>
-                        </grant>
-                    </ace>
-                    <ace>
-                        <principal>
-                            <href>MyBoardRead</href>
-                        </principal>
-                        <grant>
-                            <privilege>
-                                <read/>
-                            </privilege>
-                        </grant>
-                    </ace>
-                </acl>
-                <Z:Author xmlns:dc="urn:x-dc1:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/">MyBoard</Z:Author>
-                <dc:my-board.txt xmlns:dc="urn:x-dc1:xmlns">my-board.txt</dc:my-board.txt>
             </prop>
         </propstat>
     </response>
@@ -43,17 +19,20 @@
                 <acl xml:base="https://demo.personium.io/app-myboard/__role/__/" xmlns:dc="urn:x-dcl:xmlns">
                     <ace>
                         <principal>
-                            <href>MyBoardWrite</href>
+                            <href>MyBoardOperator</href>
                         </principal>
                         <grant>
                             <privilege>
                                 <write/>
                             </privilege>
+                            <privilege>
+                                <read/>
+                            </privilege>
                         </grant>
                     </ace>
                     <ace>
                         <principal>
-                            <href>MyBoardRead</href>
+                            <href>MyBoardViewer</href>
                         </principal>
                         <grant>
                             <privilege>
@@ -62,7 +41,6 @@
                         </grant>
                     </ace>
                 </acl>
-                <Z:Author xmlns:dc="urn:x-dc1:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/">MyBoard</Z:Author>
                 <dc:my-board.json xmlns:dc="urn:x-dc1:xmlns">my-board.json</dc:my-board.json>
             </prop>
         </propstat>

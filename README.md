@@ -20,7 +20,7 @@ You are free to use this app as base and write your own.  Basically, we reuse fi
 
 1. Relation defined bar/00_meta/10_relations.json  
 
-		getAppReadRelation = function() {
+		getAppReadRole = function() {
 		    return 'MyBoardReader';
 		}
 

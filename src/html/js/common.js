@@ -74,36 +74,34 @@ $(document).ready(function() {
             };
 
             Common.refreshToken(function(){
-                Common.getBoxUrlAPI()
-                    .done(function(data, textStatus, request) {
-                        let boxUrl = request.getResponseHeader("Location");
-                        console.log(boxUrl);
-                        Common.setInfo(boxUrl);
-                        // define your own additionalCallback for each App/screen
-                        if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
-                            additionalCallback();
-                        }
-                    })
-                    .fail(function(error) {
-                        console.log(error.responseJSON.code);
-                        console.log(error.responseJSON.message.value);
-                        Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
-                    });
-            });
-
-            /*
-             * Currently we don't have the proper API to get another user's token which
-             * is needed to retrieve Box URL.
-             */
-            if (Common.notMe()) {
-                let boxUrl = Common.getCellUrl() + Common.getBoxName();
-                console.log(boxUrl);
-                Common.setInfo(boxUrl);
-                // define your own additionalCallback for each App/screen
-                if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
-                    additionalCallback();
+                if (Common.notMe()) {
+                    let cellUrl = Common.getToCellUrl();
+                    $.when(Common.getTranscellToken(cellUrl), Common.getAppAuthToken(cellUrl))
+                        .done(function(result1, result2) {
+                            let tempTCAT = result1[0].access_token; // Transcell Access Token
+                            let tempAAAT = result2[0].access_token; // App Authentication Access Token
+                            Common.perpareToCellInfo(cellUrl, tempTCAT, tempAAAT);
+                        })
+                } else {
+                    let cellUrl = Common.getCellUrl();
+                    let token = Common.getToken();
+                    Common.getBoxUrlAPI(cellUrl, token)
+                        .done(function(data, textStatus, request) {
+                            let boxUrl = request.getResponseHeader("Location");
+                            console.log(boxUrl);
+                            Common.setInfo(boxUrl);
+                            // define your own additionalCallback for each App/screen
+                            if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                                additionalCallback();
+                            }
+                        })
+                        .fail(function(error) {
+                            console.log(error.responseJSON.code);
+                            console.log(error.responseJSON.message.value);
+                            Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+                        });
                 }
-            }
+            });
 
             Common.updateContent();
         });
@@ -146,28 +144,22 @@ Common.setAccessData = function() {
         case "cell":
             Common.setCellUrl(param[1]);
             break;
-        case "boxName":
-            Common.accessData.boxName = param[1];
-            break;
-        case "token":
-            Common.accessData.token = param[1];
-            break;
         case "refresh_token":
             Common.accessData.refToken = param[1];
             break;
-        case "fromCell":
-            Common.accessData.fromCell = param[1];
+        case "toCell":
+            Common.setToCellUrl(param[1]);
             break;
         }
     }
 };
 
-Common.getBoxUrlAPI = function() {
+Common.getBoxUrlAPI = function(cellUrl, token) {
     return $.ajax({
         type: "GET",
-        url: Common.getCellUrl() + "__box",
+        url: cellUrl + "__box",
         headers: {
-            'Authorization':'Bearer ' + Common.getToken(),
+            'Authorization':'Bearer ' + token,
             'Accept':'application/json'
         }
     });
@@ -207,12 +199,28 @@ Common.getCellName = function() {
     return Common.accessData.cellName;
 };
 
+Common.setToCellUrl = function(url) {
+    Common.accessData.toCellUrl = url;
+};
+
+Common.getToCellUrl = function() {
+    return Common.accessData.toCellUrl;
+};
+
 Common.setBoxUrl = function(url) {
     Common.accessData.boxUrl = url;
 };
 
-Common.getBoxUrl = function(url) {
+Common.getBoxUrl = function() {
     return Common.accessData.boxUrl;
+};
+
+Common.setToCellBoxUrl = function(url) {
+    Common.accessData.toCellBoxUrl = url;
+};
+
+Common.getToCellBoxUrl = function() {
+    return Common.accessData.toCellBoxUrl;
 };
 
 Common.getBoxName = function() {
@@ -221,6 +229,14 @@ Common.getBoxName = function() {
 
 Common.getToken = function() {
     return Common.accessData.token;
+};
+
+Common.setToCellToken = function(token) {
+    Common.accessData.toCellToken = token;
+};
+
+Common.getToCellToken = function() {
+    return Common.accessData.toCellToken;
 };
 
 Common.getRefressToken = function() {
@@ -245,8 +261,8 @@ Common.getCellNameFromUrl = function(url) {
 };
 
 Common.notMe = function() {
-    if (typeof Common.accessData.fromCell !== "undefined") {
-        return (Common.accessData.cellName != Common.accessData.fromCell);
+    if (typeof Common.accessData.toCellUrl !== "undefined") {
+        return (Common.accessData.cellUrl != Common.accessData.toCellUrl);
     } else {
         return false;
     }
@@ -267,10 +283,8 @@ Common.checkParam = function() {
     }
 
     if (Common.notMe()) {
-        if (Common.getBoxName() === null) {
-            msg_key = "msg.error.dataNotFound";
-        } else if (Common.getToken() === null) {
-            msg_key = "msg.error.tokenMissing";
+        if (Common.getToCellUrl() === null) {
+            msg_key = "msg.error.targetCellNotSelected";
         }
     }
 
@@ -372,70 +386,45 @@ Common.closeTab = function() {
 };
 
 Common.refreshToken = function(callback) {
-    /*
-     * Not enough information in Common.accessData to refresh token
-     * when opening another MyBoard.
-     * To be implemented.
-     */
-    if (Common.notMe()) {
-        return;
-    }
-    Common.getLaunchJson().done(function(launchObj){
-        Common.getAppToken(launchObj.personal).done(function(appToken) {
-            Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-                // update sessionStorage
-                Common.updateSessionStorage(appCellToken);
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback();
-                };
-            }).fail(function(appCellToken) {
-                Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
-            });
-        }).fail(function(appToken) {
+    let cellUrl = Common.getCellUrl();
+    Common.getAppAuthToken(cellUrl).done(function(appToken) {
+        Common.getSchemaAuthToken(appToken.access_token, cellUrl).done(function(appCellToken) {
+            // update sessionStorage
+            Common.updateSessionStorage(appCellToken);
+            if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                callback();
+            };
+        }).fail(function(appCellToken) {
             Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
         });
-    }).fail(function(){
+    }).fail(function(appToken) {
         Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
     });
 };
 
-Common.getLaunchJson = function() {
+// Get App Authentication Token
+Common.getAppAuthToken = function(cellUrl) {
+    let engineEndPoint = getEngineEndPoint();
     return $.ajax({
-        type: "GET",
-        url: Common.getAppCellUrl() + "__/launch.json",
-        headers: {
-            'Authorization':'Bearer ' + Common.accessData.token,
-            'Accept':'application/json'
-        }
+        type: "POST",
+        url: engineEndPoint,
+        data: {
+                p_target: cellUrl
+        },
+        headers: {'Accept':'application/json'}
     });
-}
-// This App's token
-Common.getAppToken = function(personalInfo) {
-    return $.ajax({
-                type: "POST",
-                url: Common.getAppCellUrl() + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                        grant_type: "password",
-                        username: personalInfo.appTokenId,
-                        password: personalInfo.appTokenPw,
-                        p_target: Common.getCellUrl()
-                },
-                headers: {'Accept':'application/json'}
-         });
 };
 
 /*
- * This App's refresh token
- * client_id must be this App's cell URL
+ * Get Schema Authentication Token
+ * client_id belongs to a App's cell URL
  * Example: MyBoard is "https://demo.personium.io/app-myboard/"
  *          Calorie Smile is "https://demo.personium.io/hn-app-genki/"
  */
-Common.getAppCellToken = function(appToken) {
+Common.getSchemaAuthToken = function(appToken, cellUrl) {
   return $.ajax({
                 type: "POST",
-                url: Common.getCellUrl() + '__token',
+                url: cellUrl + '__token',
                 processData: true,
                 dataType: 'json',
                 data: {
@@ -454,6 +443,45 @@ Common.updateSessionStorage = function(appCellToken) {
     Common.accessData.expires = appCellToken.expires_in;
     Common.accessData.refExpires = appCellToken.refresh_token_expires_in;
     sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
+};
+
+Common.perpareToCellInfo = function(cellUrl, tcat, aaat) {
+    Common.getToCellSchemaAuthToken(cellUrl, tcat, aaat).done(function(appCellToken) {
+        Common.setToCellToken(appCellToken.access_token);
+        Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
+            .done(function(data, textStatus, request) {
+                let boxUrl = request.getResponseHeader("Location");
+                console.log(boxUrl);
+                Common.setToCellBoxUrl(boxUrl + "/");
+                // define your own additionalCallback for each App/screen
+                if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                    additionalCallback();
+                }
+            })
+            .fail(function(error) {
+                console.log(error.responseJSON.code);
+                console.log(error.responseJSON.message.value);
+                Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+            });
+    }).fail(function(error) {
+        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+    });
+};
+
+Common.getToCellSchemaAuthToken = function(cellUrl, tcat, aaat) {
+    return $.ajax({
+        type: "POST",
+        url: cellUrl + '__token',
+        processData: true,
+        dataType: 'json',
+        data: {
+            grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
+            assertion: tcat,
+            client_id: Common.getAppCellUrl(),
+            client_secret: aaat
+        },
+        headers: {'Accept':'application/json'}
+    });
 };
 
 /*
