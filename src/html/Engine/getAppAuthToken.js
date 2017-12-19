@@ -12,7 +12,7 @@ function(request){
     var refererUrlList = [appCellUrl];
     var urlAllowed = false;
     for (i = 0; i < refererUrlList.length; i++) {
-        if (!refererUrl && refererUrl.indexOf(refererUrlList[i]) == 0) {
+        if (refererUrl && refererUrl.indexOf(refererUrlList[i]) == 0) {
             urlAllowed = true;
             break;
         }
