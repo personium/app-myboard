@@ -508,13 +508,17 @@ Common.stopIdleTimer = function() {
     $(document).off('click mousemove keypress');
 };
 
-Common.irrecoverableErrorHandler = function(msg_key, callback) {
+Common.irrecoverableErrorHandler = function(msg_key) {
     // define your own handler for each App/screen
     if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
         irrecoverableErrorHandler();
     }
 
-    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key, callback);
+    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
+};
+
+Common.tolerableErrorHandler = function(msg_key, callback) {
+    Common.openCommonDialog("warningDialog.title", msg_key, callback);
 };
 
 Common.displayMessageByKey = function(msg_key) {

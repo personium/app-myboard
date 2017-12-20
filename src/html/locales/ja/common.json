@@ -19,6 +19,9 @@
     "irrecoverableErrorDialog": {
         "title": "$t(glossary:irrecoverableErrorDialog.title)"
     },
+    "warningDialog": {
+        "title": "警告"
+    },
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
     "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
     "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",

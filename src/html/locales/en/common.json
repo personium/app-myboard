@@ -19,6 +19,9 @@
     "irrecoverableErrorDialog": {
         "title": "$t(glossary:irrecoverableErrorDialog.title)"
     },
+    "warningDialog": {
+        "title": "Warning"
+    },
     "readRequestTitle": "$t(glossary:readRequestTarget)_Read Permission Request",
     "readRequestBody": "Please grant read permission for your $t(glossary:readRequestBodyTarget).",
     "readResponseTitle": "$t(glossary:readRequestTarget)_Read Permission Reply",
