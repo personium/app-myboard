@@ -355,17 +355,22 @@ Common.appendCommonDialog = function() {
         '</div>'
     ].join("");
     $("body").append(html);
-    $('#b-common-ok').on('click', function() { 
-        Common.closeTab();
-    });
 };
 
-Common.openCommonDialog = function(title_key, message_key) {
+Common.openCommonDialog = function(title_key, message_key, okBtnCallback) {
     $("#modal-common .modal-title")
         .attr('data-i18n', title_key);
 
     $("#modal-common .modal-body")
         .attr('data-i18n', '[html]' + message_key);
+
+    $('#b-common-ok').one('click', function() {
+        if ((typeof okBtnCallback !== "undefined") && $.isFunction(okBtnCallback)) {
+            okBtnCallback();
+        } else {
+            Common.closeTab();
+        }
+    });
 
     $("#modal-common")
         .localize()
@@ -376,6 +381,7 @@ Common.openCommonDialog = function(title_key, message_key) {
  * clean up data and close tab/window
  */
 Common.closeTab = function() {
+    console.log("closeTab");
     // define your own cleanupData for each App/screen
     if ((typeof cleanUpData !== "undefined") && $.isFunction(cleanUpData)) {
         cleanUpData();
@@ -502,13 +508,13 @@ Common.stopIdleTimer = function() {
     $(document).off('click mousemove keypress');
 };
 
-Common.irrecoverableErrorHandler = function(msg_key) {
+Common.irrecoverableErrorHandler = function(msg_key, callback) {
     // define your own handler for each App/screen
     if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
         irrecoverableErrorHandler();
     }
 
-    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
+    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key, callback);
 };
 
 Common.displayMessageByKey = function(msg_key) {

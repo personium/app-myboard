@@ -88,7 +88,6 @@ additionalCallback = function() {
 
     $('#bReadAnotherCell').on('click', function () {
         var toCellUrl = $("#otherAllowedCells option:selected").val();
-        var childWindow = window.open('about:blank');
         $.ajax({
             type: "GET",
             url: Common.getAppCellUrl() + "__/launch.json",
@@ -104,11 +103,11 @@ additionalCallback = function() {
             url += '#cell=' + Common.getCellUrl();
                 url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
             url += '&toCell=' + toCellUrl;
-                childWindow.location.href = url;
-                childWindow = null;
-        }).fail(function(data) {
-            childWindow.close();
-            childWindow = null;
+            location.href = url;
+        }).fail(function(error) {
+            console.log(error.responseJSON.code);
+            console.log(error.responseJSON.message.value);
+            Common.irrecoverableErrorHandler("msg.error.failedToGetLaunchJson", function(){$("#modal-common").modal("hide");});
         });
     });
 
