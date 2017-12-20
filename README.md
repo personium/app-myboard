@@ -1,5 +1,5 @@
 # MyBoard App  
-An sample app that runs on the HomeApp.  
+An sample app that runs on the [HomeApp](http://personium.io/demo/home-app/).  
 It allows the data subject to edit it's and view other's notice board.  
 
 ## Installation  
