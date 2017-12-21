@@ -104,6 +104,7 @@ additionalCallback = function() {
                 url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
             url += '&toCell=' + toCellUrl;
             location.href = url;
+            location.reload(true); // force reload page
         }).fail(function(error) {
             console.log(error.responseJSON.code);
             console.log(error.responseJSON.message.value);
