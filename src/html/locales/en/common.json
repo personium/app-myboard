@@ -36,6 +36,9 @@
             "pleaseSelectTargetCell": "Please select a $t(glossary:dataSubject.label).",
             "messageSent": "Succeeded in sending the message."
         },
+        "warning": {
+            "failedToGetLaunchJson": "Failed to get this App's launching information."
+        },
         "error": {
             "failedToSendMessage": "Failed to send message.",
             "targetCellNotSelected": "Target cell not selected.",
@@ -46,8 +49,7 @@
             "failedToRetrieveData": "Failed to retrieve data.",
             "dataNotFound": "Data not found.",
             "failedToRefreshToken": "Failed to refresh token.<br>Please reload page.",
-            "failedToGetBoxUrl": "Failed to get Box URL.",
-            "failedToGetLaunchJson": "Failed to get this App's launching information."
+            "failedToGetBoxUrl": "Failed to get Box URL."
         }
     },
     "btn": {

@@ -36,6 +36,9 @@
             "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
             "messageSent": "メッセージを送信しました。"
         },
+        "warning": {
+            "failedToGetLaunchJson": "アプリの起動情報の取得に失敗しました。"
+        },
         "error": {
             "failedToSendMessage": "メッセージの送信に失敗しました。",
             "targetCellNotSelected": "対象セルが設定されていません。",
@@ -46,8 +49,7 @@
             "failedToRetrieveData": "データの取得に失敗しました。",
             "dataNotFound": "データがありません。",
             "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。",
-            "failedToGetBoxUrl": "Box URLの取得に失敗しました。",
-            "failedToGetLaunchJson": "アプリの起動情報の取得に失敗しました。"
+            "failedToGetBoxUrl": "Box URLの取得に失敗しました。"
         }
     },
     "btn": {

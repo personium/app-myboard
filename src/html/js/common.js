@@ -289,7 +289,7 @@ Common.checkParam = function() {
     }
 
     if (msg_key.length > 0) {
-        Common.irrecoverableErrorHandler(msg_key);
+        Common.showIrrecoverableErrorDialog(msg_key);
         return false;
     }
 
@@ -381,7 +381,6 @@ Common.openCommonDialog = function(title_key, message_key, okBtnCallback) {
  * clean up data and close tab/window
  */
 Common.closeTab = function() {
-    console.log("closeTab");
     // define your own cleanupData for each App/screen
     if ((typeof cleanUpData !== "undefined") && $.isFunction(cleanUpData)) {
         cleanUpData();
@@ -401,10 +400,10 @@ Common.refreshToken = function(callback) {
                 callback();
             };
         }).fail(function(appCellToken) {
-            Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+            Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
         });
     }).fail(function(appToken) {
-        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
     });
 };
 
@@ -467,10 +466,10 @@ Common.perpareToCellInfo = function(cellUrl, tcat, aaat) {
             .fail(function(error) {
                 console.log(error.responseJSON.code);
                 console.log(error.responseJSON.message.value);
-                Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+                Common.showIrrecoverableErrorDialog("msg.error.failedToGetBoxUrl");
             });
     }).fail(function(error) {
-        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
     });
 };
 
@@ -508,7 +507,7 @@ Common.stopIdleTimer = function() {
     $(document).off('click mousemove keypress');
 };
 
-Common.irrecoverableErrorHandler = function(msg_key) {
+Common.showIrrecoverableErrorDialog = function(msg_key) {
     // define your own handler for each App/screen
     if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
         irrecoverableErrorHandler();
@@ -517,7 +516,7 @@ Common.irrecoverableErrorHandler = function(msg_key) {
     Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
 };
 
-Common.tolerableErrorHandler = function(msg_key, callback) {
+Common.showWarningDialog = function(msg_key, callback) {
     Common.openCommonDialog("warningDialog.title", msg_key, callback);
 };
 

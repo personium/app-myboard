@@ -107,7 +107,7 @@ additionalCallback = function() {
         }).fail(function(error) {
             console.log(error.responseJSON.code);
             console.log(error.responseJSON.message.value);
-            Common.tolerableErrorHandler("msg.error.failedToGetLaunchJson", function(){$("#modal-common").modal("hide");});
+            Common.showWarningDialog("msg.warning.failedToGetLaunchJson", function(){$("#modal-common").modal("hide");});
         });
     });
 
