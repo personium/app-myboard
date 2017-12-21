@@ -289,7 +289,7 @@ Common.checkParam = function() {
     }
 
     if (msg_key.length > 0) {
-        Common.irrecoverableErrorHandler(msg_key);
+        Common.showIrrecoverableErrorDialog(msg_key);
         return false;
     }
 
@@ -355,17 +355,22 @@ Common.appendCommonDialog = function() {
         '</div>'
     ].join("");
     $("body").append(html);
-    $('#b-common-ok').on('click', function() { 
-        Common.closeTab();
-    });
 };
 
-Common.openCommonDialog = function(title_key, message_key) {
+Common.openCommonDialog = function(title_key, message_key, okBtnCallback) {
     $("#modal-common .modal-title")
         .attr('data-i18n', title_key);
 
     $("#modal-common .modal-body")
         .attr('data-i18n', '[html]' + message_key);
+
+    $('#b-common-ok').one('click', function() {
+        if ((typeof okBtnCallback !== "undefined") && $.isFunction(okBtnCallback)) {
+            okBtnCallback();
+        } else {
+            Common.closeTab();
+        }
+    });
 
     $("#modal-common")
         .localize()
@@ -395,10 +400,10 @@ Common.refreshToken = function(callback) {
                 callback();
             };
         }).fail(function(appCellToken) {
-            Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+            Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
         });
     }).fail(function(appToken) {
-        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
     });
 };
 
@@ -461,10 +466,10 @@ Common.perpareToCellInfo = function(cellUrl, tcat, aaat) {
             .fail(function(error) {
                 console.log(error.responseJSON.code);
                 console.log(error.responseJSON.message.value);
-                Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+                Common.showIrrecoverableErrorDialog("msg.error.failedToGetBoxUrl");
             });
     }).fail(function(error) {
-        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
     });
 };
 
@@ -502,13 +507,17 @@ Common.stopIdleTimer = function() {
     $(document).off('click mousemove keypress');
 };
 
-Common.irrecoverableErrorHandler = function(msg_key) {
+Common.showIrrecoverableErrorDialog = function(msg_key) {
     // define your own handler for each App/screen
     if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
         irrecoverableErrorHandler();
     }
 
     Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
+};
+
+Common.showWarningDialog = function(msg_key, callback) {
+    Common.openCommonDialog("warningDialog.title", msg_key, callback);
 };
 
 Common.displayMessageByKey = function(msg_key) {

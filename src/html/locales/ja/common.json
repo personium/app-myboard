@@ -19,6 +19,9 @@
     "irrecoverableErrorDialog": {
         "title": "$t(glossary:irrecoverableErrorDialog.title)"
     },
+    "warningDialog": {
+        "title": "警告"
+    },
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
     "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
     "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
@@ -32,6 +35,9 @@
         "info": {
             "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
             "messageSent": "メッセージを送信しました。"
+        },
+        "warning": {
+            "failedToGetLaunchJson": "アプリの起動情報の取得に失敗しました。"
         },
         "error": {
             "failedToSendMessage": "メッセージの送信に失敗しました。",
