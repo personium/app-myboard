@@ -63,20 +63,7 @@ additionalCallback = function() {
 
     $('#bReadAnotherCell').on('click', function () {
         var toCellUrl = $("#otherAllowedCells option:selected").val();
-        $.ajax({
-            type: "GET",
-            url: Common.getAppCellUrl() + "__/launch.json",
-            headers: {
-                'Authorization':'Bearer ' + Common.getToken(),
-                'Accept':'application/json'
-            }
-        }).done(function(data) {
-            mb.displayAnotherBoardMessage(toCellUrl);
-        }).fail(function(error) {
-            console.log(error.responseJSON.code);
-            console.log(error.responseJSON.message.value);
-            Common.showWarningDialog("msg.warning.failedToGetLaunchJson", function(){$("#modal-common").modal("hide");});
-        });
+        mb.displayAnotherBoardMessage(toCellUrl);
     });
 
     $('#bSendAllowed').on('click', function () {
@@ -143,10 +130,15 @@ mb.displayOwnBoardMessage = function() {
     let cellUrl = Common.getCellUrl();
     let boxUrl = Common.getBoxUrl();
     let token = Common.getToken();
+    $('.main_box > div.mySpinner').show();
+    $('.main_box > div.myHiddenDiv').hide();
     mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
 };
 
 mb.displayAnotherBoardMessage = function(toCellUrl) {
+    $('.main_box > div.mySpinner').show();
+    $('.main_box > div.myHiddenDiv').hide();
+        
     $.when(Common.getTranscellToken(toCellUrl), Common.getAppAuthToken(toCellUrl))
         .done(function(result1, result2) {
             let tempTCAT = result1[0].access_token; // Transcell Access Token
@@ -155,6 +147,10 @@ mb.displayAnotherBoardMessage = function(toCellUrl) {
                 let notMe = true;
                 mb.displayBoardMessage(cellUrl, boxUrl, token, notMe); // AJAX
             });
+        })
+        .fail(function(){
+            $('.main_box > div.mySpinner').hide();
+            $('.main_box > div.myHiddenDiv').show();
         });
 };
 
@@ -188,7 +184,7 @@ mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
                 .prop("disabled", false)
                 .show();
         }
-
+    }).always(function() {
         $('.main_box > div.mySpinner').hide();
         $('.main_box > div.myHiddenDiv').show();
     });
