@@ -35,50 +35,22 @@ getAppDataPath = function() {
 getAppRequestInfo = function() {
     return {
         dataType: 'text'
-    }
+    };
 };
 
 additionalCallback = function() {
-    let cellUrl, boxUrl, token;
-    if (Common.notMe()) {
-        cellUrl = Common.getToCellUrl();
-        boxUrl = Common.getToCellBoxUrl();
-        token = Common.getToCellToken();
-    } else {
-        cellUrl = Common.getCellUrl()
-        boxUrl = Common.getBoxUrl();
-        token = Common.getToken();
+    mb.displayOwnBoardMessage();
+
+    Common.setIdleTime();
+
+    if (!Common.notMe()) {
+        // 閲覧許可状況(外部セル)
+        Common.getOtherAllowedCells();
+        // 閲覧許可状況
+        Common.getAllowedCellList(getAppRole());
+        // 通知
+        mb.getReceiveMessage();
     }
-    Common.getAppDataAPI(boxUrl, token).done(function(data) {
-        mb.msgData = JSON.parse(data);
-        if (mb.msgData.message !== undefined) {
-            mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
-        }
-        Common.getProfileName(cellUrl, function(url, name){ $("#boardTitle").html(name) });
-        $('.write_board').append(mb.msgData.message);
-        $('.disp_board').css("display", "block");
-        if (Common.notMe()) {
-            $(".navbar-header button").hide();
-            $("#collapse-id").empty();
-            $("#exeEditer")
-                .prop("disabled", true)
-                .hide();
-        }
-
-        Common.setIdleTime();
-
-        if (!Common.notMe()) {
-            // 閲覧許可状況(外部セル)
-            Common.getOtherAllowedCells();
-            // 閲覧許可状況
-            Common.getAllowedCellList(getAppRole());
-            // 通知
-            mb.getReceiveMessage();
-        }
-
-        $('.main_box > div.mySpinner').hide();
-        $('.main_box > div.myHiddenDiv').show();
-    });
 
     $('#exeEditer').on('click', function () {
         $("#txtEditMyBoard").val($("#txtMyBoard").val());
@@ -99,15 +71,7 @@ additionalCallback = function() {
                 'Accept':'application/json'
             }
         }).done(function(data) {
-            var launchObj = data.personal;
-            var launch = launchObj.web;
-                var url = launch;
-                url += '?lng=' + i18next.language;
-            url += '#cell=' + Common.getCellUrl();
-                url += '&refresh_token=' + Common.getRefressToken(); // Original user's refresh token
-            url += '&toCell=' + toCellUrl;
-            location.href = url;
-            location.reload(true); // force reload page
+            mb.displayAnotherBoardMessage(toCellUrl);
         }).fail(function(error) {
             console.log(error.responseJSON.code);
             console.log(error.responseJSON.message.value);
@@ -173,6 +137,61 @@ additionalCallback = function() {
 irrecoverableErrorHandler = function() {
     $("#collapse-id").empty();
     $("#exeEditer").prop("disabled", true);
+};
+
+mb.displayOwnBoardMessage = function() {
+    let cellUrl = Common.getCellUrl();
+    let boxUrl = Common.getBoxUrl();
+    let token = Common.getToken();
+    mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
+};
+
+mb.displayAnotherBoardMessage = function(toCellUrl) {
+    $.when(Common.getTranscellToken(toCellUrl), Common.getAppAuthToken(toCellUrl))
+        .done(function(result1, result2) {
+            let tempTCAT = result1[0].access_token; // Transcell Access Token
+            let tempAAAT = result2[0].access_token; // App Authentication Access Token
+            Common.perpareToCellInfo(toCellUrl, tempTCAT, tempAAAT, function(cellUrl, boxUrl, token) {
+                let notMe = true;
+                mb.displayBoardMessage(cellUrl, boxUrl, token, notMe); // AJAX
+            });
+        });
+};
+
+mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
+    Common.getAppDataAPI(boxUrl, token).done(function(data) {
+        mb.msgData = JSON.parse(data);
+        if (mb.msgData.message !== undefined) {
+            mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
+        }
+        let title;
+        if (notMe) {
+            title = 'glossary:board.Yours';
+        } else {
+            title = 'glossary:board.Mine';
+        }
+        Common.getProfileName(cellUrl, function(url, name){ 
+            $("#boardTitle")
+                .attr('data-i18n', title)
+                .localize({
+                    name: name
+                });
+        });
+        $('.write_board').val(mb.msgData.message);
+        $('.disp_board').css("display", "block");
+        if (notMe) {
+            $("#exeEditer")
+                .prop("disabled", true)
+                .hide();
+        } else {
+            $("#exeEditer")
+                .prop("disabled", false)
+                .show();
+        }
+
+        $('.main_box > div.mySpinner').hide();
+        $('.main_box > div.myHiddenDiv').show();
+    });
 };
 
 mb.getReceiveMessage = function() {

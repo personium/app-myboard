@@ -1,5 +1,9 @@
 {
     "title": "MyBoard",
+    "board": {
+        "Mine": "Own board ({{name}})",
+        "Yours": "Another user's board ({{name}})"
+    },
     "navbar": {
         "readAnotherBoard": {
             "title": "Read another",
