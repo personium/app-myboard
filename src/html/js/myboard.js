@@ -75,6 +75,9 @@ additionalCallback = function() {
             // 通知
             mb.getReceiveMessage();
         }
+
+        $('.main_box > div.mySpinner').hide();
+        $('.main_box > div.myHiddenDiv').show();
     });
 
     $('#exeEditer').on('click', function () {
@@ -162,6 +165,9 @@ additionalCallback = function() {
         $("#extCellMyBoard").removeClass('in');
         $("#extCellMyBoard").attr("aria-expanded", false);
     });
+
+    $('body > div.mySpinner').hide();
+    $('body > div.myHiddenDiv').show();
 };
 
 irrecoverableErrorHandler = function() {
