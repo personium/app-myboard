@@ -43,14 +43,12 @@ additionalCallback = function() {
 
     Common.setIdleTime();
 
-    if (!Common.notMe()) {
-        // 閲覧許可状況(外部セル)
-        Common.getOtherAllowedCells();
-        // 閲覧許可状況
-        Common.getAllowedCellList(getAppRole());
-        // 通知
-        mb.getReceiveMessage();
-    }
+    // 閲覧許可状況(外部セル)
+    Common.getOtherAllowedCells();
+    // 閲覧許可状況
+    Common.getAllowedCellList(getAppRole());
+    // 通知
+    mb.getReceiveMessage();
 
     $('#exeEditer').on('click', function () {
         $("#txtEditMyBoard").val($("#txtMyBoard").val());

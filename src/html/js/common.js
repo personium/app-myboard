@@ -137,9 +137,6 @@ Common.setAccessData = function() {
         case "refresh_token":
             Common.accessData.refToken = param[1];
             break;
-        case "toCell":
-            Common.setToCellUrl(param[1]);
-            break;
         }
     }
 };
@@ -187,14 +184,6 @@ Common.getCellUrl = function() {
 
 Common.getCellName = function() {
     return Common.accessData.cellName;
-};
-
-Common.setToCellUrl = function(url) {
-    Common.accessData.toCellUrl = url;
-};
-
-Common.getToCellUrl = function() {
-    return Common.accessData.toCellUrl;
 };
 
 Common.setBoxUrl = function(url) {
@@ -250,14 +239,6 @@ Common.getCellNameFromUrl = function(url) {
     return cellName;
 };
 
-Common.notMe = function() {
-    if (typeof Common.accessData.toCellUrl !== "undefined") {
-        return (Common.accessData.cellUrl != Common.accessData.toCellUrl);
-    } else {
-        return false;
-    }
-}
-
 Common.updateContent = function() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
@@ -270,12 +251,6 @@ Common.checkParam = function() {
         msg_key = "msg.error.targetCellNotSelected";
     } else if (Common.accessData.refToken === null) {
         msg_key = "msg.error.refreshTokenMissing";
-    }
-
-    if (Common.notMe()) {
-        if (Common.getToCellUrl() === null) {
-            msg_key = "msg.error.targetCellNotSelected";
-        }
     }
 
     if (msg_key.length > 0) {
