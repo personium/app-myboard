@@ -2,6 +2,8 @@
 An sample app that runs on the [HomeApp](http://personium.io/demo/home-app/).  
 It allows the data subject to edit it's and view other's notice board.  
 
+[![MyBoard on YouTube](https://i.ytimg.com/vi/X_djQih94tU/1.jpg)](https://youtu.be/X_djQih94tU)  
+
 ## Installation  
 TBD  
 
