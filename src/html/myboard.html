@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-i18n="glossary:title"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
@@ -17,86 +18,103 @@
   <script src="./js/common_personium.js"></script>
   <script src="./js/myboard.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+  <link href='./css/personium.css' rel='stylesheet' type='text/css'>
   <link href='./css/myboard.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-  <div class="main_box">
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
-            <span class="sr-only" data-i18n="navbar.toggleNavigation"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-
-          <a class="navbar-brand" data-i18n="navbar.appName"></a>
+  <div class="mySpinner">
+    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+    <span class="sr-only">Loading...</span>
+  </div>
+  <div class="myHiddenDiv">
+    <div class="main_box">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
+              <span class="sr-only" data-i18n="navbar.toggleNavigation"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+            <a id="myboard" href="#" onclick="mb.displayOwnBoardMessage();return false;">
+              <i class="fa fa-pencil-square-o fa-2x fa-fw"></i>
+            </a>
+            
+            <a href="#" onclick="mb.displayOwnBoardMessage();return false;" class="navbar-brand" data-i18n="navbar.appName"></a>
+          </div>
+          <div class="collapse navbar-collapse" id="collapse-id">
+           <ul class="nav navbar-nav">
+            <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed" data-i18n="glossary:navbar.readAnotherBoard.title"></a></li>
+            <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed" data-i18n="glossary:navbar.sendReadPermissionRequest.title"></a></li>
+            <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed" data-i18n="glossary:navbar.readPermissionStatus.title"></a></li>
+            <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed" data-i18n="menu.notification.title"></a></li>
+           </ul>
+          </div>
+          <div class="panel-group" id="accordion">
+            <div id="extCellMyBoard" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h3 data-i18n="glossary:navbar.readAnotherBoard.panelHeader"></h3>
+                <p data-i18n="glossary:navbar.readAnotherBoard.description"></p>
+                <select id="otherAllowedCells"></select>
+                <button type="button" class="btn btn-primary" id="bReadAnotherCell" data-i18n="glossary:navbar.readAnotherBoard.btn" disabled></button>
+              </div>
+              <span class="popupAlertArea" style="color:red">
+                <aside id="popupReadAllowedErrorMsg"></aside>
+              </span>
+            </div>
+            <div id="sendAllowedMessage" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h3 data-i18n="glossary:navbar.sendReadPermissionRequest.panelHeader"></h3>
+                <p data-i18n="glossary:navbar.sendReadPermissionRequest.description"></p>
+                <select id="requestCells"></select>
+                <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="glossary:navbar.sendReadPermissionRequest.btn" disabled></button>
+              </div>
+              <span class="popupAlertArea" style="color:red">
+                <aside id="popupSendAllowedErrorMsg"></aside>
+              </span>
+            </div>
+            <div id="listAllowed" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h3 data-i18n="glossary:navbar.readPermissionStatus.panelHeader"></h3>
+                <p data-i18n="glossary:navbar.readPermissionStatus.description"></p>
+                <table id="allowedCellList"></table>
+              </div>
+            </div>
+            <div id="receiveMessage" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h3 data-i18n="menu.notification.header"></h3>
+                <div class="panel-group" id="messageList"></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="collapse navbar-collapse" id="collapse-id">
-         <ul class="nav navbar-nav">
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed" data-i18n="glossary:navbar.readAnotherBoard.title"></a></li>
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed" data-i18n="glossary:navbar.sendReadPermissionRequest.title"></a></li>
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed" data-i18n="glossary:navbar.readPermissionStatus.title"></a></li>
-          <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed" data-i18n="menu.notification.title"></a></li>
-         </ul>
-        </div>
-        <div class="panel-group" id="accordion">
-          <div id="extCellMyBoard" class="panel-collapse collapse">
-            <div class="panel-body">
-              <h3 data-i18n="glossary:navbar.readAnotherBoard.panelHeader"></h3>
-              <p data-i18n="glossary:navbar.readAnotherBoard.description"></p>
-              <select id="otherAllowedCells"></select>
-              <button type="button" class="btn btn-primary" id="bReadAnotherCell" data-i18n="glossary:navbar.readAnotherBoard.btn" disabled></button>
-            </div>
-            <span class="popupAlertArea" style="color:red">
-              <aside id="popupReadAllowedErrorMsg"></aside>
-            </span>
+      </nav>
+      <div class="mySpinner">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="myHiddenDiv">
+        <div class="col-md-12 col-xs-12" align="center">
+          <div class="panel panel-default disp_board">
+            <table class="table table-bordered">
+              <tr>
+                <td class="info text-center">
+                  <span id="boardTitle" class="small"></span>
+                </td>
+              </tr>
+              <tr height="70%">
+                <td>
+                  <textarea class="write_board" id="txtMyBoard" readonly></textarea>
+                </td>
+              </tr>
+            </table>
           </div>
-          <div id="sendAllowedMessage" class="panel-collapse collapse">
-            <div class="panel-body">
-              <h3 data-i18n="glossary:navbar.sendReadPermissionRequest.panelHeader"></h3>
-              <p data-i18n="glossary:navbar.sendReadPermissionRequest.description"></p>
-              <select id="requestCells"></select>
-              <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="glossary:navbar.sendReadPermissionRequest.btn" disabled></button>
-            </div>
-            <span class="popupAlertArea" style="color:red">
-              <aside id="popupSendAllowedErrorMsg"></aside>
-            </span>
-          </div>
-          <div id="listAllowed" class="panel-collapse collapse">
-            <div class="panel-body">
-              <h3 data-i18n="glossary:navbar.readPermissionStatus.panelHeader"></h3>
-              <p data-i18n="glossary:navbar.readPermissionStatus.description"></p>
-              <table id="allowedCellList"></table>
-            </div>
-          </div>
-          <div id="receiveMessage" class="panel-collapse collapse">
-            <div class="panel-body">
-              <h3 data-i18n="menu.notification.header"></h3>
-              <div class="panel-group" id="messageList"></div>
-            </div>
-          </div>
+          <button type="button" class="btn btn-primary" id="exeEditer" data-i18n="btn.edit"></button>
+          <div id="dispMsg" style="display:none;"></div>
         </div>
       </div>
-    </nav>
-    <div class="col-md-12 col-xs-12" align="center">
-      <div class="panel panel-default disp_board">
-        <table class="table table-bordered">
-          <tr>
-            <td class="info text-center">
-              <span id="boardTitle" class="small"></span>
-            </td>
-          </tr>
-          <tr height="70%">
-            <td>
-              <textarea class="write_board" id="txtMyBoard" readonly></textarea>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <button type="button" class="btn btn-primary" id="exeEditer" data-i18n="btn.edit"></button>
-      <div id="dispMsg" style="display:none;"></div>
     </div>
   </div>
 

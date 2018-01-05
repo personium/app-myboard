@@ -1,3 +1,9 @@
+#myboard {
+    color: #777;
+    float: left;
+    margin:13px 3px;
+}
+
 textarea {
     resize:none;
 }
@@ -47,5 +53,12 @@ textarea {
 }
 
 @media (max-width: 767px) {
-    
+    #myboard {
+        color: #777;
+        float: left;
+        margin:13px 3px 13px 5px;
+    }
+    .navbar-brand {
+        padding: 15px 15px 15px 0px;
+    }
 }

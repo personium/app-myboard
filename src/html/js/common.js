@@ -74,33 +74,23 @@ $(document).ready(function() {
             };
 
             Common.refreshToken(function(){
-                if (Common.notMe()) {
-                    let cellUrl = Common.getToCellUrl();
-                    $.when(Common.getTranscellToken(cellUrl), Common.getAppAuthToken(cellUrl))
-                        .done(function(result1, result2) {
-                            let tempTCAT = result1[0].access_token; // Transcell Access Token
-                            let tempAAAT = result2[0].access_token; // App Authentication Access Token
-                            Common.perpareToCellInfo(cellUrl, tempTCAT, tempAAAT);
-                        })
-                } else {
-                    let cellUrl = Common.getCellUrl();
-                    let token = Common.getToken();
-                    Common.getBoxUrlAPI(cellUrl, token)
-                        .done(function(data, textStatus, request) {
-                            let boxUrl = request.getResponseHeader("Location");
-                            console.log(boxUrl);
-                            Common.setInfo(boxUrl);
-                            // define your own additionalCallback for each App/screen
-                            if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
-                                additionalCallback();
-                            }
-                        })
-                        .fail(function(error) {
-                            console.log(error.responseJSON.code);
-                            console.log(error.responseJSON.message.value);
-                            Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
-                        });
-                }
+                let cellUrl = Common.getCellUrl();
+                let token = Common.getToken();
+                Common.getBoxUrlAPI(cellUrl, token)
+                    .done(function(data, textStatus, request) {
+                        let boxUrl = request.getResponseHeader("Location");
+                        console.log(boxUrl);
+                        Common.setInfo(boxUrl);
+                        // define your own additionalCallback for each App/screen
+                        if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                            additionalCallback();
+                        }
+                    })
+                    .fail(function(error) {
+                        console.log(error.responseJSON.code);
+                        console.log(error.responseJSON.message.value);
+                        Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+                    });
             });
 
             Common.updateContent();
@@ -146,9 +136,6 @@ Common.setAccessData = function() {
             break;
         case "refresh_token":
             Common.accessData.refToken = param[1];
-            break;
-        case "toCell":
-            Common.setToCellUrl(param[1]);
             break;
         }
     }
@@ -197,14 +184,6 @@ Common.getCellUrl = function() {
 
 Common.getCellName = function() {
     return Common.accessData.cellName;
-};
-
-Common.setToCellUrl = function(url) {
-    Common.accessData.toCellUrl = url;
-};
-
-Common.getToCellUrl = function() {
-    return Common.accessData.toCellUrl;
 };
 
 Common.setBoxUrl = function(url) {
@@ -260,14 +239,6 @@ Common.getCellNameFromUrl = function(url) {
     return cellName;
 };
 
-Common.notMe = function() {
-    if (typeof Common.accessData.toCellUrl !== "undefined") {
-        return (Common.accessData.cellUrl != Common.accessData.toCellUrl);
-    } else {
-        return false;
-    }
-}
-
 Common.updateContent = function() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
@@ -280,12 +251,6 @@ Common.checkParam = function() {
         msg_key = "msg.error.targetCellNotSelected";
     } else if (Common.accessData.refToken === null) {
         msg_key = "msg.error.refreshTokenMissing";
-    }
-
-    if (Common.notMe()) {
-        if (Common.getToCellUrl() === null) {
-            msg_key = "msg.error.targetCellNotSelected";
-        }
     }
 
     if (msg_key.length > 0) {
@@ -450,17 +415,16 @@ Common.updateSessionStorage = function(appCellToken) {
     sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
-Common.perpareToCellInfo = function(cellUrl, tcat, aaat) {
+Common.perpareToCellInfo = function(cellUrl, tcat, aaat, callback) {
     Common.getToCellSchemaAuthToken(cellUrl, tcat, aaat).done(function(appCellToken) {
         Common.setToCellToken(appCellToken.access_token);
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
                 let boxUrl = request.getResponseHeader("Location");
-                console.log(boxUrl);
                 Common.setToCellBoxUrl(boxUrl + "/");
-                // define your own additionalCallback for each App/screen
-                if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
-                    additionalCallback();
+                // callback
+                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                    callback(cellUrl, Common.getToCellBoxUrl(), Common.getToCellToken());
                 }
             })
             .fail(function(error) {

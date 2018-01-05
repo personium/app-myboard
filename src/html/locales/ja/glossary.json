@@ -1,5 +1,9 @@
 {
     "title": "MyBoard",
+    "board": {
+        "Mine": "自分の board ({{name}})",
+        "Yours": "他人の board ({{name}})"
+    },
     "navbar": {
         "readAnotherBoard": {
             "title": "他のMyBoardを見る",
