@@ -215,11 +215,13 @@ Common.prepareExtCellForApp = function(extUrl, dispName) {
 };
 
 /*
- * Get Schema Authenitication Token of the external Cell and get its Box URL.
- * When done, execute callback (add external Cell to proper list).
+ * Perform the followings for an external Cell:
+ * 1. Get access token for protected box(es) which is accessible by the App.
+ * 2. Get Box URL.
+ * 3. Execute callback (add external Cell to proper list).
  */
 Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, dispName) {
-    Common.getToCellSchemaAuthToken(cellUrl, tcat, aaat).done(function(appCellToken) {
+    Common.getProtectedBoxAccessToken4ExtCell(cellUrl, tcat, aaat).done(function(appCellToken) {
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
                 let boxUrl = request.getResponseHeader("Location") + "/";

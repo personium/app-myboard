@@ -1,10 +1,10 @@
 {
     "MyBoardOperator": {
-        "DisplayName": "",
-        "Description": ""
+        "DisplayName": "オペレータ",
+        "Description": "オペレータは、書き込みと読む権限を持ちユーザーです。"
     },
     "MyBoardViewer": {
-        "DisplayName": "",
-        "Description": ""
+        "DisplayName": "ビューア",
+        "Description": "ビューアはボードを見ることができるだけです。"
     }
 }
