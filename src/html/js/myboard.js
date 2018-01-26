@@ -68,12 +68,8 @@ additionalCallback = function() {
         var value = $("#requestCells option:selected").val();
         var title = i18next.t("readRequestTitle");
         var body = i18next.t("readRequestBody");
-        var reqRel = [
-            Common.getAppCellUrl(),
-            "__role/__/",
-            getAppRole()
-        ].join("");
-        Common.sendMessageAPI(null, value, "req.role.grant", title, body, reqRel, Common.getCellUrl()).done(function(data) {
+        var reqRel = getAppRole();
+        Common.sendMessageAPI(null, value, "request", title, body, "role.add", reqRel, Common.getCellUrl()).done(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
         }).fail(function(data) {
             $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
