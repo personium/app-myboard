@@ -298,7 +298,12 @@ Common.appendRequestCells = function(extUrl, dispName) {
     $("#bSendAllowed").prop("disabled", false);
 };
 
-Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
+/*
+ * When the following conditions are satisfied, there is no need to include App URL when specifying the role/relation name.
+ * 1. BoxBound must set to true
+ * 2. Authorization token must be App authenticated token
+ */
+Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqType, reqRel, reqRelTar) {
     var data = {};
     data.BoxBound = true;
     data.InReplyTo = uuid;
@@ -308,11 +313,13 @@ Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRe
     data.Title = title;
     data.Body = body;
     data.Priority = 3;
-    if (reqRel) {
-        data.RequestRelation = reqRel;
-    }
-    if (reqRelTar) {
-        data.RequestRelationTarget = reqRelTar;
+    if (reqType) {
+        data.RequestObjects = [];
+        let objArray = {};
+        objArray.RequestType = reqType;
+        objArray.Name = reqRel;
+        objArray.TargetUrl = reqRelTar;
+        data.RequestObjects.push(objArray);
     }
 
     return $.ajax({
