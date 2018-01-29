@@ -298,6 +298,11 @@ Common.appendRequestCells = function(extUrl, dispName) {
     $("#bSendAllowed").prop("disabled", false);
 };
 
+/*
+ * When the following conditions are satisfied, there is no need to include App URL when specifying the role/relation name.
+ * 1. BoxBound must set to true
+ * 2. Authorization token must be App authenticated token
+ */
 Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqType, reqRel, reqRelTar) {
     var data = {};
     data.BoxBound = true;
