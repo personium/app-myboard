@@ -78,7 +78,7 @@ $(document).ready(function() {
                 let token = Common.getToken();
                 Common.getBoxUrlAPI(cellUrl, token)
                     .done(function(data, textStatus, request) {
-                        let boxUrl = request.getResponseHeader("Location");
+                        let boxUrl = Common.getBoxUrlFromResponseHeader(request);
                         console.log(boxUrl);
                         Common.setInfo(boxUrl);
                         // define your own additionalCallback for each App/screen
@@ -150,6 +150,15 @@ Common.getBoxUrlAPI = function(cellUrl, token) {
             'Accept':'application/json'
         }
     });
+};
+
+/*
+ * Currently the REST API does not support CORS.
+ * Therefore, for CORS case, the default Box name is used.
+ */
+Common.getBoxUrlFromResponseHeader = function(request) {
+    let boxUrl = request.getResponseHeader("Location") || (Common.getCellUrl() + APP_BOX_NAME);
+    return boxUrl;
 };
 
 Common.setInfo = function(url) {
@@ -420,7 +429,7 @@ Common.perpareToCellInfo = function(cellUrl, tcat, aaat, callback) {
         Common.setToCellToken(appCellToken.access_token);
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
-                let boxUrl = request.getResponseHeader("Location");
+                let boxUrl = Common.getBoxUrlFromResponseHeader(request);
                 Common.setToCellBoxUrl(boxUrl + "/");
                 // callback
                 if ((typeof callback !== "undefined") && $.isFunction(callback)) {
