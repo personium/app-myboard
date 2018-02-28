@@ -209,7 +209,7 @@ Common.setToCellBoxUrl = function(url) {
 
 // Make sure Unit/Cell/Box URL contains ending slash ('/')
 Common.preparePersoniumUrl = function(url) {
-    let tempUrl;
+    let tempUrl = url;
 
     if (url.slice(-1) != '/') {
         tempUrl = url + '/';
