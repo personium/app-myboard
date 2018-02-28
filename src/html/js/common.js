@@ -166,8 +166,8 @@ Common.setInfo = function(url) {
     Common.accessData.unitUrl = _.first(urlSplit, 3).join("/") + "/";
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
     Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
-    Common.setBoxUrl(url + "/");
-    Common.accessData.boxName = _.last(urlSplit);
+    Common.setBoxUrl(url);
+    Common.accessData.boxName = _.last(_.compact(urlSplit));
 };
 
 Common.getUnitUrl = function() {
@@ -184,7 +184,7 @@ Common.changeLocalUnitToUnitUrl = function (cellUrl) {
 };
 
 Common.setCellUrl = function(url) {
-    Common.accessData.cellUrl = url;
+    Common.accessData.cellUrl = Common.preparePersoniumUrl(url);
 };
 
 Common.getCellUrl = function() {
@@ -196,7 +196,7 @@ Common.getCellName = function() {
 };
 
 Common.setBoxUrl = function(url) {
-    Common.accessData.boxUrl = url;
+    Common.accessData.boxUrl = Common.preparePersoniumUrl(url);
 };
 
 Common.getBoxUrl = function() {
@@ -204,7 +204,18 @@ Common.getBoxUrl = function() {
 };
 
 Common.setToCellBoxUrl = function(url) {
-    Common.accessData.toCellBoxUrl = url;
+    Common.accessData.toCellBoxUrl = Common.preparePersoniumUrl(url);
+};
+
+// Make sure Unit/Cell/Box URL contains ending slash ('/')
+Common.preparePersoniumUrl = function(url) {
+    let tempUrl = url;
+
+    if (url.slice(-1) != '/') {
+        tempUrl = url + '/';
+    }
+
+    return tempUrl;
 };
 
 Common.getToCellBoxUrl = function() {
@@ -430,7 +441,7 @@ Common.perpareToCellInfo = function(cellUrl, tcat, aaat, callback) {
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
                 let boxUrl = Common.getBoxUrlFromResponseHeader(request);
-                Common.setToCellBoxUrl(boxUrl + "/");
+                Common.setToCellBoxUrl(boxUrl);
                 // callback
                 if ((typeof callback !== "undefined") && $.isFunction(callback)) {
                     callback(cellUrl, Common.getToCellBoxUrl(), Common.getToCellToken());
