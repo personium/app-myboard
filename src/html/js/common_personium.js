@@ -224,7 +224,12 @@ Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, dispName) {
     Common.getProtectedBoxAccessToken4ExtCell(cellUrl, tcat, aaat).done(function(appCellToken) {
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
-                let boxUrl = Common.getBoxUrlFromResponseHeader(request);
+                let tempInfo = {
+                    data: data,
+                    request: request,
+                    targetCellUrl: cellUrl
+                };
+                let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                 console.log(boxUrl);
 
                 if ((typeof callback !== "undefined") && $.isFunction(callback)) {
