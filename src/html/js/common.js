@@ -78,7 +78,12 @@ $(document).ready(function() {
                 let token = Common.getToken();
                 Common.getBoxUrlAPI(cellUrl, token)
                     .done(function(data, textStatus, request) {
-                        let boxUrl = Common.getBoxUrlFromResponseHeader(request);
+                        let tempInfo = {
+                            data: data,
+                            request: request,
+                            targetCellUrl: cellUrl
+                        };
+                        let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                         console.log(boxUrl);
                         Common.setInfo(boxUrl);
                         // define your own additionalCallback for each App/screen
@@ -156,8 +161,12 @@ Common.getBoxUrlAPI = function(cellUrl, token) {
  * Currently the REST API does not support CORS.
  * Therefore, for CORS case, the default Box name is used.
  */
-Common.getBoxUrlFromResponseHeader = function(request) {
-    let boxUrl = request.getResponseHeader("Location") || (Common.getCellUrl() + APP_BOX_NAME);
+Common.getBoxUrlFromResponse = function(info) {
+    let urlFromHeader = info.request.getResponseHeader("Location");
+    let urlFromBody = info.data.Url;
+    let urlDefaultBox = info.targetCellUrl + APP_BOX_NAME;
+    let boxUrl = urlFromHeader || urlFromBody || urlDefaultBox;
+    
     return boxUrl;
 };
 
@@ -440,7 +449,12 @@ Common.perpareToCellInfo = function(cellUrl, tcat, aaat, callback) {
         Common.setToCellToken(appCellToken.access_token);
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
-                let boxUrl = Common.getBoxUrlFromResponseHeader(request);
+                let tempInfo = {
+                    data: data,
+                    request: request,
+                    targetCellUrl: cellUrl
+                };
+                let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                 Common.setToCellBoxUrl(boxUrl);
                 // callback
                 if ((typeof callback !== "undefined") && $.isFunction(callback)) {
