@@ -3,10 +3,13 @@ var mb = {};
 mb.msgData = null;
 
 const APP_URL = "https://demo.personium.io/app-myboard/";
-const APP_BOX_NAME = 'io_personium_demo_app-myboard';
 
 getEngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
+};
+
+getStartOAuth2EngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/start_oauth2";
 };
 
 getNamesapces = function() {
