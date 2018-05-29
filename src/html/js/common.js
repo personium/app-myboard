@@ -73,7 +73,7 @@ $(document).ready(function() {
                 return;
             };
 
-            Common.refreshToken(function(){
+            Common.startOAuth2(function(){
                 let cellUrl = Common.getCellUrl();
                 let token = Common.getToken();
                 Common.getBoxUrlAPI(cellUrl, token)
@@ -94,7 +94,7 @@ $(document).ready(function() {
                     .fail(function(error) {
                         console.log(error.responseJSON.code);
                         console.log(error.responseJSON.message.value);
-                        Common.irrecoverableErrorHandler("msg.error.failedToGetBoxUrl");
+                        Common.showIrrecoverableErrorDialog("msg.error.failedToGetBoxUrl");
                     });
             });
 
@@ -157,15 +157,10 @@ Common.getBoxUrlAPI = function(cellUrl, token) {
     });
 };
 
-/*
- * Currently the REST API does not support CORS.
- * Therefore, for CORS case, the default Box name is used.
- */
 Common.getBoxUrlFromResponse = function(info) {
     let urlFromHeader = info.request.getResponseHeader("Location");
     let urlFromBody = info.data.Url;
-    let urlDefaultBox = info.targetCellUrl + APP_BOX_NAME;
-    let boxUrl = urlFromHeader || urlFromBody || urlDefaultBox;
+    let boxUrl = urlFromHeader || urlFromBody;
     
     return boxUrl;
 };
@@ -278,8 +273,6 @@ Common.checkParam = function() {
     var msg_key = "";
     if (Common.getCellUrl() === null) {
         msg_key = "msg.error.targetCellNotSelected";
-    } else if (Common.accessData.refToken === null) {
-        msg_key = "msg.error.refreshTokenMissing";
     }
 
     if (msg_key.length > 0) {
@@ -384,6 +377,34 @@ Common.closeTab = function() {
     window.close();
 };
 
+// https://qiita.com/kawaz/items/1e51c374b7a13c21b7e2
+Common.startOAuth2 = function(callback) {
+    let endPoint = getStartOAuth2EngineEndPoint();
+    let cellUrl = Common.getCellUrl();
+    let params = $.param({
+        cellUrl: cellUrl
+    });
+    $.ajax({
+        type: "POST",
+        xhrFields: {
+            withCredentials: true
+        },
+        url: endPoint + "?" + params,
+        headers: {
+            'Accept':'application/json'
+        }
+    }).done(function(appCellToken) {
+        // update sessionStorage
+        Common.updateSessionStorage(appCellToken);
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        };
+    }).fail(function(error) {
+        console.log(error.responseJSON);
+        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
+    });
+};
+
 Common.refreshToken = function(callback) {
     let cellUrl = Common.getCellUrl();
     Common.getAppAuthToken(cellUrl).done(function(appToken) {
@@ -393,10 +414,12 @@ Common.refreshToken = function(callback) {
             if ((typeof callback !== "undefined") && $.isFunction(callback)) {
                 callback();
             };
-        }).fail(function(appCellToken) {
+        }).fail(function(error) {
+            console.log(error.responseJSON);
             Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
         });
-    }).fail(function(appToken) {
+    }).fail(function(error) {
+        console.log(error.responseJSON);
         Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
     });
 };
