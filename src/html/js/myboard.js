@@ -45,7 +45,7 @@ getAppRequestInfo = function() {
 additionalCallback = function() {
     mb.displayOwnBoardMessage();
 
-    Common.setIdleTime();
+    Common.setRefreshTimer();
 
     // 閲覧許可状況(外部セル)
     Common.getOtherAllowedCells();
