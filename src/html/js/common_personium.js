@@ -87,8 +87,9 @@ Common.dispAllowedCellList = function(json) {
             var uri = results[i].uri;
             var matchUrl = uri.match(/\(\'(.+)\'\)/);
             var extUrl = matchUrl[1];
-
-            Common.dispAllowedCellListAfter(extUrl, i);
+            
+            var url = Common.changeLocalUnitToUnitUrl(extUrl);
+            Common.dispAllowedCellListAfter(url, i);
         }
     }
 };
