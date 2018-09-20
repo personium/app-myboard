@@ -35,6 +35,7 @@ exports.personium = (function() {
         ].join("");
         var headers = {
             "Accept": "application/json",
+            "content-type": "application/x-www-form-urlencoded"
         };
         var contentType = "text/plain";
         var body = [

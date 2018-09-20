@@ -275,7 +275,10 @@ Common.getTranscellToken = function(extCellUrl) {
             refresh_token: Common.getRefressToken(),
             p_target: extCellUrl
         },
-        headers: {'Accept':'application/json'}
+        headers: {
+            'Accept':'application/json',
+            'content-type': 'application/x-www-form-urlencoded'
+        }
     });
 };
 
