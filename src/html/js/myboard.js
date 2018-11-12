@@ -193,28 +193,43 @@ mb.getReceiveMessage = function() {
     mb.getReceivedMessageAPI().done(function(data) {
         var results = data.d.results;
         for (var i in results) {
-            var title = results[i].Title;
-            var body = results[i].Body;
-            var fromCell = results[i].From;
-            var uuid = results[i].__id;
-
-            if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
-                var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + Common.getCellNameFromUrl(fromCell) + ':[' + title + ']</a></h4></div><div id="recMsg' + i + '" class="panel-collapse collapse"><div class="panel-body">';
-                if (results[i].Type === "message") {
-                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
-                } else {
-                    html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                    html += '<td width="10%"><button onClick="Common.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\', mb.approvalCallback);">'+ i18next.t("btn.approve") + '</button></td>';
-                    html += '<td width="10%"><button onClick="Common.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\', mb.rejectionCallback);">'+ i18next.t("btn.decline") + '</button></td>';
-                    html += '</tr></table>';
-                }
-                html += '</div></div></div>';
-
-                $("#messageList").append(html);
-            }
+            mb.createMessageList(results[i], i);
         }
     });
 };
+
+mb.createMessageList = function(result, no) {
+    var title = result.Title;
+    var body = result.Body;
+    var fromCell = result.From;
+    var uuid = result.__id;
+
+    if (result.Status !== "approved" && result.Status !== "rejected") {
+        let dispName = "";
+        Common.getCell(fromCell).done(function(cellObj){
+            dispName = cellObj.cell.name;
+        }).fail(function(xmlObj) {
+            if (xmlObj.status == "200") {
+                dispName = Common.getCellNameFromUrl(fromCell);
+            } else {
+                dispName = fromCell;
+            }
+        }).always(function(){
+            var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + dispName + ':[' + title + ']</a></h4></div><div id="recMsg' + no + '" class="panel-collapse collapse"><div class="panel-body">';
+            if (result.Type === "message") {
+                html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
+            } else {
+                html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
+                html += '<td width="10%"><button onClick="Common.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.approvalCallback);">'+ i18next.t("btn.approve") + '</button></td>';
+                html += '<td width="10%"><button onClick="Common.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.rejectionCallback);">'+ i18next.t("btn.decline") + '</button></td>';
+                html += '</tr></table>';
+            }
+            html += '</div></div></div>';
+    
+            $("#messageList").append(html);
+        });
+    }
+}
 
 mb.approvalCallback = function() {
     Common.getAllowedCellList(getAppRole());
