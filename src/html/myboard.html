@@ -5,8 +5,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-i18n="glossary:title"></title>
+  <!--     Fonts and icons     -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" />
+  <link href='./css/myboard.css' rel='stylesheet' type='text/css'>
+  <link href='./css/personium.css' rel='stylesheet' type='text/css'>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
@@ -14,123 +21,121 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jdenticon@1.8.0"></script>
+  
   <script src="./js/common.js"></script>
-  <script src="./js/common_personium.js"></script>
   <script src="./js/myboard.js"></script>
-  <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
-  <link href='./css/personium.css' rel='stylesheet' type='text/css'>
-  <link href='./css/myboard.css' rel='stylesheet' type='text/css'>
+  <script>
+    FontAwesomeConfig = {
+      searchPseudoElements: true
+    };
+  </script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 </head>
 <body>
-  <div class="mySpinner">
-    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-    <span class="sr-only">Loading...</span>
+  <div class="mySpinner modal-backdrop">
+      <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+      <span class="sr-only">Loading...</span>
   </div>
-  <div class="myHiddenDiv">
-    <div class="main_box">
-      <nav class="navbar navbar-default">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
-              <span class="sr-only" data-i18n="navbar.toggleNavigation"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            
-            <a id="myboard" href="#" onclick="mb.displayOwnBoardMessage();return false;">
-              <i class="fa fa-pencil-square-o fa-2x fa-fw"></i>
-            </a>
-            
-            <a href="#" onclick="mb.displayOwnBoardMessage();return false;" class="navbar-brand" data-i18n="navbar.appName"></a>
-          </div>
-          <div class="collapse navbar-collapse" id="collapse-id">
-           <ul class="nav navbar-nav">
-            <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellMyBoard" class="collapsed" data-i18n="glossary:navbar.readAnotherBoard.title"></a></li>
-            <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed" data-i18n="glossary:navbar.sendReadPermissionRequest.title"></a></li>
-            <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed" data-i18n="glossary:navbar.readPermissionStatus.title"></a></li>
-            <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed" data-i18n="menu.notification.title"></a></li>
-           </ul>
-          </div>
-          <div class="panel-group" id="accordion">
-            <div id="extCellMyBoard" class="panel-collapse collapse">
-              <div class="panel-body">
-                <h3 data-i18n="glossary:navbar.readAnotherBoard.panelHeader"></h3>
-                <p data-i18n="glossary:navbar.readAnotherBoard.description"></p>
-                <select id="otherAllowedCells"></select>
-                <button type="button" class="btn btn-primary" id="bReadAnotherCell" data-i18n="glossary:navbar.readAnotherBoard.btn" disabled></button>
-              </div>
-              <span class="popupAlertArea" style="color:red">
-                <aside id="popupReadAllowedErrorMsg"></aside>
-              </span>
+  <div id="loadContent" class="loadHiddenDiv">
+  </div>
+  <div class="myHiddenDiv" style="height: 100%;">
+    <div id="drawer">
+        <div id="menu-background">
+            <div id="drawer_menu">
+                <ul>
+                    <li class="menu-list">
+                        <a id="sharingMember" onClick="Common.displayReceivedSendSharingListPanel();" href="javascript:void(0)" class="allToggle">
+                          <div class="sharing-list">
+                            <div class="list-icon-left">
+                                <i class="fas fa-caret-right fa-2x sharing-icon"></i>
+                                <i class="fas fa-user fa-2x sharing-icon"></i>
+                            </div>
+                            <span class="sharing-menu" data-i18n="Sharing.Received.label"></span>
+                          </div>
+                        </a>
+                    </li>
+                    <li class="menu-list">
+                        <a id="sharingMember" onClick="Common.displaySharingMemberListPanel();" href="javascript:void(0)" class="allToggle">
+                          <div class="sharing-list">
+                            <div class="list-icon-left">
+                                <i class="fas fa-caret-right fa-2x sharing-icon"></i>
+                                <i class="fas fa-user fa-2x sharing-icon"></i>
+                            </div>
+                            <span class="sharing-menu" data-i18n="Sharing.by.label"></span>
+                          </div>
+                        </a>
+                    </li>
+                    <li class="menu-list">
+                        <a id="sharingMember" onClick="Common.displaySendSharingListPanel();" href="javascript:void(0)" class="allToggle">
+                          <div class="sharing-list">
+                            <div class="list-icon-left">
+                                <i class="fas fa-user fa-2x sharing-icon"></i>
+                                <i class="fas fa-caret-right fa-2x sharing-icon"></i>
+                            </div>
+                            <span class="sharing-menu" data-i18n="Sharing.Send.label"></span>
+                          </div>
+                        </a>
+                    </li>
+                    <li class="menu-list app-version">
+                        <a href="javascript:void(0)" data-i18n="menu.Version"></a>
+                    </li>
+                </ul>
             </div>
-            <div id="sendAllowedMessage" class="panel-collapse collapse">
-              <div class="panel-body">
-                <h3 data-i18n="glossary:navbar.sendReadPermissionRequest.panelHeader"></h3>
-                <p data-i18n="glossary:navbar.sendReadPermissionRequest.description"></p>
-                <select id="requestCells"></select>
-                <button type="button" class="btn btn-primary" id="bSendAllowed" data-i18n="glossary:navbar.sendReadPermissionRequest.btn" disabled></button>
-              </div>
-              <span class="popupAlertArea" style="color:red">
-                <aside id="popupSendAllowedErrorMsg"></aside>
-              </span>
+            <div id="other_list">
+                <ul>
+                    <li class="menu-list menu-list-header">
+                        <span　data-i18n="glossary:Sharing.title"></span>
+                    </li>
+                </ul>
+                <ul id="otherAllowedCells">
+                </ul>
+                <ul class="subMySpinner modal-backdrop">
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    <span class="sr-only">Loading...</span>
+                </ul>
             </div>
-            <div id="listAllowed" class="panel-collapse collapse">
-              <div class="panel-body">
-                <h3 data-i18n="glossary:navbar.readPermissionStatus.panelHeader"></h3>
-                <p data-i18n="glossary:navbar.readPermissionStatus.description"></p>
-                <table id="allowedCellList"></table>
-              </div>
-            </div>
-            <div id="receiveMessage" class="panel-collapse collapse">
-              <div class="panel-body">
-                <h3 data-i18n="menu.notification.header"></h3>
-                <div class="panel-group" id="messageList"></div>
-              </div>
-            </div>
-          </div>
         </div>
-      </nav>
+    </div>
+
+    <header>
+      <button id="drawer_btn" class="header-btn pn-btn">
+        <i class="fas fa-bars fa-2x header-ic-02"></i>
+      </button>
+
+      <div id="appTitle" class="app-displayname ellipsisText"></div>
+
+      <a id="other_btn" class="header-btn-right header-btn pn-btn" href="javascript:void(0)">
+          <div>
+              <svg class="other-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                  <title>other</title>
+                  <path d="M25.94,13.63h0l-.43-.12A6.79,6.79,0,0,0,15,5a.25.25,0,0,0,.08.41,8.91,8.91,0,0,1,1.63.84.25.25,0,0,0,.29,0,4.49,4.49,0,0,1,2.78-1A4.53,4.53,0,0,1,21,14.2a.25.25,0,0,0-.19.22,9.18,9.18,0,0,1-.32,1.82.25.25,0,0,0,.05.23.26.26,0,0,0,.22.08,6.79,6.79,0,0,0,3-1.21l1.56.44a2.46,2.46,0,0,1,1.78,2.35v.93a.83.83,0,0,1-.83.83H23.47a.25.25,0,0,0-.23.35,6.94,6.94,0,0,1,.52,1.68.25.25,0,0,0,.25.21h2.26a3.08,3.08,0,0,0,3.07-3.07v-.93A4.68,4.68,0,0,0,25.94,13.63Z"
+                  />
+                  <path d="M18.6,18.07h0L18,17.9a7.45,7.45,0,1,0-12.43,0L5,18.07A5.11,5.11,0,0,0,1.29,23v1a3.33,3.33,0,0,0,3.33,3.33H19A3.33,3.33,0,0,0,22.31,24V23A5.11,5.11,0,0,0,18.6,18.07Zm-6.78.82a5.12,5.12,0,1,1,5.12-5.12A5.12,5.12,0,0,1,11.82,18.89Zm4.38.92,1.76.5A2.8,2.8,0,0,1,20,23v1a1,1,0,0,1-1,1H4.62a1,1,0,0,1-1-1V23a2.8,2.8,0,0,1,2-2.68l1.76-.5a7.45,7.45,0,0,0,8.78,0Z"
+                  />
+              </svg>
+          </div>
+      </a>
+      <a id="edit_btn" class="header-btn-right header-btn pn-btn" href="javascript:void(0)" style="display:none;">
+        <div>
+          <i class="fas fa-check fa-2x header-ic-03 other-icon"></i>
+        </div>
+      </a>
+      <!--<button id="other_btn" class="header-btn-right header-btn pn-btn" >Other</button>-->
+    </header>
+    <main>
+      <div class="panel panel-default disp_board">
+        <textarea class="write_board" id="txtMyBoard" readonly></textarea>
+      </div>
+      <!--<div id="modalDialogContainer"></div>-->
+    </main>
+
+    <div class="modal" id="dialogOverlay">
       <div class="mySpinner">
         <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-        <span class="sr-only">Loading...</span>
-      </div>
-      <div class="myHiddenDiv">
-        <div class="col-md-12 col-xs-12" align="center">
-          <div class="panel panel-default disp_board">
-            <table class="table table-bordered">
-              <tr>
-                <td class="info text-center">
-                  <span id="boardTitle" class="small"></span>
-                </td>
-              </tr>
-              <tr height="70%">
-                <td>
-                  <textarea class="write_board" id="txtMyBoard" readonly></textarea>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <button type="button" class="btn btn-primary" id="exeEditer" data-i18n="btn.edit"></button>
-          <div id="dispMsg" style="display:none;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-edit-myboard" class="modal fade" role="dialog" data-backdrop="static">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header login-header">
-          <h4 class="modal-title" data-i18n="btn.edit"></h4>
-        </div>
-        <div class="modal-body">
-           <textarea class="edit_board" id="txtEditMyBoard"></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="btn.cancel"></button>
-          <button type="button" class="btn btn-primary" id="b-edit-myboard-ok" data-i18n="btn.save"></button>
-        </div>
+        <span class="sr-only">Sync...</span>
       </div>
     </div>
   </div>
