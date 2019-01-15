@@ -1,26 +1,16 @@
 {
-    "title": "MyBoard",
+    "title": "Personium MyBoard",
+    "label": "MyBoard",
     "board": {
         "Mine": "自分の board ({{name}})",
         "Yours": "他人の board ({{name}})"
     },
-    "navbar": {
-        "readAnotherBoard": {
-            "title": "他のMyBoardを見る",
-            "panelHeader": "$t(glossary:navbar.readAnotherBoard.title)",
-            "description": "許可されているセル",
-            "btn": "閲覧"
+    "modalDialog": {
+        "updateMyBoard": {
+            "msg": "文章が更新されています。画面に反映しますか？"
         },
-        "sendReadPermissionRequest": {
-            "title": "閲覧許可依頼送信",
-            "panelHeader": "$t(glossary:navbar.sendReadPermissionRequest.title)",
-            "description": "依頼先セル",
-            "btn": "送信"
-        },
-        "readPermissionStatus": {
-            "title": "閲覧許可状況",
-            "panelHeader": "$t(glossary:navbar.readPermissionStatus.title)",
-            "description": "許可しているセル"
+        "updatingMyBoard": {
+            "msg": "{{name}}が編集中の為、編集はロックされています。"
         }
     },
     "sessionExpiredDialog": {

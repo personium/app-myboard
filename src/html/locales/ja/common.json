@@ -5,7 +5,8 @@
         "notification": {
             "title": "通知",
             "header": "$t(menu.notification.title)一覧"
-        }
+        },
+        "Version": "バージョン 1.2.1"
     },
     "navbar": {
         "toggleNavigation": "Toggle navigation",
@@ -14,6 +15,7 @@
     "sessionExpiredDialog": {
         "title": "$t(glossary:sessionExpiredDialog.title)",
         "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
+        "cancelBtn": "キャンセル",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "irrecoverableErrorDialog": {
@@ -21,6 +23,9 @@
     },
     "warningDialog": {
         "title": "警告"
+    },
+    "confirmDialog": {
+        "title": "確認"
     },
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
     "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
@@ -34,13 +39,18 @@
     "msg": {
         "info": {
             "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
-            "messageSent": "メッセージを送信しました。"
+            "messageSent": "メッセージを送信しました。",
+            "requestSent": "許可依頼を送信します。よろしいですか？",
+            "requestApproval": "要求された権限を付与します。よろしいですか？",
+            "requestRejection": "要求を拒否します。よろしいですか？"
         },
         "warning": {
             "failedToGetLaunchJson": "アプリの起動情報の取得に失敗しました。"
         },
         "error": {
             "failedToSendMessage": "メッセージの送信に失敗しました。",
+            "failedRequestSent": "許可依頼の送信に失敗しました。",
+            "failedChangeStatus": "ステータスの変更に失敗しました。",
             "targetCellNotSelected": "対象セルが設定されていません。",
             "tokenMissing": "トークンが設定されていません。",
             "refreshTokenMissing": "リフレッシュ$t(msg.error.tokenMissing)",
@@ -58,6 +68,37 @@
         "save": "保存",
         "release": "解除",
         "approve": "承諾",
-        "decline": "拒否"
+        "decline": "拒否",
+        "finish": "完了"
+    },
+    "Authority": {
+        "label": "権限",
+        "owner": "オーナー",
+        "editor": "編集",
+        "viewer": "閲覧"
+    },
+    "Sharing": {
+        "title": "別の$t(glossary:label)を表示",
+        "by": {
+            "label": "私の$t(glossary:label)を共有してる"
+        },
+        "with": {
+            "label": "共有してもらう"
+        },
+        "Member": {
+            "label": "共有メンバー",
+            "add": "メンバー追加"
+        },
+        "Send": {
+            "label": "共有依頼を送信",
+            "description": "下記の権限で共有依頼を送信します。",
+            "btnFooter": "送信"
+        },
+        "Received": {
+            "label": "受信した共有依頼",
+            "description": "許可すると下記の権限で貴方の$t(glossary:label)が共有されます。",
+            "rejectionBtn": "破棄",
+            "approvelBtn": "許可"
+        }
     }
 }

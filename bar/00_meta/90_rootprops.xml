@@ -19,14 +19,11 @@
                 <acl xml:base="https://demo.personium.io/app-myboard/__role/__/" xmlns:dc="urn:x-dcl:xmlns">
                     <ace>
                         <principal>
-                            <href>MyBoardOperator</href>
+                            <href>MyBoardOwner</href>
                         </principal>
                         <grant>
                             <privilege>
-                                <write/>
-                            </privilege>
-                            <privilege>
-                                <read/>
+                                <all/>
                             </privilege>
                         </grant>
                     </ace>
@@ -37,6 +34,19 @@
                         <grant>
                             <privilege>
                                 <read/>
+                            </privilege>
+                        </grant>
+                    </ace>
+                    <ace>
+                        <principal>
+                            <href>MyBoardEditor</href>
+                        </principal>
+                        <grant>
+                            <privilege>
+                                <read/>
+                            </privilege>
+                            <privilege>
+                                <write/>
                             </privilege>
                         </grant>
                     </ace>

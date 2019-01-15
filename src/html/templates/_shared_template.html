@@ -1,0 +1,94 @@
+﻿<!doctype html>
+<html lang="ja">
+
+<head>
+   <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+    <script>
+        FontAwesomeConfig = {
+            searchPseudoElements: true
+        };
+    </script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+    <title>Personium</title>
+</head>
+
+<body>
+    <header>
+        <button class="header-btn pn-back-btn pn-btn" onclick="Common.backSubContent();">
+            <i id="back_btn" class="fas fa-angle-left fa-2x header-ic-01"></i>
+        </button>
+        <div class="header-title"></div>
+    </header>
+
+    <main>
+        <div class="bg-gray">
+            <div class="extcell-profile">
+                <div class="link_icon user-icon user-icon-large"></div>
+                <div class="user-description"></div>
+                <div class="user-cell-url"></div>
+            </div>
+            <div class="authority-panel sendShared">
+                <hr style="border: 1px solid #ccc;margin:0;margin-bottom:20px;">
+                <div data-i18n="Sharing.Send.description" style="margin: 20px 0;"></div>
+                <table>
+                    <tr>
+                        <td>
+                            <span class="authority-label" data-i18n="Authority.label" style="float:left;"></span>:
+                        </td>
+                        <td>
+                            <span>
+                                <a href="javascript:void(0)" onClick="Common.selectSharingRequestRole();">
+                                    <div class="select-button">
+                                        <div class="account-info">
+                                            <div id="selectAuth" class="authority-label" data-select-auth="viewer" data-i18n="Authority.viewer"></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+                <!--<span class="authority-label" data-i18n="Authority.label" style="float:left;"></span>:
+                <span class="authority-label" data-i18n="Authority.viewer"></span>-->
+            </div>
+            <div class="authority-panel dispShared">
+                <hr style="border: 1px solid #ccc;margin:0;margin-bottom:20px;">
+                <div data-i18n="Sharing.Received.description" style="margin: 20px 0;"></div>
+                <span class="authority-label" data-i18n="Authority.label" style="float:left;"></span>:
+                <span class="authority-label" id="reqAuthority"></span>
+            </div>
+        </div>
+    </main>
+    <footer class="shared-footer">
+        <div class="singleBtn">
+            <button id="sendSharedFooterButton" class="width-full-btn" onclick="Common.sendSharingRequest();">
+                <div data-i18n="Sharing.Send.btnFooter"></div>
+            </button>
+        </div>
+        <div class="doubleBtn">
+            <button id="refectionFooterButton" class="width-full-btn colorGray" onclick="Common.backSubContent();">
+                <div data-i18n="Sharing.Received.rejectionBtn"></div>
+            </button>
+            <button id="approvalFooterButton" class="width-full-btn" onclick="Common.backSubContent();">
+                <div data-i18n="Sharing.Received.approvelBtn"></div>
+            </button>
+        </div>
+    </footer>
+</body>
+
+</html>

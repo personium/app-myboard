@@ -16,11 +16,6 @@ getNamesapces = function() {
     return ['common', 'glossary'];
 };
 
-getAppRole = function() {
-    // Currently we only allow role with read permission.
-    return 'MyBoardViewer';
-};
-
 getAppDataPath = function() {
     return 'MyBoardBox/my-board.json';
 };
@@ -42,42 +37,125 @@ getAppRequestInfo = function() {
     };
 };
 
+getAppRole = function(auth) {
+    if (auth == "read") {
+        // Currently we only allow role with read permission.
+        return 'MyBoardViewer';
+    }
+};
+
+getAuthorityAppRole = function(auth) {
+    let result = auth;
+    switch (auth) {
+        case "owner":
+            result = "MyBoardOwner";
+            break;
+        case "editor":
+            result = "MyBoardEditor";
+            break;
+        case "viewer":
+            result = "MyBoardViewer";
+            break;
+    }
+
+    return result;
+}
+
+getAppRoleAuthority = function(roleName) {
+    let result = roleName;
+    switch (roleName) {
+        case "MyBoardOwner":
+            result = "owner";
+            break;
+        case "MyBoardEditor":
+            result = "editor";
+            break;
+        case "MyBoardViewer":
+            result = "viewer";
+            break;
+    }
+
+    return result;
+}
+getAppRoleAuthorityName = function(roleName) {
+    let result = roleName;
+    switch (roleName) {
+        case "MyBoardOwner":
+            result = i18next.t("Authority.owner");
+            break;
+        case "MyBoardEditor":
+            result = i18next.t("Authority.editor");
+            break;
+        case "MyBoardViewer":
+            result = i18next.t("Authority.viewer");
+            break;
+    }
+
+    return result;
+}
+
+getAppRoleAuthorityList = function(roleList) {
+    let result = "";
+    for (var i = 0; i < roleList.length; i++) {
+        result += getAppRoleAuthorityName(roleList[i]) + ", ";
+    }
+    result = result.slice(0,-2);
+    return result;
+}
+
 additionalCallback = function() {
     mb.displayOwnBoardMessage();
 
+    Common.Drawer_Menu();
+
     Common.setRefreshTimer();
 
-    // 閲覧許可状況(外部セル)
-    Common.getOtherAllowedCells();
-    // 閲覧許可状況
-    Common.getAllowedCellList(getAppRole());
-    // 通知
-    mb.getReceiveMessage();
+    Common.getProfileName(Common.getTargetCellUrl(), Common.displayMyDisplayName);
 
-    $('#exeEditer').on('click', function () {
-        $("#txtEditMyBoard").val($("#txtMyBoard").val());
-        $('#modal-edit-myboard').modal('show');
+    if (Common.getTargetCellUrl() !== Common.getCellUrl()) {
+        $("#other_btn").hide();
+        $(".menu-list").addClass("disable-field");
+    }
+
+    $('#txtMyBoard').on('click', function () {
+        Common.getAppDataAPI(Common.getBoxUrl(), Common.getToken()).done(function(data) {
+            var msgData = JSON.parse(data);
+            if (msgData.locked && msgData.locked !== "" && msgData.locked !== Common.getCellUrl()) {
+                // Messages that can not be edited because it is being edited
+                let msg_key = "glossary:modalDialog.updatingMyBoard.msg";
+                Common.showWarningDialog(msg_key, function() {
+                    $('#modal-common').modal('hide');
+                });
+                $("#modal-common .modal-body")
+                .attr('data-i18n', '[html]' + msg_key).localize({name: msgData.locked});
+            } else {
+                // Editable
+                if (mb.msgData.message !== msgData.message) {
+                    // When the currently displayed message is old, a confirmation message for updating is displayed
+                    Common.showConfirmDialog("glossary:modalDialog.updateMyBoard.msg", function() {
+                        $('#txtMyBoard').val(msgData.message);
+                        mb.msgData.message = msgData.message
+                        $('#modal-common').modal('hide');
+                        mb.removeReadOnly(msgData.message);
+                    }, function() {
+                        $('#modal-common').modal('hide');
+                        mb.removeReadOnly(msgData.message);
+                    });
+                } else {
+                    // Remove readonly
+                    mb.removeReadOnly(msgData.message);
+                }
+            }
+        });
     });
 
-    $('#b-edit-myboard-ok').on('click', function () {
+    $('#edit_btn').on('click', function () {
         mb.myboardReg();
     });
 
     $('#bReadAnotherCell').on('click', function () {
         var toCellUrl = $("#otherAllowedCells option:selected").val();
         mb.displayAnotherBoardMessage(toCellUrl);
-    });
-
-    $('#bSendAllowed').on('click', function () {
-        var value = $("#requestCells option:selected").val();
-        var title = i18next.t("readRequestTitle");
-        var body = i18next.t("readRequestBody");
-        var reqRel = getAppRole();
-        Common.sendMessageAPI(null, value, "request", title, body, "role.add", reqRel, Common.getCellUrl()).done(function(data) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
-        }).fail(function(data) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-        });
     });
 
     $("#extCellMyBoard").on('show.bs.collapse', function() {
@@ -115,9 +193,33 @@ additionalCallback = function() {
         $("#extCellMyBoard").attr("aria-expanded", false);
     });
 
-    $('body > div.mySpinner').hide();
-    $('body > div.myHiddenDiv').show();
+    Common.hideSpinner("body");
 };
+
+mb.removeReadOnly = function(message) {
+    mb.registerMyBoardAPI(Common.getCellUrl(), message).done(function() {
+        $('#txtMyBoard').attr('readonly',false);
+        // To reflect changes to the editable state, specify the focus again.
+        $('#txtMyBoard').blur();
+        $('#txtMyBoard').focus();
+
+        // Switch the browsing button of the other person on the upper right to the save button
+        $("#other_btn").hide();
+        $("#edit_btn").show();
+    }).fail(function() {
+
+        Common.displayMessageByKey("glossary:msg.error.noWritePermission");
+    });
+}
+
+mb.grantReadOnly = function() {
+    $('#txtMyBoard').attr('readonly',true);
+    $('#txtMyBoard').blur();
+
+    // Switch the browsing button of the other person on the upper right to the save button
+    $("#other_btn").show();
+    $("#edit_btn").hide();
+}
 
 irrecoverableErrorHandler = function() {
     $("#collapse-id").empty();
@@ -128,14 +230,12 @@ mb.displayOwnBoardMessage = function() {
     let cellUrl = Common.getCellUrl();
     let boxUrl = Common.getBoxUrl();
     let token = Common.getToken();
-    $('.main_box > div.mySpinner').show();
-    $('.main_box > div.myHiddenDiv').hide();
+    Common.showSpinner(".main_box");
     mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
 };
 
 mb.displayAnotherBoardMessage = function(toCellUrl) {
-    $('.main_box > div.mySpinner').show();
-    $('.main_box > div.myHiddenDiv').hide();
+    Common.showSpinner(".main_box");
         
     $.when(Common.getTranscellToken(toCellUrl), Common.getAppAuthToken(toCellUrl))
         .done(function(result1, result2) {
@@ -147,8 +247,7 @@ mb.displayAnotherBoardMessage = function(toCellUrl) {
             });
         })
         .fail(function(){
-            $('.main_box > div.mySpinner').hide();
-            $('.main_box > div.myHiddenDiv').show();
+            Common.hideSpinner(".main_box");
         });
 };
 
@@ -183,70 +282,32 @@ mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
                 .show();
         }
     }).always(function() {
-        $('.main_box > div.mySpinner').hide();
-        $('.main_box > div.myHiddenDiv').show();
+        Common.hideSpinner(".main_box");
     });
 };
 
-mb.getReceiveMessage = function() {
-    $("#messageList").empty();
-    mb.getReceivedMessageAPI().done(function(data) {
-        var results = data.d.results;
-        for (var i in results) {
-            mb.createMessageList(results[i], i);
+mb.myboardReg = function() {
+    var strTxt = $("#txtMyBoard").val();
+    mb.msgData.message = strTxt.replace(/\n/g, "<br>");
+    mb.registerMyBoardAPI("", mb.msgData.message).done(function() {
+        $("#txtMyBoard").val(strTxt);
+        mb.grantReadOnly();
+    }).fail(function(data) {
+        var status = data.status;
+        if (status == 403) {
+            Common.displayMessageByKey("glossary:msg.error.noWritePermission");
+        } else {
+            Common.displayMessageByKey("glossary:msg.error.failedToWrite");
         }
     });
 };
 
-mb.createMessageList = function(result, no) {
-    var title = result.Title;
-    var body = result.Body;
-    var fromCell = result.From;
-    var uuid = result.__id;
-
-    if (result.Status !== "approved" && result.Status !== "rejected") {
-        let dispName = "";
-        Common.getCell(fromCell).done(function(cellObj){
-            dispName = cellObj.cell.name;
-        }).fail(function(xmlObj) {
-            if (xmlObj.status == "200") {
-                dispName = Common.getCellNameFromUrl(fromCell);
-            } else {
-                dispName = fromCell;
-            }
-        }).always(function(){
-            var html = '<div class="panel panel-default" id="recMsgParent' + i + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + i + '" class="allToggle collapsed">' + dispName + ':[' + title + ']</a></h4></div><div id="recMsg' + no + '" class="panel-collapse collapse"><div class="panel-body">';
-            if (result.Type === "message") {
-                html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
-            } else {
-                html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                html += '<td width="10%"><button onClick="Common.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.approvalCallback);">'+ i18next.t("btn.approve") + '</button></td>';
-                html += '<td width="10%"><button onClick="Common.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.rejectionCallback);">'+ i18next.t("btn.decline") + '</button></td>';
-                html += '</tr></table>';
-            }
-            html += '</div></div></div>';
-    
-            $("#messageList").append(html);
-        });
-    }
-}
-
-mb.approvalCallback = function() {
-    Common.getAllowedCellList(getAppRole());
-};
-
-mb.rejectionCallback = function() {
-    Common.getAllowedCellList(getAppRole());
-};
-
-
-mb.myboardReg = function() {
-    var strTxt = $("#txtEditMyBoard").val();
-    mb.msgData.message = strTxt.replace(/\n/g, "<br>");
+mb.registerMyBoardAPI = function(locked, message) {
     json = {
-        "message" : mb.msgData.message
+        "locked" : locked,
+        "message" : message
     };
-    $.ajax({
+    return $.ajax({
         type: "PUT",
         url: Common.getBoxUrl() + 'MyBoardBox/my-board.json',
         data: JSON.stringify(json),
@@ -255,19 +316,8 @@ mb.myboardReg = function() {
             'Authorization':'Bearer ' + Common.getToken(),
             'Accept':'application/json'
         }
-    }).done(function() {
-        $("#txtMyBoard").val(strTxt);
-        $('#modal-edit-myboard').modal('hide');
-    }).fail(function(data) {
-        var status = data.status;
-        if (status == 403) {
-            Common.displayMessageByKey("glossary:msg.error.noWritePermission");
-        } else {
-            Common.displayMessageByKey("glossary:msg.error.failedToWrite");
-        }
-        $('#modal-edit-myboard').modal('hide');
     });
-};
+}
 
 mb.getReceivedMessageAPI = function() {
     return $.ajax({
