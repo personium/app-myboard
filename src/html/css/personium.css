@@ -907,7 +907,6 @@ footer {
 .sharing-list {
     position: relative;
     display: flex;
-    padding-right: 50px;
 }
 
 .sharing-icon {
