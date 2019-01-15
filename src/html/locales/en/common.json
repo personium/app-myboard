@@ -15,7 +15,7 @@
     "sessionExpiredDialog": {
         "title": "$t(glossary:sessionExpiredDialog.title)",
         "message": "Session has expired.<br>$t(glossary:sessionExpiredDialog.action)",
-        "cancelBtn": "cencel",
+        "cancelBtn": "cancel",
         "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
     },
     "irrecoverableErrorDialog": {
@@ -94,7 +94,7 @@
             "description": "Send sharing request with the following authority.",
             "btnFooter": "Send"
         },
-        "Response": {
+        "Received": {
             "label": "Received sharing request",
             "description": "If you allow it, your $t(glossary:label) will be shared with the following authority.",
             "rejectionBtn": "Discard",

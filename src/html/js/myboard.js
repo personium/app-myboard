@@ -16,11 +16,6 @@ getNamesapces = function() {
     return ['common', 'glossary'];
 };
 
-getAppRole = function() {
-    // Currently we only allow role with read permission.
-    return 'MyBoardViewer';
-};
-
 getAppDataPath = function() {
     return 'MyBoardBox/my-board.json';
 };
@@ -45,7 +40,7 @@ getAppRequestInfo = function() {
 getAppRole = function(auth) {
     if (auth == "read") {
         // Currently we only allow role with read permission.
-        return 'CalendarViewer';
+        return 'MyBoardViewer';
     }
 };
 
@@ -161,18 +156,6 @@ additionalCallback = function() {
     $('#bReadAnotherCell').on('click', function () {
         var toCellUrl = $("#otherAllowedCells option:selected").val();
         mb.displayAnotherBoardMessage(toCellUrl);
-    });
-
-    $('#bSendAllowed').on('click', function () {
-        var value = $("#requestCells option:selected").val();
-        var title = i18next.t("readRequestTitle");
-        var body = i18next.t("readRequestBody");
-        var reqRel = getAppRole();
-        Common.sendMessageAPI(null, value, "request", title, body, "role.add", reqRel, Common.getCellUrl()).done(function(data) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
-        }).fail(function(data) {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
-        });
     });
 
     $("#extCellMyBoard").on('show.bs.collapse', function() {
@@ -302,58 +285,6 @@ mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
         Common.hideSpinner(".main_box");
     });
 };
-
-mb.getReceiveMessage = function() {
-    $("#messageList").empty();
-    mb.getReceivedMessageAPI().done(function(data) {
-        var results = data.d.results;
-        for (var i in results) {
-            mb.createMessageList(results[i], i);
-        }
-    });
-};
-
-mb.createMessageList = function(result, no) {
-    var title = result.Title;
-    var body = result.Body;
-    var fromCell = result.From;
-    var uuid = result.__id;
-
-    if (result.Status !== "approved" && result.Status !== "rejected") {
-        let dispName = "";
-        Common.getCell(fromCell).done(function(cellObj){
-            dispName = cellObj.cell.name;
-        }).fail(function(xmlObj) {
-            if (xmlObj.status == "200") {
-                dispName = Common.getCellNameFromUrl(fromCell);
-            } else {
-                dispName = fromCell;
-            }
-        }).always(function(){
-            var html = '<div class="panel panel-default" id="recMsgParent' + no + '"><div class="panel-heading"><h4 class="panel-title accordion-togle"><a data-toggle="collapse" data-parent="#accordion" href="#recMsg' + no + '" class="allToggle collapsed">' + dispName + ':[' + title + ']</a></h4></div><div id="recMsg' + no + '" class="panel-collapse collapse"><div class="panel-body">';
-            if (result.Type === "message") {
-                html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
-            } else {
-                html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                html += '<td width="10%"><button onClick="Common.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.approvalCallback);">'+ i18next.t("btn.approve") + '</button></td>';
-                html += '<td width="10%"><button onClick="Common.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + no + '\', mb.rejectionCallback);">'+ i18next.t("btn.decline") + '</button></td>';
-                html += '</tr></table>';
-            }
-            html += '</div></div></div>';
-    
-            $("#messageList").append(html);
-        });
-    }
-}
-
-mb.approvalCallback = function() {
-    Common.getAllowedCellList(getAppRole());
-};
-
-mb.rejectionCallback = function() {
-    Common.getAllowedCellList(getAppRole());
-};
-
 
 mb.myboardReg = function() {
     var strTxt = $("#txtMyBoard").val();

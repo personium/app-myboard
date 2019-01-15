@@ -962,60 +962,6 @@ Common.sendSharingRequest = function() {
 }
 
 /* other cell */
-Common.getAllowedCellList = function(role) {
-    let extCellUrl = [
-        Common.getCellUrl(),
-        '__ctl/Role(Name=\'',
-        role,
-        '\',_Box\.Name=\'',
-        Common.getBoxName(),
-        '\')/$links/_ExtCell'
-    ].join("");
-
-    $.ajax({
-        type: "GET",
-        url: extCellUrl,
-        headers: {
-            'Authorization':'Bearer ' + Common.getToken(),
-            'Accept':'application/json'
-        }
-    }).done(function(data) {
-        Common.dispAllowedCellList(data);
-    });
-};
-Common.dispAllowedCellList = function(json) {
-    $("#allowedCellList").empty();
-    var results = json.d.results;
-    if (results.length > 0) {
-        results.sort(function(val1, val2) {
-          return (val1.uri < val2.uri ? 1 : -1);
-        })
-
-        for (var i in results) {
-            var uri = results[i].uri;
-            var matchUrl = uri.match(/\(\'(.+)\'\)/);
-            var extUrl = matchUrl[1];
-
-            Common.dispAllowedCellListAfter(extUrl, i);
-        }
-    }
-};
-Common.dispAllowedCellListAfter = function(extUrl, no) {
-    Common.getProfile(extUrl, function(profObj) {
-        Common.appendAllowedCellList(extUrl, profObj.dispName, no)
-    });
-};
-Common.appendAllowedCellList = function(extUrl, dispName, no) {
-    $("#allowedCellList")
-        .append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="Common.notAllowedCell(this)" data-ext-url="' + extUrl + '"data-i18n="btn.release">' + '</button></td></tr>')
-        .localize();
-};
-Common.notAllowedCell = function(aDom) {
-    let extUrl = $(aDom).data("extUrl");
-    Common.deleteExtCellLinkRelation(extUrl, getAppRole()).done(function() {
-        $(aDom).closest("tr").remove();
-    });
-};
 Common.getOtherAllowedCells = function() {
     Common.getExtCell().done(function(json) {
         $(".subMySpinner").show();
@@ -1025,14 +971,7 @@ Common.getOtherAllowedCells = function() {
                 objSel.removeChild(objSel.firstChild);
             }
         }
-/*
-        objSel = document.getElementById("requestCells");
-        if (objSel.hasChildNodes()) {
-            while (objSel.childNodes.length > 0) {
-                objSel.removeChild(objSel.firstChild);
-            }
-        }      
-*/
+
         var results = json.d.results;
         if (results.length > 0) {
             results.sort(function(val1, val2) {
