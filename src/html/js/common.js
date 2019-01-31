@@ -972,6 +972,9 @@ Common.getOtherAllowedCells = function() {
             }
         }
 
+        Common.sharingMemberRole = {};
+        Common.reqReceivedUUID = {};
+        Common.reqRequestAuthority = {};
         var results = json.d.results;
         if (results.length > 0) {
             results.sort(function(val1, val2) {
