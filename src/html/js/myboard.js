@@ -2,7 +2,7 @@ var mb = {};
 
 mb.msgData = null;
 
-const APP_URL = "https://demo.personium.io/app-myboard/";
+const APP_URL = "https://app-myboard.demo.personium.io/";
 
 getEngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
