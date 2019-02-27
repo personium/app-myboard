@@ -1,29 +1,35 @@
 <multistatus xmlns="DAV:">
     <response>
-        <href>dcbox:/</href>
+        <href>personium-localbox:/</href>
         <propstat>
             <prop>
+                <creationdate>2019-02-27T01:34:39.833+0000</creationdate>
+                <getlastmodified>Wed, 27 Feb 2019 01:34:39 GMT</getlastmodified>
                 <resourcetype>
                     <collection/>
                 </resourcetype>
+                <acl xml:base="https://app-myboard.demo.personium.io/__role/app/" xmlns:p="urn:x-personium:xmlns"/>
             </prop>
+            <status>HTTP/1.1 200 OK</status>
         </propstat>
     </response>
     <response>
-        <href>dcbox:/MyBoardBox</href>
+        <href>personium-localbox:/MyBoardBox</href>
         <propstat>
             <prop>
+                <creationdate>2019-02-27T01:34:40.081+0000</creationdate>
+                <getlastmodified>Wed, 27 Feb 2019 01:34:40 GMT</getlastmodified>
                 <resourcetype>
                     <collection/>
                 </resourcetype>
-                <acl xml:base="https://demo.personium.io/app-myboard/__role/__/" xmlns:dc="urn:x-dcl:xmlns">
+                <acl xml:base="https://app-myboard.demo.personium.io/__role/app/" xmlns:p="urn:x-personium:xmlns">
                     <ace>
                         <principal>
                             <href>MyBoardOwner</href>
                         </principal>
                         <grant>
                             <privilege>
-                                <all/>
+                                <D:all xmlns:D="DAV:"/>
                             </privilege>
                         </grant>
                     </ace>
@@ -33,7 +39,7 @@
                         </principal>
                         <grant>
                             <privilege>
-                                <read/>
+                                <D:read xmlns:D="DAV:"/>
                             </privilege>
                         </grant>
                     </ace>
@@ -43,24 +49,31 @@
                         </principal>
                         <grant>
                             <privilege>
-                                <read/>
+                                <D:read xmlns:D="DAV:"/>
                             </privilege>
                             <privilege>
-                                <write/>
+                                <D:write xmlns:D="DAV:"/>
                             </privilege>
                         </grant>
                     </ace>
                 </acl>
-                <dc:my-board.json xmlns:dc="urn:x-dc1:xmlns">my-board.json</dc:my-board.json>
+                <dc:my-board.json xmlns:p="urn:x-personium:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/" xmlns:dc="urn:x-dc1:xmlns">my-board.json</dc:my-board.json>
             </prop>
+            <status>HTTP/1.1 200 OK</status>
         </propstat>
     </response>
     <response>
-        <href>dcbox:/MyBoardBox/my-board.json</href>
+        <href>personium-localbox:/MyBoardBox/my-board.json</href>
         <propstat>
             <prop>
+                <creationdate>2019-02-27T01:34:40.216+0000</creationdate>
+                <getcontentlength>31</getcontentlength>
                 <getcontenttype>text/plan</getcontenttype>
+                <getlastmodified>Wed, 27 Feb 2019 01:34:40 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-myboard.demo.personium.io/__role/app/" xmlns:p="urn:x-personium:xmlns"/>
             </prop>
+            <status>HTTP/1.1 200 OK</status>
         </propstat>
     </response>
 </multistatus>
