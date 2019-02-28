@@ -1,13 +1,1 @@
-{
-  "Roles": [
-    {
-      "Name": "MyBoardOwner"
-    },
-    {
-      "Name": "MyBoardViewer"
-    },
-    {
-      "Name": "MyBoardEditor"
-    }
-  ]
-}
+{"Roles":[{"Name":"MyBoardEditor"},{"Name":"MyBoardOwner"},{"Name":"MyBoardViewer"}]}

@@ -1,6 +1,1 @@
-{
-  "bar_version": "1",
-  "box_version": "1",
-  "DefaultPath": "MyBoardBox",
-  "schema": "https://demo.personium.io/app-myboard/"
-}
+{"bar_version":"2","box_version":"1","default_path":"app","schema":"https://app-myboard.demo.personium.io/"}

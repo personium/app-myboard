@@ -2,8 +2,7 @@ exports.accInfo = (function() {
     /*
      * Begin of your Personium app configurations
      */
-    var rootUrl = '***'; // for example: https://demo.personium.io
-    var appCellName = '***'; // for example: app-minimal
+    var appCellUrl = '***'; // for example: https://demo.personium.io/appCellName/ or https://appCellName.demo.personium.io/
     var appUserId = '***';
     var appUserPass = '***';
     /*
@@ -15,10 +14,9 @@ exports.accInfo = (function() {
      * Don't modify anything from here on
      */
     var accInfo = {};
-    var appCellUrl = [ rootUrl, appCellName, '' ].join('/'); // always with ending slash
     accInfo.APP_CELL_URL = appCellUrl;
     accInfo.APP_CELL_ADMIN_INFO = {
-        cellUrl: appCellName,
+        cellUrl: appCellUrl,
         userId: appUserId,
         password: appUserPass 
     };      
