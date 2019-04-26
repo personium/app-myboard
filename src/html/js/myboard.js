@@ -254,9 +254,6 @@ mb.displayAnotherBoardMessage = function(toCellUrl) {
 mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
     Common.getAppDataAPI(boxUrl, token).done(function(data) {
         mb.msgData = JSON.parse(data);
-        if (mb.msgData.message !== undefined) {
-            mb.msgData.message = mb.msgData.message.replace(/<br>/g, "\n");
-        }
         let title;
         if (notMe) {
             title = 'glossary:board.Yours';
@@ -288,7 +285,7 @@ mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
 
 mb.myboardReg = function() {
     var strTxt = $("#txtMyBoard").val();
-    mb.msgData.message = strTxt.replace(/\n/g, "<br>");
+    mb.msgData.message = strTxt;
     mb.registerMyBoardAPI("", mb.msgData.message).done(function() {
         $("#txtMyBoard").val(strTxt);
         mb.grantReadOnly();
