@@ -1,7 +1,10 @@
 {
-    "MyBoardOperator": {
-        "DisplayName": "Operator",
-        "Description": "Operator can post anything to (read and write permission) the board.",
+    "MyBoardOwner": {
+        "DisplayName": "Owner",
+        "Description": "Owner has all privileges."
+    },"MyBoardEditor": {
+        "DisplayName": "Editor",
+        "Description": "Editor can post anything to (read and write permission) the board.",
         "Image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAADW0lEQVR4Xu3c73HUMBCG8U0FhAogHUAHUAF0AHQAFQAVABUAFQAVABUQKkhSAdAB88xYMxpF/yX7tLL1jYnvfP559dryrDmTY0QFzg6fuMABlKiQA+gAaguRmSvoiYg8WHj+isg3Ebku5ZoR6L6IfBSRRx6MryLyqgRqNiAq5ruInEcqhWoC6VNONc0ElINjm7zIQZoJ6PkytXIKw2yTRJoJiIPujqQdiGn1bMkUUxWlSGTSw1BwawayM4fAZbrUInEL8NQ3N7UC+QK5FenCV0Vagbjhu+c54y1I3sDWCkQF/RCROx2R3orIG/f7NAGBQuUQqozeSKqBTOYA9HglJK5klxoryA1kDqI30s/A2k1Gn2Kh5UNPpH/LdPWu9EcGSq2teiCBw6r/1tQyU21UoBSO+f2tSHw+iMNORgTKxemBlFzYjgZUilOD9EFEXiZllg1GAqrFKUFKZs6ol/lWnBykYpxRMqgXTgyJZ9Gs1qOBPOJqvjdOCCk3cm5td8oMWgunK9KpgNbGAakqc0YIaTU4pwhpVThbA6nD2RJIJc5WQGpxtgBSjbM2kHqcNYGmwFkLaBqcNYCmwukNNB1OT6ApcXoBTYvTA2hqnFag6XFagHaBUwu0G5waoF3hlALRwf4r0aRd/XB8+WCXx6StP8L+fMkzadrb6ChdawyHU1JBtPZfWdXDwfja32rxhsQpAXJ7j2lXo5+Gl0Zax7A4JUBkDwFtxt2lDa60advFHBonF4gGI96gMePz0vJv/l2LNDxOLpAbzvQH0oJrj1IkFTg5QITzH0viRkS43PtGLpIanBwgGo3eWRq8iPY+ksopJFU4OUBc2u2KMeEcu3KFkNThpIBS4exDApObSSrPfi1SJU4KKCecDRKYwFA96i7lsekQWmq44fzbuQ/iO9nGVEsouNVWjkELAfHWy2tL1u4MjVWL+QgwtL3xPcXvqsfO6NZ/CwG54czv4upFn1+oWtiGSmM7cMxbOVsfU9f9+YBA+FK4F+6ugSlukizcz+ab+4A4+/y3DqnBTSMohPkU1eI7YBeI6cP0ig2qBRR3uZECVfl3F8i99zEHtYtqya0gcsQ8DON1aaqFabfL4csgphmVxBRSfYnucUZLnkn32J+67ziAEqfsAEoA/QcsGwJYnOd1BgAAAABJRU5ErkJggg=="
     },
     "MyBoardViewer": {
