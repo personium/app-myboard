@@ -78,20 +78,24 @@ $(document).ready(function() {
 
             Common.setAppCellUrl(function() {
                 Common.startOAuth2(function(){
-                    let cellUrl = Common.getTargetCellUrl();
-                    if (cellUrl !== Common.getCellUrl()) {
-                        $.when(Common.getTranscellToken(cellUrl), Common.getAppAuthToken(cellUrl))
+                    let cellUrl = Common.getCellUrl();
+                    let extUrl = Common.getTargetCellUrl();
+                    if (extUrl !== Common.getCellUrl()) {
+                        $.when(Common.getAppAuthToken(cellUrl), Common.getAppAuthToken(extUrl))
                             .done(function(result1, result2) {
-                                let tempTCAT = result1[0].access_token; // Transcell Access Token
-                                let tempAAAT = result2[0].access_token; // App Authentication Access Token
-                                Common.getProtectedBoxAccessToken4ExtCell(cellUrl, tempTCAT, tempAAAT).done(function(appCellToken) {
-                                    Common.updateSessionStorage(appCellToken);
-                                    let token = appCellToken.access_token;
-                                    Common.prevAdditionalCallback(cellUrl, token);
-                                }).fail(function(error) {
-                                    console.log(error.responseJSON.code);
-                                    console.log(error.responseJSON.message.value);
-                                });
+                                let meAAAT = result1[0].access_token; // App Authentication Access Token (me)
+                                let tempAAAT = result2[0].access_token; // App Authentication Access Token (friend)
+                                Common.getTranscellToken(extUrl, meAAAT).done(function(tempTCATObj) {
+                                    let tempTCAT = tempTCATObj.access_token; // Transcell Access Token
+                                    Common.getProtectedBoxAccessToken4ExtCell(extUrl, tempTCAT, tempAAAT).done(function(appCellToken) {
+                                        Common.updateSessionStorage(appCellToken);
+                                        let token = appCellToken.access_token;
+                                        Common.prevAdditionalCallback(extUrl, token);
+                                    }).fail(function(error) {
+                                        console.log(error.responseJSON.code);
+                                        console.log(error.responseJSON.message.value);
+                                    });
+                                })
                             })
                     } else {
                         let token = Common.getToken();
@@ -545,7 +549,7 @@ Common.startOAuth2 = function(callback) {
 };
 
 Common.refreshToken = function(callback) {
-    let cellUrl = Common.getCellUrl();
+    let cellUrl = Common.getTargetCellUrl();
     Common.getAppAuthToken(cellUrl).done(function(appToken) {
         Common.getProtectedBoxAccessToken(appToken.access_token, cellUrl).done(function(appCellToken) {
             // update sessionStorage
@@ -997,11 +1001,16 @@ Common.dispOtherAllowedCells = function(extUrl, no) {
  * When done, execute callback (add external Cell to proper list).
  */
 Common.prepareExtCellForApp = function(extUrl, profObj, no) {
-    $.when(Common.getTranscellToken(extUrl), Common.getAppAuthToken(extUrl))
+    let cellUrl = Common.getCellUrl();
+    $.when(Common.getAppAuthToken(cellUrl), Common.getAppAuthToken(extUrl))
         .done(function(result1, result2) {
-            let tempTCAT = result1[0].access_token; // Transcell Access Token
-            let tempAAAT = result2[0].access_token; // App Authentication Access Token
-            Common.perpareExtCellInfo(extUrl, tempTCAT, tempAAAT, Common.appendExtCellToList, profObj, no);
+            let meAAAT = result1[0].access_token; // App Authentication Access Token (me)
+            let tempAAAT = result2[0].access_token; // App Authentication Access Token (friend)
+            Common.getTranscellToken(extUrl, meAAAT).done(function(tempTCATObj) {
+                let tempTCAT = tempTCATObj.access_token; // Transcell Access Token
+                Common.perpareExtCellInfo(extUrl, tempTCAT, tempAAAT, Common.appendExtCellToList, profObj, no);
+            }) 
+            
         })
 };
 /*
@@ -1580,7 +1589,7 @@ Common.getProfileDefaultAPI = function(url) {
         headers: {'Accept':'application/json'}
     });
 }
-Common.getTranscellToken = function(extCellUrl) {
+Common.getTranscellToken = function(extCellUrl, tempAAAT) {
     return $.ajax({
         type: "POST",
         url: Common.getCellUrl() + '__token',
@@ -1589,7 +1598,9 @@ Common.getTranscellToken = function(extCellUrl) {
         data: {
             grant_type: "refresh_token",
             refresh_token: Common.getRefressToken(),
-            p_target: extCellUrl
+            p_target: extCellUrl,
+            client_id: Common.getAppCellUrl(),
+            client_secret: tempAAAT
         },
         headers: {
             'Accept':'application/json',

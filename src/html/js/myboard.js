@@ -153,11 +153,6 @@ additionalCallback = function() {
         mb.myboardReg();
     });
 
-    $('#bReadAnotherCell').on('click', function () {
-        var toCellUrl = $("#otherAllowedCells option:selected").val();
-        mb.displayAnotherBoardMessage(toCellUrl);
-    });
-
     $("#extCellMyBoard").on('show.bs.collapse', function() {
         $("#sendAllowedMessage").removeClass('in');
         $("#sendAllowedMessage").attr("aria-expanded", false);
@@ -232,23 +227,6 @@ mb.displayOwnBoardMessage = function() {
     let token = Common.getToken();
     Common.showSpinner(".main_box");
     mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
-};
-
-mb.displayAnotherBoardMessage = function(toCellUrl) {
-    Common.showSpinner(".main_box");
-        
-    $.when(Common.getTranscellToken(toCellUrl), Common.getAppAuthToken(toCellUrl))
-        .done(function(result1, result2) {
-            let tempTCAT = result1[0].access_token; // Transcell Access Token
-            let tempAAAT = result2[0].access_token; // App Authentication Access Token
-            Common.perpareToCellInfo(toCellUrl, tempTCAT, tempAAAT, function(cellUrl, boxUrl, token) {
-                let notMe = true;
-                mb.displayBoardMessage(cellUrl, boxUrl, token, notMe); // AJAX
-            });
-        })
-        .fail(function(){
-            Common.hideSpinner(".main_box");
-        });
 };
 
 mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
