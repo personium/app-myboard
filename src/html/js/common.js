@@ -550,17 +550,12 @@ Common.startOAuth2 = function(callback) {
 
 Common.refreshToken = function(callback) {
     let cellUrl = Common.getTargetCellUrl();
-    Common.getAppAuthToken(cellUrl).done(function(appToken) {
-        Common.getProtectedBoxAccessToken(appToken.access_token, cellUrl).done(function(appCellToken) {
-            // update sessionStorage
-            Common.updateSessionStorage(appCellToken);
-            if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                callback();
-            };
-        }).fail(function(error) {
-            console.log(error.responseJSON);
-            Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
-        });
+    Common.refreshProtectedBoxAccessToken(cellUrl).done(function(appCellToken) {
+        // update sessionStorage
+        Common.updateSessionStorage(appCellToken);
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        };
     }).fail(function(error) {
         console.log(error.responseJSON);
         Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
@@ -1491,6 +1486,7 @@ Common.getBoxUrlAPI = function(cellUrl, token) {
         }
     });
 };
+
 // Get App Authentication Token
 Common.getAppAuthToken = function(cellUrl) {
     let engineEndPoint = getEngineEndPoint();
@@ -1503,30 +1499,29 @@ Common.getAppAuthToken = function(cellUrl) {
         headers: {'Accept':'application/json'}
     });
 };
+
 /*
- * Get access token for protected box(es) which is accessible by the App.
- * client_id belongs to a App's cell URL
- * Example: MyBoard is "https://demo.personium.io/app-myboard/"
- *          Calorie Smile is "https://demo.personium.io/hn-app-genki/"
+ * Refresh access token for protected box which is accessible by the App.
+ * cell_url - user's cell URL
  */
-Common.getProtectedBoxAccessToken = function(appToken, cellUrl) {
-  return $.ajax({
-                type: "POST",
-                url: cellUrl + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                    grant_type: "refresh_token",
-                    refresh_token: Common.accessData.refToken,
-                    client_id: Common.getAppCellUrl(),
-                    client_secret: appToken
-                },
-                headers: {
-                    'Accept':'application/json',
-                    'content-type': 'application/x-www-form-urlencoded'
-                }
-            });
+Common.refreshProtectedBoxAccessToken = function(cellUrl) {
+    let engineEndPoint = getRefreshTokenEngineEndPoint();
+    return $.ajax({
+        type: "POST",
+        url: engineEndPoint,
+        processData: true,
+        dataType: 'json',
+        data: {
+            p_target: cellUrl,
+            refresh_token: Common.getRefressToken()
+        },
+        headers: {
+            'Accept':'application/json',
+            'content-type': 'application/x-www-form-urlencoded'
+        }
+    });
 };
+
 Common.getProtectedBoxAccessToken4ExtCell = function(cellUrl, tcat, aaat) {
     return $.ajax({
         type: "POST",

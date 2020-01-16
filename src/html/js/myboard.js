@@ -8,6 +8,10 @@ getEngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
 };
 
+getRefreshTokenEngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/refreshProtectedBoxAccessToken";
+};
+
 getStartOAuth2EngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/start_oauth2";
 };

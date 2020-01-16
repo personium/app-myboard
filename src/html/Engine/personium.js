@@ -47,6 +47,27 @@ exports.personium = (function() {
         
         return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
     };
+    
+    personium.refreshProtectedBoxAccessToken = function(params, appToken) {
+        var cellUrl = params.p_target;
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=refresh_token",
+            "refresh_token=" + params.refresh_token,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
 
     personium.getUserCell = function(accInfo, cellname) {
         return _p.as(accInfo).cell(cellname);
