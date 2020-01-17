@@ -68,6 +68,48 @@ exports.personium = (function() {
         
         return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
     };
+    
+    personium.getTranscellToken = function(params, appToken) {
+        var cellUrl = params.user_url;
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=refresh_token",
+            "refresh_token=" + params.refresh_token,
+            "p_target=" + params.p_target,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
+    
+    personium.getProtectedBoxAccessToken = function(cellUrl, transcellToken, appToken) {
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer",
+            "assertion=" + transcellToken,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
 
     personium.getUserCell = function(accInfo, cellname) {
         return _p.as(accInfo).cell(cellname);

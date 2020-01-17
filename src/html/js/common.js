@@ -80,23 +80,16 @@ $(document).ready(function() {
                 Common.startOAuth2(function(){
                     let cellUrl = Common.getCellUrl();
                     let extUrl = Common.getTargetCellUrl();
-                    if (extUrl !== Common.getCellUrl()) {
-                        $.when(Common.getAppAuthToken(cellUrl), Common.getAppAuthToken(extUrl))
-                            .done(function(result1, result2) {
-                                let meAAAT = result1[0].access_token; // App Authentication Access Token (me)
-                                let tempAAAT = result2[0].access_token; // App Authentication Access Token (friend)
-                                Common.getTranscellToken(extUrl, meAAAT).done(function(tempTCATObj) {
-                                    let tempTCAT = tempTCATObj.access_token; // Transcell Access Token
-                                    Common.getProtectedBoxAccessToken4ExtCell(extUrl, tempTCAT, tempAAAT).done(function(appCellToken) {
-                                        Common.updateSessionStorage(appCellToken);
-                                        let token = appCellToken.access_token;
-                                        Common.prevAdditionalCallback(extUrl, token);
-                                    }).fail(function(error) {
-                                        console.log(error.responseJSON.code);
-                                        console.log(error.responseJSON.message.value);
-                                    });
-                                })
+                    if (extUrl !== cellUrl) {
+                        Common.getProtectedBoxAccessToken4ExtCell()
+                            .done(function(appCellToken){
+                                Common.updateSessionStorage(appCellToken);
+                                let token = appCellToken.access_token;
+                                Common.prevAdditionalCallback(extUrl, token);
                             })
+                            .fail(function(error) {
+                                console.log(error.responseJSON);
+                            });
                     } else {
                         let token = Common.getToken();
                         Common.prevAdditionalCallback(cellUrl, token);
@@ -104,7 +97,7 @@ $(document).ready(function() {
                 });
     
                 Common.updateContent();
-                });
+            });
         });
 });
 
@@ -570,33 +563,6 @@ Common.updateSessionStorage = function(appCellToken) {
     sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
-Common.perpareToCellInfo = function(cellUrl, tcat, aaat, callback) {
-    Common.getProtectedBoxAccessToken4ExtCell(cellUrl, tcat, aaat).done(function(appCellToken) {
-        Common.setToCellToken(appCellToken.access_token);
-        Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
-            .done(function(data, textStatus, request) {
-                let tempInfo = {
-                    data: data,
-                    request: request,
-                    targetCellUrl: cellUrl
-                };
-                let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
-                Common.setToCellBoxUrl(boxUrl);
-                // callback
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback(cellUrl, Common.getToCellBoxUrl(), Common.getToCellToken());
-                }
-            })
-            .fail(function(error) {
-                console.log(error.responseJSON.code);
-                console.log(error.responseJSON.message.value);
-                Common.showIrrecoverableErrorDialog("msg.error.failedToGetBoxUrl");
-            });
-    }).fail(function(error) {
-        Common.showIrrecoverableErrorDialog("msg.error.failedToRefreshToken");
-    });
-};
-
 Common.showIrrecoverableErrorDialog = function(msg_key) {
     // define your own handler for each App/screen
     if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
@@ -1015,7 +981,7 @@ Common.prepareExtCellForApp = function(extUrl, profObj, no) {
  * 3. Execute callback (add external Cell to proper list).
  */
 Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, profObj, no) {
-    Common.getProtectedBoxAccessToken4ExtCell(cellUrl, tcat, aaat).done(function(appCellToken) {
+    Common.getPBAT4XC(cellUrl, tcat, aaat).done(function(appCellToken) {
         Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
             .done(function(data, textStatus, request) {
                 let tempInfo = {
@@ -1025,7 +991,7 @@ Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, profObj, no)
                 };
                 let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                 console.log(boxUrl);
-
+                
                 if ((typeof callback !== "undefined") && $.isFunction(callback)) {
                     callback(boxUrl, tcat, cellUrl, profObj, no);
                 }
@@ -1502,7 +1468,7 @@ Common.getAppAuthToken = function(cellUrl) {
 
 /*
  * Refresh access token for protected box which is accessible by the App.
- * cell_url - user's cell URL
+ * cellUrl - user's cell URL
  */
 Common.refreshProtectedBoxAccessToken = function(cellUrl) {
     let engineEndPoint = getRefreshTokenEngineEndPoint();
@@ -1522,7 +1488,28 @@ Common.refreshProtectedBoxAccessToken = function(cellUrl) {
     });
 };
 
-Common.getProtectedBoxAccessToken4ExtCell = function(cellUrl, tcat, aaat) {
+Common.getProtectedBoxAccessToken4ExtCell = function() {
+    let engineEndPoint = getProtectedBoxAccessTokenEngineEndPoint();
+    let cellUrl = Common.getCellUrl();
+    let extUrl = Common.getTargetCellUrl();
+    return $.ajax({
+        type: "POST",
+        url: engineEndPoint,
+        processData: true,
+        dataType: 'json',
+        data: {
+            user_url: cellUrl,
+            p_target: extUrl,
+            refresh_token: Common.getRefressToken()
+        },
+        headers: {
+            'Accept':'application/json',
+            'content-type': 'application/x-www-form-urlencoded'
+        }
+    });
+};
+
+Common.getPBAT4XC = function(cellUrl, tcat, aaat) {
     return $.ajax({
         type: "POST",
         url: cellUrl + '__token',
