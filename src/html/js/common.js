@@ -275,18 +275,21 @@ Common.getUnitUrl = function() {
 Common.changeLocalUnitToUnitUrl = function (cellUrl) {
     var result = cellUrl;
     if (cellUrl.startsWith(Common.PERSONIUM_LOCALUNIT)) {
-        if (!Common.path_based_cellurl_enabled) {
+        // Remove the keyword first
+        let cellname = cellUrl.replace(Common.PERSONIUM_LOCALUNIT, "");
+        // Remove ending ":/" of "dixonsiu:/"
+        cellname = cellname.replace(":/", "");
+        // Remove all "/" of "/dixonsiu" and "/dixonsiu/"
+        cellname = cellname.replace(/\//g, "");
+        
+        if (Common.path_based_cellurl_enabled) {
+            // https://fqdn/cellname/
+            result = Common.unitUrl + cellname + "/";
+        } else {
             // https://cellname.fqdn/
-            let cellname = cellUrl.replace(Common.PERSONIUM_LOCALUNIT + "/", "");
-            if (cellname.endsWith("/")) {
-              cellname = cellname.substring(0, cellname.length-1);
-            }
             let unitSplit = Common.unitUrl.split("/");
             unitSplit[2] = cellname + "." + unitSplit[2];
             result = unitSplit.join("/");
-        } else {
-            // https://fqdn/cellname/
-            result = cellUrl.replace(Common.PERSONIUM_LOCALUNIT + "/", Common.unitUrl);
         }
     }
 
