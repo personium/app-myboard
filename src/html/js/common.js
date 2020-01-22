@@ -272,15 +272,20 @@ Common.getUnitUrl = function() {
     return Common.accessData.unitUrl;
 };
 
+/*
+ * Convert "personium-localunit:{cellName}:/" to the normal URL format when the Cell (cellUrl) is in the same Personium Unit.
+ * Cell URL: personium-localunit:/dixonsiu  (supporting old format)
+ *           personium-localunit:/dixonsiu/ (supporting old format)
+ *           personium-localunit:dixonsiu:  (new - missing ending slash)
+ *           personium-localunit:dixonsiu:/ (new)
+ */
 Common.changeLocalUnitToUnitUrl = function (cellUrl) {
     var result = cellUrl;
     if (cellUrl.startsWith(Common.PERSONIUM_LOCALUNIT)) {
         // Remove the keyword first
         let cellname = cellUrl.replace(Common.PERSONIUM_LOCALUNIT, "");
-        // Remove ending ":/" of "dixonsiu:/"
-        cellname = cellname.replace(":/", "");
-        // Remove all "/" of "/dixonsiu" and "/dixonsiu/"
-        cellname = cellname.replace(/\//g, "");
+        // Remove all "/" of "/dixonsiu", "/dixonsiu/", "dixonsiu:" and "dixonsiu:/"
+        cellname = cellname.replace(/:|\//g, "");
         
         if (Common.path_based_cellurl_enabled) {
             // https://fqdn/cellname/
