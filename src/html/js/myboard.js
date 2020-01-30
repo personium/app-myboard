@@ -226,44 +226,20 @@ mb.grantReadOnly = function() {
 
 irrecoverableErrorHandler = function() {
     $("#collapse-id").empty();
-    $("#exeEditer").prop("disabled", true);
 };
 
 mb.displayOwnBoardMessage = function() {
-    let cellUrl = Common.getCellUrl();
     let boxUrl = Common.getBoxUrl();
     let token = Common.getToken();
     Common.showSpinner(".main_box");
-    mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
+    mb.displayBoardMessage(boxUrl, token); // AJAX
 };
 
-mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
+mb.displayBoardMessage = function(boxUrl, token) {
     Common.getAppDataAPI(boxUrl, token).done(function(data) {
         mb.msgData = JSON.parse(data);
-        let title;
-        if (notMe) {
-            title = 'glossary:board.Yours';
-        } else {
-            title = 'glossary:board.Mine';
-        }
-        Common.getProfileName(cellUrl, function(url, name){ 
-            $("#boardTitle")
-                .attr('data-i18n', title)
-                .localize({
-                    name: name
-                });
-        });
         $('.write_board').val(mb.msgData.message);
         $('.disp_board').css("display", "block");
-        if (notMe) {
-            $("#exeEditer")
-                .prop("disabled", true)
-                .hide();
-        } else {
-            $("#exeEditer")
-                .prop("disabled", false)
-                .show();
-        }
     }).always(function() {
         Common.hideSpinner(".main_box");
     });
