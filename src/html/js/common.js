@@ -364,7 +364,7 @@ Common.getToCellToken = function() {
     return Common.accessData.toCellToken;
 };
 
-Common.getRefressToken = function() {
+Common.getRefreshToken = function() {
     return Common.accessData.refToken;
 };
 
@@ -1487,7 +1487,7 @@ Common.refreshProtectedBoxAccessToken = function(cellUrl) {
         dataType: 'json',
         data: {
             p_target: cellUrl,
-            refresh_token: Common.getRefressToken()
+            refresh_token: Common.getRefreshToken()
         },
         headers: {
             'Accept':'application/json',
@@ -1508,7 +1508,7 @@ Common.getProtectedBoxAccessToken4ExtCell = function() {
         data: {
             user_url: cellUrl,
             p_target: extUrl,
-            refresh_token: Common.getRefressToken()
+            refresh_token: Common.getRefreshToken()
         },
         headers: {
             'Accept':'application/json',
@@ -1587,7 +1587,7 @@ Common.getTranscellToken = function(extCellUrl, tempAAAT) {
         dataType: 'json',
         data: {
             grant_type: "refresh_token",
-            refresh_token: Common.getRefressToken(),
+            refresh_token: Common.getRefreshToken(),
             p_target: extCellUrl,
             client_id: Common.getAppCellUrl(),
             client_secret: tempAAAT
