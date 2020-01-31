@@ -81,7 +81,7 @@ $(document).ready(function() {
                     let cellUrl = Common.getCellUrl();
                     let extUrl = Common.getTargetCellUrl();
                     if (extUrl !== cellUrl) {
-                        Common.getProtectedBoxAccessToken4ExtCell()
+                        Common.getProtectedBoxAccessToken4ExtCell(cellUrl, extUrl)
                             .done(function(appCellToken){
                                 Common.updateSessionStorage(appCellToken);
                                 let token = appCellToken.access_token;
@@ -969,40 +969,27 @@ Common.dispOtherAllowedCells = function(extUrl, no) {
  * Get Transcell Token of the external Cell and prepare its data.
  * When done, execute callback (add external Cell to proper list).
  */
-Common.prepareExtCellForApp = function(extUrl, profObj, no) {
-    let cellUrl = Common.getCellUrl();
-    $.when(Common.getAppAuthToken(cellUrl), Common.getAppAuthToken(extUrl))
-        .done(function(result1, result2) {
-            let meAAAT = result1[0].access_token; // App Authentication Access Token (me)
-            let tempAAAT = result2[0].access_token; // App Authentication Access Token (friend)
-            Common.getTranscellToken(extUrl, meAAAT).done(function(tempTCATObj) {
-                let tempTCAT = tempTCATObj.access_token; // Transcell Access Token
-                Common.perpareExtCellInfo(extUrl, tempTCAT, tempAAAT, Common.appendExtCellToList, profObj, no);
-            }) 
-            
-        })
-};
 /*
  * Perform the followings for an external Cell:
- * 1. Get access token for protected box(es) which is accessible by the App.
+ * 1. Get access token for protected box which is accessible by the App.
  * 2. Get Box URL.
- * 3. Execute callback (add external Cell to proper list).
+ * 3. Add an entry to the accessible list which is rendered when the Group icon on the top right corner is clicked.
  */
-Common.perpareExtCellInfo = function(cellUrl, tcat, aaat, callback, profObj, no) {
-    Common.getPBAT4XC(cellUrl, tcat, aaat).done(function(appCellToken) {
-        Common.getBoxUrlAPI(cellUrl, appCellToken.access_token)
+Common.prepareExtCellForApp = function(extUrl, profObj, no) {
+    let cellUrl = Common.getCellUrl();
+    Common.getProtectedBoxAccessToken4ExtCell(cellUrl, extUrl).done(function(appCellToken) {
+        let boxAcessToken = appCellToken.access_token;
+        Common.getBoxUrlAPI(extUrl, boxAcessToken)
             .done(function(data, textStatus, request) {
                 let tempInfo = {
                     data: data,
                     request: request,
-                    targetCellUrl: cellUrl
+                    targetCellUrl: extUrl
                 };
                 let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                 console.log(boxUrl);
                 
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback(boxUrl, tcat, cellUrl, profObj, no);
-                }
+                Common.appendExtCellToList(boxUrl, boxAcessToken, extUrl, profObj, no);
             })
             .fail(function(error) {
                 console.log(error.responseJSON.code);
@@ -1461,19 +1448,6 @@ Common.getBoxUrlAPI = function(cellUrl, token) {
     });
 };
 
-// Get App Authentication Token
-Common.getAppAuthToken = function(cellUrl) {
-    let engineEndPoint = getEngineEndPoint();
-    return $.ajax({
-        type: "POST",
-        url: engineEndPoint,
-        data: {
-                p_target: cellUrl
-        },
-        headers: {'Accept':'application/json'}
-    });
-};
-
 /*
  * Refresh access token for protected box which is accessible by the App.
  * cellUrl - user's cell URL
@@ -1496,10 +1470,8 @@ Common.refreshProtectedBoxAccessToken = function(cellUrl) {
     });
 };
 
-Common.getProtectedBoxAccessToken4ExtCell = function() {
+Common.getProtectedBoxAccessToken4ExtCell = function(cellUrl, extUrl) {
     let engineEndPoint = getProtectedBoxAccessTokenEngineEndPoint();
-    let cellUrl = Common.getCellUrl();
-    let extUrl = Common.getTargetCellUrl();
     return $.ajax({
         type: "POST",
         url: engineEndPoint,
@@ -1517,24 +1489,6 @@ Common.getProtectedBoxAccessToken4ExtCell = function() {
     });
 };
 
-Common.getPBAT4XC = function(cellUrl, tcat, aaat) {
-    return $.ajax({
-        type: "POST",
-        url: cellUrl + '__token',
-        processData: true,
-        dataType: 'json',
-        data: {
-            grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer',
-            assertion: tcat,
-            client_id: Common.getAppCellUrl(),
-            client_secret: aaat
-        },
-        headers: {
-            'Accept':'application/json',
-            'content-type': 'application/x-www-form-urlencoded'
-        }
-    });
-};
 Common.getCell = function (cellUrl) {
     if (!cellUrl) cellUrl = "https";
 
