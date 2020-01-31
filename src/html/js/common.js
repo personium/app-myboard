@@ -1471,7 +1471,7 @@ Common.refreshProtectedBoxAccessToken = function(cellUrl) {
 };
 
 Common.getProtectedBoxAccessToken4ExtCell = function(cellUrl, extUrl) {
-    let engineEndPoint = getProtectedBoxAccessTokenEngineEndPoint();
+    let engineEndPoint = getProtectedBoxAccessToken4ExtCellEngineEndPoint();
     return $.ajax({
         type: "POST",
         url: engineEndPoint,

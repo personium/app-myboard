@@ -4,12 +4,8 @@ mb.msgData = null;
 
 const APP_URL = "https://app-myboard.demo.personium.io/";
 
-getEngineEndPoint = function() {
-    return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
-};
-
-getProtectedBoxAccessTokenEngineEndPoint = function() {
-    return Common.getAppCellUrl() + "__/html/Engine/getProtectedBoxAccessToken";
+getProtectedBoxAccessToken4ExtCellEngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/getProtectedBoxAccessToken4ExtCell";
 };
 
 getRefreshTokenEngineEndPoint = function() {

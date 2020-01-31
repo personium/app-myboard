@@ -16,7 +16,7 @@ function(request){
         
         var extUrl = params.p_target;
         var appTokenExt = personium.getAppToken(params.p_target); // External cell (cell to be accessed)
-        var token = personium.getProtectedBoxAccessToken(extUrl, transcellToken.access_token, appTokenExt.access_token)
+        var token = personium.getProtectedBoxAccessToken4ExtCell(extUrl, transcellToken.access_token, appTokenExt.access_token)
         
         return personium.createResponse(200, token);
     } catch (e) {

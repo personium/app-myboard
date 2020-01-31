@@ -91,7 +91,7 @@ exports.personium = (function() {
         return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
     };
     
-    personium.getProtectedBoxAccessToken = function(cellUrl, transcellToken, appToken) {
+    personium.getProtectedBoxAccessToken4ExtCell = function(cellUrl, transcellToken, appToken) {
         var url = [
             cellUrl,
             "__token"
