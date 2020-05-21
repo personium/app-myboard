@@ -4,8 +4,12 @@ mb.msgData = null;
 
 const APP_URL = "https://app-myboard.demo.personium.io/";
 
-getEngineEndPoint = function() {
-    return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
+getProtectedBoxAccessToken4ExtCellEngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/getProtectedBoxAccessToken4ExtCell";
+};
+
+getRefreshTokenEngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/refreshProtectedBoxAccessToken";
 };
 
 getStartOAuth2EngineEndPoint = function() {
@@ -153,11 +157,6 @@ additionalCallback = function() {
         mb.myboardReg();
     });
 
-    $('#bReadAnotherCell').on('click', function () {
-        var toCellUrl = $("#otherAllowedCells option:selected").val();
-        mb.displayAnotherBoardMessage(toCellUrl);
-    });
-
     $("#extCellMyBoard").on('show.bs.collapse', function() {
         $("#sendAllowedMessage").removeClass('in');
         $("#sendAllowedMessage").attr("aria-expanded", false);
@@ -223,61 +222,20 @@ mb.grantReadOnly = function() {
 
 irrecoverableErrorHandler = function() {
     $("#collapse-id").empty();
-    $("#exeEditer").prop("disabled", true);
 };
 
 mb.displayOwnBoardMessage = function() {
-    let cellUrl = Common.getCellUrl();
     let boxUrl = Common.getBoxUrl();
     let token = Common.getToken();
     Common.showSpinner(".main_box");
-    mb.displayBoardMessage(cellUrl, boxUrl, token); // AJAX
+    mb.displayBoardMessage(boxUrl, token); // AJAX
 };
 
-mb.displayAnotherBoardMessage = function(toCellUrl) {
-    Common.showSpinner(".main_box");
-        
-    $.when(Common.getTranscellToken(toCellUrl), Common.getAppAuthToken(toCellUrl))
-        .done(function(result1, result2) {
-            let tempTCAT = result1[0].access_token; // Transcell Access Token
-            let tempAAAT = result2[0].access_token; // App Authentication Access Token
-            Common.perpareToCellInfo(toCellUrl, tempTCAT, tempAAAT, function(cellUrl, boxUrl, token) {
-                let notMe = true;
-                mb.displayBoardMessage(cellUrl, boxUrl, token, notMe); // AJAX
-            });
-        })
-        .fail(function(){
-            Common.hideSpinner(".main_box");
-        });
-};
-
-mb.displayBoardMessage = function(cellUrl, boxUrl, token, notMe) {
+mb.displayBoardMessage = function(boxUrl, token) {
     Common.getAppDataAPI(boxUrl, token).done(function(data) {
         mb.msgData = JSON.parse(data);
-        let title;
-        if (notMe) {
-            title = 'glossary:board.Yours';
-        } else {
-            title = 'glossary:board.Mine';
-        }
-        Common.getProfileName(cellUrl, function(url, name){ 
-            $("#boardTitle")
-                .attr('data-i18n', title)
-                .localize({
-                    name: name
-                });
-        });
         $('.write_board').val(mb.msgData.message);
         $('.disp_board').css("display", "block");
-        if (notMe) {
-            $("#exeEditer")
-                .prop("disabled", true)
-                .hide();
-        } else {
-            $("#exeEditer")
-                .prop("disabled", false)
-                .show();
-        }
     }).always(function() {
         Common.hideSpinner(".main_box");
     });

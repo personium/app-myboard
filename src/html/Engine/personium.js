@@ -47,6 +47,69 @@ exports.personium = (function() {
         
         return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
     };
+    
+    personium.refreshProtectedBoxAccessToken = function(params, appToken) {
+        var cellUrl = params.p_target;
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=refresh_token",
+            "refresh_token=" + params.refresh_token,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
+    
+    personium.getTranscellToken = function(params, appToken) {
+        var cellUrl = params.user_url;
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=refresh_token",
+            "refresh_token=" + params.refresh_token,
+            "p_target=" + params.p_target,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
+    
+    personium.getProtectedBoxAccessToken4ExtCell = function(cellUrl, transcellToken, appToken) {
+        var url = [
+            cellUrl,
+            "__token"
+        ].join("");
+        var headers = {
+            "Accept": "application/json"
+        };
+        var contentType = "application/x-www-form-urlencoded";
+        var body = [
+            "grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer",
+            "assertion=" + transcellToken,
+            "client_id=" + personium.getAppCellUrl(),
+            "client_secret=" + appToken
+        ].join('&');
+        var httpCodeExpected = 200;
+        
+        return personium.httpPOSTMethod(url, headers, contentType, body, httpCodeExpected);
+    };
 
     personium.getUserCell = function(accInfo, cellname) {
         return _p.as(accInfo).cell(cellname);
@@ -204,8 +267,15 @@ exports.personium = (function() {
 
     personium.httpPOSTMethod = function (url, headers, contentType, body, httpCodeExpected) {
         var httpClient = new _p.extension.HttpClient();
-        var response = httpClient.post(url, headers, contentType, body);
-        var httpCode = parseInt(response.status);
+        var response = null;
+        var httpCode;
+        try {
+            response = httpClient.post(url, headers, contentType, body);
+            httpCode = parseInt(response.status);
+        } catch(e) {
+            // Sometimes SSL certificate issue raises exception
+            httpCode = 500;
+        }
         if (httpCode === 500) {
             // retry
             var ignoreVerification = {"IgnoreHostnameVerification": true};
@@ -237,12 +307,12 @@ exports.personium = (function() {
             return personium.createResponse(500, e);
         }
 
-        var tempErrorMessage;
+        var tempErrorMessage = e.message;
         try {
             // Convert to JSON so that response header can be properly configured ("Content-Type":"application/json").
             tempErrorMessage = JSON.parse(e.message);
         } catch(e) {
-            tempErrorMessage = e.message;
+            tempErrorMessage = "Fail to parse JSON. " + tempErrorMessage;
         }
         if (_.isUndefined(tempErrorCode) || _.isNull(tempErrorCode) || tempErrorCode == 0) {
             return personium.createResponse(500, tempErrorMessage);
