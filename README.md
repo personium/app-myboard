@@ -5,7 +5,24 @@ It allows the data subject to edit it's and view other's notice board.
 [![MyBoard on YouTube](https://i.ytimg.com/vi/X_djQih94tU/1.jpg)](https://youtu.be/X_djQih94tU)  
 
 ## Installation  
-TBD  
+Perform the following procedures by someone with admin permission of the target Personium Unit.  
+
+### Prepare target App Cell  
+Perform the following in the target Personium Unit.  
+
+1. Download the [snapshot](https://app-myboard.appdev.personium.io/__/app-myboard-clone.zip) of the MyBoard App from the Personium Community.  
+1. Import the snapshot to the target App Cell of the target Personium Unit.  
+1. Create new user accounts or modify passwords for the newly target App Cell.  
+
+### Set up target App Cell  
+Perform the following in the target App Cell.  
+
+1. Use the target App Cell's URL for the schema URL of the app Box.  
+Export the app Box and upload the app Box to the main folder of the target App Cell.  
+1. Use the target App Cell's URL in launch.json in the main Box.  
+1. Use the target App Cell's URL and proper app authentication info in the Personium Engine.  
+
+        __/html/Engine/__src/acc_info.js  
 
 ## Instructions on modifying this app and building your own  
 You are free to use this app as base and write your own.  Basically, we reuse files that contain the "common" in their file names for all other apps. And then we edit the following constants/functions to match our needs.  
